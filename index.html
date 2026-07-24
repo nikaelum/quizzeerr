@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Quiz Runner, Study Planner & Math Suite</title>
+    
+    <!-- MathJax 3 Configuration for LaTeX Mathematical Formatting -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2b6cb0;
+            --accent: #2c5282;
+            --success: #276749;
+            --success-bg: #c6f6d5;
+            --danger: #9b2c2c;
+            --danger-bg: #fed7d7;
+            --warning: #d69e2e;
+            --warning-bg: #fefcbf;
+            --bg: #edf2f7;
+            --card: #ffffff;
+            --border: #cbd5e0;
+            --text: #2d3748;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+            line-height: 1.5;
+        }
+
+        .app-container {
+            max-width: 1080px;
+            margin: 0 auto;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        header {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 1.6rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 10px 16px;
+            background: #e2e8f0;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Layout Grid */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 20px;
+        }
+
+        @media (max-width: 880px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 15px;
+            background: #ffffff;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-weight: bold;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Settings Bar */
+        .settings-bar {
+            background: #f7fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.9rem;
+        }
+
+        .settings-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover { background: var(--primary-light); }
+        .btn-secondary { background: #4a5568; }
+        .btn-success { background: var(--success); }
+        .btn-danger { background: var(--danger); }
+        .btn-warning { background: var(--warning); color: #744210; }
+        .btn-sm { padding: 4px 8px; font-size: 0.8rem; }
+
+        /* FOLDER & ORGANIZATION STYLES */
+        .folder-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background: #ffffff;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .folder-header {
+            padding: 10px 14px;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 6px solid var(--primary);
+            user-select: none;
+        }
+
+        .folder-title-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .folder-color-badge {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .folder-content {
+            padding: 12px;
+            background: #ffffff;
+        }
+
+        .folder-content.collapsed {
+            display: none;
+        }
+
+        /* Color Picker Swatches */
+        .color-swatches {
+            display: flex;
+            gap: 8px;
+            margin: 8px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .color-swatch {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.1s;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.15);
+        }
+
+        .color-swatch.selected {
+            border-color: #000;
+            transform: scale(1.15);
+        }
+
+        .folder-modal {
+            background: #f7fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+        }
+
+        /* Quiz Item List */
+        .quiz-item {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            background: #f7fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .quiz-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .quiz-item.highlight {
+            background-color: var(--success-bg) !important;
+            border-color: var(--success) !important;
+        }
+
+        .quiz-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .quiz-title {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .quiz-meta {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .badge-streak { background: var(--warning-bg); color: #744210; }
+        .badge-folder { background: #e2e8f0; color: #2d3748; }
+
+        /* Quiz Engine Elements */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            background: #edf2f7;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .timer-badge {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 0.95rem;
+            color: var(--primary);
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            text-align: left;
+            padding: 10px 14px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .option-btn:hover:not([disabled]) { background: #ebf8ff; }
+        .option-btn.correct { background: var(--success-bg) !important; border-color: var(--success) !important; color: var(--success) !important; font-weight: bold; }
+        .option-btn.wrong { background: var(--danger-bg) !important; border-color: var(--danger) !important; color: var(--danger) !important; }
+
+        .explanation-box {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 5px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .explanation-box.correct-bg { background: var(--success-bg); border: 1px solid var(--success); color: var(--success); }
+        .explanation-box.wrong-bg { background: var(--danger-bg); border: 1px solid var(--danger); color: var(--danger); }
+
+        .keyboard-hint {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* JSON Code Editor Styling */
+        .code-editor {
+            width: 100%;
+            height: 200px;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            background: #1e1e1e;
+            color: #4ec9b0;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            box-sizing: border-box;
+            resize: vertical;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            outline: none;
+        }
+
+        .code-editor:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 2px rgba(43, 108, 176, 0.3);
+        }
+
+        .editor-status-bar {
+            margin-top: 6px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: block;
+            background: #edf2f7;
+            color: #4a5568;
+        }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; font-size: 0.85rem; }
+        th { background: #edf2f7; color: var(--primary); }
+    </style>
+</head>
+<body class="tex2jax_process">
+
+<div class="app-container">
+    <header>
+        <div>
+            <h1>🎯 Master Quiz Runner</h1>
+            <span style="font-size: 0.85rem; color: #4a5568;">Practice custom quizzes, group by colored folders, render LaTeX math, and track overall mastery</span>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary btn-sm" onclick="exportAppData()">📤 Export Data</button>
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('import-file-input').click()">📥 Import Data</button>
+            <input type="file" id="import-file-input" accept=".json,.html" style="display: none;" onchange="importAppData(event)">
+            <button class="btn btn-secondary btn-sm" onclick="loadSampleQuiz()">PCAR Quiz</button>
+            <button class="btn btn-secondary btn-sm" onclick="loadMathSampleQuiz()"> Math & Science Quiz</button>
+        </div>
+    </header>
+
+    <!-- Global Practice Settings Bar -->
+    <div class="settings-bar">
+        <div class="settings-group">
+            <label style="cursor: pointer; font-weight: bold;">
+                <input type="checkbox" id="setting-shuffle-options" checked> 🔀 Shuffle Options (A, B, C, D)
+            </label>
+        </div>
+        <div class="settings-group">
+            <label style="font-weight: bold;">⏱️ Practice Timer:</label>
+            <select id="setting-timer-mode" style="padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border);">
+                <option value="none">Untimed (Default)</option>
+                <option value="per_question_30">30 Sec per Question</option>
+                <option value="10m">10 Minutes Total</option>
+                <option value="30m">30 Minutes Total</option>
+                <option value="60m">60 Minutes Total</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('library-tab')">📚 Quiz Library</button>
+        <button class="tab-btn" onclick="switchTab('compile-tab')">🔀 Handpick & Compile</button>
+        <button class="tab-btn" onclick="switchTab('wrong-tab')">⚠️ Weak Spots (<span id="wrong-count-badge">0</span>)</button>
+        <button class="tab-btn" onclick="switchTab('runner-tab')" id="runner-tab-btn" disabled>📝 Practice Mode</button>
+        <button class="tab-btn" onclick="switchTab('history-tab')">📜 Master History</button>
+    </div>
+
+    <!-- TAB 1: LIBRARY & FOLDERS -->
+    <div id="library-tab" class="tab-content active">
+        <div class="grid-layout">
+            <div>
+                <div class="card" style="margin-bottom: 12px; padding: 10px 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <div style="display: flex; gap: 8px; align-items: center; flex: 1;">
+                            <input type="text" id="library-search-input" placeholder="🔍 Search quizzes by name or topic..." oninput="renderLibrary()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 4px; width: 100%; font-size: 0.85rem;">
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="btn btn-success btn-sm" onclick="toggleFolderForm()">📁 + New Folder</button>
+                            <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(true)">Expand All</button>
+                            <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(false)">Collapse All</button>
+                        </div>
+                    </div>
+
+                    <!-- Inline New / Edit Folder Form -->
+                    <div id="folder-form-card" class="folder-modal" style="display: none; margin-top: 12px;">
+                        <input type="hidden" id="folder-edit-id" value="">
+                        <div style="font-weight: bold; margin-bottom: 6px; color: var(--primary);" id="folder-form-title">📁 Create New Folder</div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                            <input type="text" id="folder-name-input" placeholder="Folder Name (e.g., Physics, Aviation Law)" style="flex: 1; padding: 6px; border: 1px solid var(--border); border-radius: 4px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="font-size: 0.85rem; font-weight: bold;">Color:</span>
+                                <input type="color" id="folder-custom-color" value="#2b6cb0" style="border: none; width: 28px; height: 28px; cursor: pointer; background: transparent;" onchange="selectSwatchColor(this.value)">
+                            </div>
+                        </div>
+
+                        <div class="color-swatches" id="preset-color-swatches">
+                            <!-- Populated via JS -->
+                        </div>
+
+                        <div style="display: flex; gap: 6px; margin-top: 10px;">
+                            <button class="btn btn-success btn-sm" onclick="saveFolderForm()">Save Folder</button>
+                            <button class="btn btn-secondary btn-sm" onclick="toggleFolderForm(false)">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="quiz-list-container">
+                    <p style="color: #718096; text-align: center;">No quizzes uploaded yet. Upload or paste a quiz on the right panel to get started!</p>
+                </div>
+            </div>
+
+            <!-- Terminal JSON Editor Panel -->
+            <div>
+                <div class="card">
+                    <div class="card-title">💻 JSON Terminal / Code Editor</div>
+                    <p style="font-size: 0.8rem; color: #4a5568; margin-top: 0;">Paste JSON or JS objects directly to create a quiz. Supports LaTeX math formula notation: <code>\( E = mc^2 \)</code> or <code>$$ ... $$</code>.</p>
+                    
+                    <textarea id="json-editor-textarea" class="code-editor" spellcheck="false" placeholder='{\n  "title": "Quantum Physics Basics",\n  "category": "Physics",\n  "folder": "Science & Math",\n  "questions": [\n    {\n      "q": "What is Planck&#39;s energy equation?",\n      "options": ["\\( E = h\\nu \\)", "\\( F = ma \\)", "\\( E = mc^2 \\)"],\n      "answer": 0,\n      "explain": "According to Planck, energy equals Planck&#39;s constant times frequency."\n    }\n  ]\n}'></textarea>
+                    
+                    <div id="editor-status-msg" class="editor-status-bar">Status: Ready (Paste JSON code)</div>
+
+                    <div style="display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-success btn-sm" style="flex: 1;" onclick="createQuizFromEditor()">🚀 Create Quiz</button>
+                        <button class="btn btn-warning btn-sm" onclick="runTerminalTest()">⚡ Run Self-Test</button>
+                        <button class="btn btn-secondary btn-sm" onclick="loadTemplateToEditor()">📋 Template</button>
+                        <button class="btn btn-danger btn-sm" onclick="clearEditor()">🧹 Clear</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📥 Upload File</div>
+                    <p style="font-size: 0.8rem; color: #4a5568;">Select a <code>.json</code> or <code>.html</code> quiz file from your computer.</p>
+                    <input type="file" id="file-input" accept=".json,.html" style="display: none;" onchange="handleFileUpload(event)">
+                    <button class="btn btn-secondary btn-sm" style="width: 100%; text-align: center;" onclick="document.getElementById('file-input').click()">Choose Quiz File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: HANDPICK, COMPILE & COMBINE -->
+    <div id="compile-tab" class="tab-content">
+        <div class="card">
+            <div class="card-title">
+                <span>🔀 Handpick & Combine Quizzes</span>
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllCompile(true)">Select All</button>
+                    <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllCompile(false)">Deselect All</button>
+                </div>
+            </div>
+            <p style="font-size: 0.9rem;">Select specific quizzes across folders to combine into a new quiz in your library, run a practice session, or export as JSON:</p>
+            
+            <div id="compile-checklist" style="margin: 15px 0;">
+                <!-- Dynamic Checkboxes Grouped by Folder -->
+            </div>
+
+            <div style="border-top: 1px solid var(--border); padding-top: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <button class="btn btn-success" onclick="startCompiledQuiz()">🚀 Start Practice Session</button>
+                <button class="btn btn-warning" onclick="combineAndSaveToLibrary()">🧩 Create New Combined Quiz in Library</button>
+                <button class="btn btn-secondary" onclick="exportMergedQuizJSON()">📥 Export Merged JSON</button>
+                <button class="btn btn-secondary" onclick="exportSelectedQuizArrayJSON()">📦 Export Quiz Array JSON</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: WEAK SPOTS (WRONG QUESTIONS PILE) -->
+    <div id="wrong-tab" class="tab-content">
+        <div class="card">
+            <div class="card-title">
+                <span>⚠️ Missed Questions Pile</span>
+                <button class="btn btn-danger btn-sm" onclick="clearWrongPile()">Clear All Missed Questions</button>
+            </div>
+            <p style="font-size: 0.9rem; color: #4a5568;">
+                Questions you answer incorrectly, skip, or manually flag are collected here. Answer a question correctly <b>3 consecutive times</b> across practice sessions to remove it from this pile!
+            </p>
+
+            <div style="margin-bottom: 15px;">
+                <button class="btn btn-success" id="start-wrong-quiz-btn" onclick="startWrongPileQuiz()">🚀 Practice Weak Spots Now</button>
+            </div>
+
+            <div id="wrong-questions-list">
+                <p style="color: #718096; text-align: center;">No missed questions recorded yet! Keep taking quizzes to populate this pile.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: QUIZ RUNNER ENGINE -->
+    <div id="runner-tab" class="tab-content">
+        <div class="quiz-header">
+            <span id="active-quiz-title">Quiz Title</span>
+            <span id="quiz-timer" class="timer-badge" style="display: none;">⏱️ 00:00</span>
+            <span id="quiz-progress">Question 1 of 10</span>
+            <span id="quiz-score">Score: 0</span>
+        </div>
+
+        <div id="quiz-body" class="card">
+            <div id="question-text" style="font-weight: bold; font-size: 1.05rem;">Question text goes here...</div>
+            <div id="options-container" class="options-list"></div>
+            <div id="explanation-box" class="explanation-box"></div>
+
+            <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <button id="prev-btn" class="btn btn-secondary" onclick="prevQuestion()" disabled>Previous</button>
+                <button id="flag-btn" class="btn btn-warning" onclick="toggleFlagCurrentQuestion()">🏳️ Flag to Weak Spots</button>
+                <button id="next-btn" class="btn" onclick="nextQuestion()" disabled>Next Question</button>
+            </div>
+            <div class="keyboard-hint">💡 Tip: Press <b>Spacebar</b> or <b>Right-Click</b> anywhere to skip or proceed to the next question.</div>
+        </div>
+
+        <div id="quiz-results" class="card" style="display: none; text-align: center;">
+            <h2>🎉 Practice Session Complete!</h2>
+            <div id="final-score" style="font-size: 2rem; font-weight: bold; color: var(--primary); margin: 15px 0;">0 / 0 (0%)</div>
+            <p id="final-msg"></p>
+            <button class="btn" onclick="switchTab('library-tab')">Return to Library</button>
+        </div>
+    </div>
+
+    <!-- TAB 5: MASTER HISTORY -->
+    <div id="history-tab" class="tab-content">
+        <div class="card">
+            <div class="card-title">
+                <span>📜 Master Progress History</span>
+                <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear History</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Quiz Name</th>
+                        <th>Date Completed</th>
+                        <th>Score</th>
+                        <th>Percentage</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="history-rows">
+                    <tr><td colspan="6" style="text-align: center;">No history recorded yet.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // PRESET COLOR SWATCHES FOR FOLDERS
+    const COLOR_PRESETS = [
+        '#2b6cb0', // Blue
+        '#276749', // Emerald Green
+        '#9b2c2c', // Crimson Red
+        '#6b46c1', // Purple
+        '#d69e2e', // Amber Yellow
+        '#2c7a7b', // Teal
+        '#4c51bf', // Indigo
+        '#4a5568'  // Slate Gray
+    ];
+
+    // MASTER APP STATE
+    let db = {
+        folders: [],    // [{ id, name, color, collapsed }]
+        quizzes: [],    // [{ id, title, category, folderId, questions: [] }]
+        history: [],    // [{ id, quizTitle, date, score, total, percentage, status }]
+        wrongPile: {}   // { [qKey]: { question: {}, consecutiveCorrect: 0, lastFailed: "" } }
+    };
+
+    let activeSession = {
+        title: "",
+        questions: [],
+        currentIndex: 0,
+        userAnswers: [],
+        score: 0,
+        timerMode: "none"
+    };
+
+    let timerInterval = null;
+    let sessionTimeRemaining = 0;
+    let selectedFormColor = '#2b6cb0';
+
+    // INITIALIZATION
+    window.onload = function() {
+        loadDatabase();
+        renderColorSwatches();
+        renderLibrary();
+        renderHistory();
+        renderWrongPile();
+        setupCodeEditor();
+    };
+
+    // MATHJAX HELPER RENDER FUNCTION
+    function renderMath(node) {
+        if (window.MathJax && window.MathJax.typesetPromise) {
+            window.MathJax.typesetPromise(node ? [node] : []).catch(err => console.error("MathJax error:", err));
+        }
+    }
+
+    // LOCAL STORAGE MANAGEMENT
+    function loadDatabase() {
+        const saved = localStorage.getItem('master_quiz_runner_db');
+        if (saved) {
+            try { 
+                db = JSON.parse(saved); 
+                if (!db.folders) db.folders = [];
+                if (!db.quizzes) db.quizzes = [];
+                if (!db.history) db.history = [];
+                if (!db.wrongPile) db.wrongPile = {};
+            } catch(e) { 
+                console.error("Error loading DB", e); 
+            }
+        }
+    }
+
+    function saveDatabase() {
+        localStorage.setItem('master_quiz_runner_db', JSON.stringify(db));
+    }
+
+    // UNIQUE QUESTION KEY GENERATOR
+    function getQuestionKey(q) {
+        if (q.id) return q.id;
+        const text = (q.q || '').trim().toLowerCase();
+        const opts = (q.options || []).join('|').trim().toLowerCase();
+        return text + '___' + opts;
+    }
+
+    // TAB NAVIGATION
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        const targetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+        if (targetBtn) targetBtn.classList.add('active');
+
+        document.getElementById(tabId).classList.add('active');
+
+        if (tabId === 'compile-tab') renderCompileChecklist();
+        if (tabId === 'wrong-tab') renderWrongPile();
+    }
+
+    // EXPORT & UNIVERSAL IMPORT DATA
+    function exportAppData() {
+        downloadJSONFile(db, `master_quiz_backup_${new Date().toISOString().split('T')[0]}.json`);
+    }
+
+    function importAppData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let text = e.target.result;
+
+                if (file.name.endsWith('.html') || text.includes('<html') || text.includes('<script')) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'html');
+                    const scriptTag = doc.getElementById('quiz-data');
+                    if (scriptTag) {
+                        text = scriptTag.textContent;
+                    } else {
+                        throw new Error("HTML file must contain a <script id='quiz-data' type='application/json'> block.");
+                    }
+                }
+
+                const parsed = flexibleJSONParse(text);
+                if (!parsed) throw new Error("File is empty or invalid JSON.");
+
+                if (typeof parsed === 'object' && !Array.isArray(parsed) && (parsed.quizzes || parsed.history || parsed.wrongPile)) {
+                    if (confirm("Replace existing database with imported backup? Click OK to Replace, Cancel to Merge.")) {
+                        db = {
+                            folders: parsed.folders || [],
+                            quizzes: parsed.quizzes || [],
+                            history: parsed.history || [],
+                            wrongPile: parsed.wrongPile || {}
+                        };
+                    } else {
+                        db.folders = [...db.folders, ...(parsed.folders || [])];
+                        db.quizzes = [...db.quizzes, ...(parsed.quizzes || [])];
+                        db.history = [...db.history, ...(parsed.history || [])];
+                        db.wrongPile = { ...db.wrongPile, ...(parsed.wrongPile || {}) };
+                    }
+                    saveDatabase();
+                    renderLibrary();
+                    renderHistory();
+                    renderWrongPile();
+                    alert("Database imported successfully!");
+                    return;
+                }
+
+                const quizList = Array.isArray(parsed) ? parsed : [parsed];
+                let count = 0;
+                let firstNewId = null;
+
+                for (let quizObj of quizList) {
+                    if (quizObj && quizObj.questions && Array.isArray(quizObj.questions) && quizObj.questions.length > 0) {
+                        const newId = addQuizToLibrary(quizObj, false);
+                        if (!firstNewId) firstNewId = newId;
+                        count++;
+                    }
+                }
+
+                if (count > 0) {
+                    saveDatabase();
+                    renderLibrary();
+                    renderHistory();
+                    renderWrongPile();
+                    if (firstNewId) highlightQuizInLibrary(firstNewId);
+                    alert(`Successfully imported ${count} quiz(zes) into your Library!`);
+                } else {
+                    alert("Invalid structure. Make sure the JSON file contains a 'questions' array.");
+                }
+
+            } catch (err) {
+                alert("Import Failed: " + err.message);
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    function handleFileUpload(event) {
+        importAppData(event);
+    }
+
+    // FLEXIBLE JSON PARSER
+    function flexibleJSONParse(rawText) {
+        if (!rawText || !rawText.trim()) throw new Error("Terminal is empty.");
+
+        let clean = rawText.trim();
+        clean = clean.replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
+        clean = clean.replace(/\/\/.*/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
+        clean = clean.replace(/,\s*([}\]])/g, '$1');
+
+        try {
+            return JSON.parse(clean);
+        } catch (e1) {
+            let fixed = clean.replace(/([{,]\s*)([a-zA-Z0-9_$]+)\s*:/g, '$1"$2":');
+            fixed = fixed.replace(/'([^'\\]*(\\.[^'\\]*)*)'/g, '"$1"');
+            fixed = fixed.replace(/,\s*([}\]])/g, '$1');
+
+            try {
+                return JSON.parse(fixed);
+            } catch (e2) {
+                try {
+                    return (new Function("return (" + clean + ")"))();
+                } catch (e3) {
+                    throw new Error("Syntax error: " + e1.message);
+                }
+            }
+        }
+    }
+
+    // FOLDER & ORGANIZATION MANAGEMENT
+    function renderColorSwatches() {
+        const container = document.getElementById('preset-color-swatches');
+        if (!container) return;
+
+        container.innerHTML = COLOR_PRESETS.map(hex => `
+            <div class="color-swatch ${hex === selectedFormColor ? 'selected' : ''}" 
+                 style="background-color: ${hex};" 
+                 onclick="selectSwatchColor('${hex}')"></div>
+        `).join('');
+    }
+
+    function selectSwatchColor(hex) {
+        selectedFormColor = hex;
+        document.getElementById('folder-custom-color').value = hex;
+        renderColorSwatches();
+    }
+
+    function toggleFolderForm(show) {
+        const card = document.getElementById('folder-form-card');
+        if (show === undefined) show = card.style.display === 'none';
+        
+        card.style.display = show ? 'block' : 'none';
+
+        if (show) {
+            document.getElementById('folder-edit-id').value = '';
+            document.getElementById('folder-name-input').value = '';
+            document.getElementById('folder-form-title').innerText = '📁 Create New Folder';
+            selectSwatchColor('#2b6cb0');
+            document.getElementById('folder-name-input').focus();
+        }
+    }
+
+    function openEditFolderForm(folderId) {
+        const folder = db.folders.find(f => f.id === folderId);
+        if (!folder) return;
+
+        toggleFolderForm(true);
+        document.getElementById('folder-edit-id').value = folder.id;
+        document.getElementById('folder-name-input').value = folder.name;
+        document.getElementById('folder-form-title').innerText = '✏️ Edit Folder';
+        selectSwatchColor(folder.color || '#2b6cb0');
+    }
+
+    function saveFolderForm() {
+        const nameInput = document.getElementById('folder-name-input').value.trim();
+        const editId = document.getElementById('folder-edit-id').value;
+
+        if (!nameInput) {
+            alert("Please enter a folder name.");
+            return;
+        }
+
+        if (editId) {
+            const folder = db.folders.find(f => f.id === editId);
+            if (folder) {
+                folder.name = nameInput;
+                folder.color = selectedFormColor;
+            }
+        } else {
+            const newFolder = {
+                id: 'folder_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                name: nameInput,
+                color: selectedFormColor,
+                collapsed: false
+            };
+            db.folders.push(newFolder);
+        }
+
+        saveDatabase();
+        renderLibrary();
+        toggleFolderForm(false);
+    }
+
+    function deleteFolder(folderId) {
+        const folder = db.folders.find(f => f.id === folderId);
+        if (!folder) return;
+
+        const assignedQuizzes = db.quizzes.filter(q => q.folderId === folderId);
+        let deleteQuizzesToo = false;
+
+        if (assignedQuizzes.length > 0) {
+            const choice = confirm(`Folder "${folder.name}" contains ${assignedQuizzes.length} quiz(zes).\n\nClick OK to delete the folder AND its quizzes.\nClick Cancel to keep the quizzes (they will be moved to Unorganized).`);
+            deleteQuizzesToo = choice;
+        }
+
+        if (deleteQuizzesToo) {
+            db.quizzes = db.quizzes.filter(q => q.folderId !== folderId);
+        } else {
+            db.quizzes.forEach(q => {
+                if (q.folderId === folderId) q.folderId = null;
+            });
+        }
+
+        db.folders = db.folders.filter(f => f.id !== folderId);
+        saveDatabase();
+        renderLibrary();
+    }
+
+    function toggleFolderCollapse(folderId) {
+        const folder = db.folders.find(f => f.id === folderId);
+        if (folder) {
+            folder.collapsed = !folder.collapsed;
+            saveDatabase();
+            renderLibrary();
+        }
+    }
+
+    function toggleAllFolders(expand) {
+        db.folders.forEach(f => f.collapsed = !expand);
+        saveDatabase();
+        renderLibrary();
+    }
+
+    function moveQuizToFolder(quizId, folderId) {
+        const quiz = db.quizzes.find(q => q.id === quizId);
+        if (quiz) {
+            quiz.folderId = folderId || null;
+            saveDatabase();
+            renderLibrary();
+        }
+    }
+
+    function resolveFolderForQuiz(quizObj) {
+        const folderProp = quizObj.folder || quizObj.folderName;
+        const folderId = quizObj.folderId;
+
+        if (folderId && db.folders.some(f => f.id === folderId)) {
+            return folderId;
+        }
+
+        if (folderProp && typeof folderProp === 'string' && folderProp.trim()) {
+            const nameClean = folderProp.trim();
+            const existing = db.folders.find(f => f.name.toLowerCase() === nameClean.toLowerCase());
+            if (existing) {
+                return existing.id;
+            } else {
+                const newFolder = {
+                    id: 'folder_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                    name: nameClean,
+                    color: '#2b6cb0',
+                    collapsed: false
+                };
+                db.folders.push(newFolder);
+                return newFolder.id;
+            }
+        }
+        return null;
+    }
+
+    function startFolderPracticeSession(folderId) {
+        const folder = db.folders.find(f => f.id === folderId);
+        if (!folder) return;
+
+        const folderQuizzes = db.quizzes.filter(q => q.folderId === folderId);
+        if (folderQuizzes.length === 0) {
+            alert("No quizzes in this folder to practice!");
+            return;
+        }
+
+        let combinedQuestions = [];
+        folderQuizzes.forEach(q => combinedQuestions.push(...q.questions));
+        combinedQuestions.sort(() => Math.random() - 0.5);
+
+        initSession(`Folder Practice: ${folder.name} (${combinedQuestions.length} Qs)`, combinedQuestions);
+    }
+
+    // JSON CODE EDITOR LOGIC
+    function setupCodeEditor() {
+        const textarea = document.getElementById('json-editor-textarea');
+        if (!textarea) return;
+
+        textarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 2;
+                validateEditorLive();
+            }
+        });
+
+        textarea.addEventListener('input', validateEditorLive);
+    }
+
+    function validateEditorLive() {
+        const rawText = document.getElementById('json-editor-textarea').value.trim();
+        if (!rawText) {
+            showEditorStatus("Status: Ready (Paste JSON code)", "#4a5568", "#edf2f7");
+            return;
+        }
+
+        try {
+            flexibleJSONParse(rawText);
+            showEditorStatus("Status: Valid JSON / JS Object ✓", "var(--success)", "var(--success-bg)");
+        } catch (err) {
+            showEditorStatus(`Status: Invalid Syntax ✗ (${err.message})`, "var(--danger)", "var(--danger-bg)");
+        }
+    }
+
+    function createQuizFromEditor() {
+        const rawText = document.getElementById('json-editor-textarea').value.trim();
+        if (!rawText) {
+            showEditorStatus("Status: Please paste or enter JSON code first ⚠️", "var(--danger)", "var(--danger-bg)");
+            return;
+        }
+
+        try {
+            const parsed = flexibleJSONParse(rawText);
+            const quizList = Array.isArray(parsed) ? parsed : [parsed];
+            let count = 0;
+            let firstNewId = null;
+
+            for (let quizObj of quizList) {
+                if (quizObj && quizObj.questions && Array.isArray(quizObj.questions) && quizObj.questions.length > 0) {
+                    const newId = addQuizToLibrary(quizObj, false);
+                    if (!firstNewId) firstNewId = newId;
+                    count++;
+                } else {
+                    throw new Error("Each quiz object must contain a 'questions' array with at least 1 question.");
+                }
+            }
+
+            showEditorStatus(`Status: Success! Created ${count} quiz(zes) 🎉`, "var(--success)", "var(--success-bg)");
+            document.getElementById('json-editor-textarea').value = '';
+
+            if (firstNewId) highlightQuizInLibrary(firstNewId);
+
+        } catch (err) {
+            showEditorStatus(`Status: Error - ${err.message}`, "var(--danger)", "var(--danger-bg)");
+        }
+    }
+
+    function runTerminalTest() {
+        const testPayload = {
+            title: "Physics & Equations Test",
+            category: "Science",
+            folder: "Science & Engineering",
+            questions: [
+                {
+                    q: "What is Einstein's mass-energy formula?",
+                    options: ["\\( E = mc^2 \\)", "\\( F = ma \\)", "\\( E = h\\nu \\)", "\\( P = IV \\)"],
+                    answer: 0,
+                    explain: "Where \\( E \\) is energy, \\( m \\) is mass, and \\( c \\) is the speed of light."
+                }
+            ]
+        };
+
+        document.getElementById('json-editor-textarea').value = JSON.stringify(testPayload, null, 2);
+        validateEditorLive();
+        createQuizFromEditor();
+    }
+
+    function showEditorStatus(msg, color, bgColor) {
+        const statusDiv = document.getElementById('editor-status-msg');
+        statusDiv.style.color = color;
+        statusDiv.style.backgroundColor = bgColor;
+        statusDiv.innerText = msg;
+    }
+
+    function clearEditor() {
+        document.getElementById('json-editor-textarea').value = '';
+        showEditorStatus("Status: Ready (Paste JSON code)", "#4a5568", "#edf2f7");
+    }
+
+    function loadTemplateToEditor() {
+        const template = {
+            title: "Calculus & Geometry Fundamentals",
+            category: "Mathematics",
+            folder: "Mathematics",
+            questions: [
+                {
+                    q: "What is the derivative of \\( f(x) = x^n \\) using the power rule?",
+                    options: ["\\( f'(x) = n x^{n-1} \\)", "\\( f'(x) = x^{n+1} \\)", "\\( f'(x) = n x^n \\)", "\\( f'(x) = \\frac{x^n}{n} \\)"],
+                    answer: 0,
+                    explain: "The power rule states that \\( \\frac{d}{dx}[x^n] = n x^{n-1} \\)."
+                },
+                {
+                    q: "What is the Pythagorean formula for right triangles?",
+                    options: ["$$a^2 + b^2 = c^2$$", "$$a + b = c$$", "$$a^2 - b^2 = c^2$$", "$$ab = c^2$$"],
+                    answer: 0,
+                    explain: "Where \\( a \\) and \\( b \\) are legs, and \\( c \\) is the hypotenuse."
+                }
+            ]
+        };
+
+        document.getElementById('json-editor-textarea').value = JSON.stringify(template, null, 2);
+        validateEditorLive();
+    }
+
+    function addQuizToLibrary(quizObj, showNotice = true) {
+        const folderId = resolveFolderForQuiz(quizObj);
+
+        const newQuiz = {
+            id: 'quiz_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+            title: quizObj.title || "Untitled Quiz",
+            category: quizObj.category || "General",
+            folderId: folderId,
+            questions: quizObj.questions
+        };
+
+        db.quizzes.push(newQuiz);
+        saveDatabase();
+        renderLibrary();
+
+        if (showNotice) {
+            alert(`Successfully added "${newQuiz.title}" (${newQuiz.questions.length} questions)!`);
+        }
+
+        return newQuiz.id;
+    }
+
+    function highlightQuizInLibrary(quizId) {
+        setTimeout(() => {
+            const items = document.querySelectorAll('.quiz-item');
+            items.forEach(el => {
+                if (el.getAttribute('data-quiz-id') === quizId) {
+                    el.classList.add('highlight');
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => el.classList.remove('highlight'), 2000);
+                }
+            });
+        }, 100);
+    }
+
+    // RENDER LIBRARY & FOLDERS
+    function renderLibrary() {
+        const container = document.getElementById('quiz-list-container');
+        const searchTerm = (document.getElementById('library-search-input')?.value || '').toLowerCase().trim();
+
+        if (db.quizzes.length === 0) {
+            container.innerHTML = `<p style="color: #718096; text-align: center;">No quizzes uploaded yet. Upload or paste a quiz on the right panel to get started!</p>`;
+            return;
+        }
+
+        // Group quizzes by folders
+        let filteredQuizzes = db.quizzes.filter(q => {
+            if (!searchTerm) return true;
+            return q.title.toLowerCase().includes(searchTerm) || q.category.toLowerCase().includes(searchTerm);
+        });
+
+        let folderMap = {};
+        db.folders.forEach(f => {
+            folderMap[f.id] = { ...f, quizzes: [] };
+        });
+
+        let unorganizedQuizzes = [];
+
+        filteredQuizzes.forEach(q => {
+            if (q.folderId && folderMap[q.folderId]) {
+                folderMap[q.folderId].quizzes.push(q);
+            } else {
+                unorganizedQuizzes.push(q);
+            }
+        });
+
+        let html = '';
+
+        // Render Folder Groups
+        db.folders.forEach(folder => {
+            const fGroup = folderMap[folder.id];
+            const qList = fGroup ? fGroup.quizzes : [];
+
+            if (searchTerm && qList.length === 0) return; // Hide empty search folders
+
+            html += `
+                <div class="folder-card">
+                    <div class="folder-header" style="border-left-color: ${folder.color || '#2b6cb0'};">
+                        <div class="folder-title-area" onclick="toggleFolderCollapse('${folder.id}')">
+                            <span style="font-size: 0.8rem;">${folder.collapsed ? '▶' : '▼'}</span>
+                            <span class="folder-color-badge" style="background-color: ${folder.color || '#2b6cb0'};"></span>
+                            <b style="color: var(--primary); font-size: 1rem;">📂 ${folder.name}</b>
+                            <span class="badge badge-folder">${qList.length} Quiz${qList.length === 1 ? '' : 'zes'}</span>
+                        </div>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <button class="btn btn-success btn-sm" onclick="startFolderPracticeSession('${folder.id}')" ${qList.length === 0 ? 'disabled' : ''}>🚀 Practice Folder</button>
+                            <button class="btn btn-secondary btn-sm" onclick="openEditFolderForm('${folder.id}')">✏️ Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteFolder('${folder.id}')">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="folder-content ${folder.collapsed ? 'collapsed' : ''}">
+                        ${qList.length === 0 ? `<p style="font-size: 0.85rem; color: #a0aec0; margin: 5px 0;">No quizzes in this folder. Select "Move to Folder..." on any quiz below to add it!</p>` : ''}
+                        ${qList.map(q => renderQuizItemHTML(q)).join('')}
+                    </div>
+                </div>
+            `;
+        });
+
+        // Render Unorganized Section
+        if (unorganizedQuizzes.length > 0 || db.folders.length === 0) {
+            html += `
+                <div class="folder-card">
+                    <div class="folder-header" style="border-left-color: #718096; background: #edf2f7;">
+                        <div class="folder-title-area">
+                            <b style="color: var(--primary); font-size: 0.95rem;">📁 Unorganized / General Quizzes</b>
+                            <span class="badge badge-folder">${unorganizedQuizzes.length} Quiz${unorganizedQuizzes.length === 1 ? '' : 'zes'}</span>
+                        </div>
+                    </div>
+                    <div class="folder-content">
+                        ${unorganizedQuizzes.map(q => renderQuizItemHTML(q)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html || `<p style="color: #718096; text-align: center;">No matching quizzes found for "${searchTerm}".</p>`;
+        renderMath(container);
+    }
+
+    function renderQuizItemHTML(q) {
+        const folderOptions = db.folders.map(f => 
+            `<option value="${f.id}" ${q.folderId === f.id ? 'selected' : ''}>📁 ${f.name}</option>`
+        ).join('');
+
+        return `
+            <div class="quiz-item" data-quiz-id="${q.id}">
+                <div class="quiz-info">
+                    <div>
+                        <div class="quiz-title">${q.title}</div>
+                        <div class="quiz-meta">${q.questions.length} Questions | Category: ${q.category}</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                    <select class="btn-sm" onchange="moveQuizToFolder('${q.id}', this.value)" style="padding: 4px 6px; border-radius: 4px; border: 1px solid var(--border); font-size: 0.8rem; background: #fff;">
+                        <option value="">Move to Folder...</option>
+                        <option value="">(Unorganized)</option>
+                        ${folderOptions}
+                    </select>
+                    <button class="btn btn-sm" onclick="startSingleQuiz('${q.id}')">Run</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteQuiz('${q.id}')">🗑️</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function deleteQuiz(id) {
+        if (confirm("Are you sure you want to remove this quiz from your library?")) {
+            db.quizzes = db.quizzes.filter(q => q.id !== id);
+            saveDatabase();
+            renderLibrary();
+        }
+    }
+
+    // HANDPICK, COMPILE, COMBINE & EXPORT QUIZZES
+    function renderCompileChecklist() {
+        const container = document.getElementById('compile-checklist');
+        if (db.quizzes.length === 0) {
+            container.innerHTML = `<p style="color: #718096;">Upload quizzes first to use the compilation tool.</p>`;
+            return;
+        }
+
+        let folderMap = {};
+        db.folders.forEach(f => folderMap[f.id] = { ...f, quizzes: [] });
+        let unorganized = [];
+
+        db.quizzes.forEach(q => {
+            if (q.folderId && folderMap[q.folderId]) folderMap[q.folderId].quizzes.push(q);
+            else unorganized.push(q);
+        });
+
+        let html = '';
+
+        // Render Folder groups in Checklist
+        db.folders.forEach(folder => {
+            const list = folderMap[folder.id].quizzes;
+            if (list.length === 0) return;
+
+            html += `
+                <div style="margin-bottom: 12px; border-left: 4px solid ${folder.color || '#2b6cb0'}; padding-left: 10px;">
+                    <div style="font-weight: bold; color: var(--primary); margin-bottom: 5px;">📂 ${folder.name}</div>
+                    ${list.map(q => `
+                        <div style="margin-bottom: 4px; margin-left: 10px;">
+                            <label style="cursor: pointer;">
+                                <input type="checkbox" class="compile-checkbox" value="${q.id}">
+                                <b>${q.title}</b> (${q.questions.length} questions)
+                            </label>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        });
+
+        if (unorganized.length > 0) {
+            html += `
+                <div style="margin-bottom: 12px; border-left: 4px solid #718096; padding-left: 10px;">
+                    <div style="font-weight: bold; color: var(--primary); margin-bottom: 5px;">📁 Unorganized / General</div>
+                    ${unorganized.map(q => `
+                        <div style="margin-bottom: 4px; margin-left: 10px;">
+                            <label style="cursor: pointer;">
+                                <input type="checkbox" class="compile-checkbox" value="${q.id}">
+                                <b>${q.title}</b> (${q.questions.length} questions)
+                            </label>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
+        renderMath(container);
+    }
+
+    function toggleSelectAllCompile(select) {
+        document.querySelectorAll('.compile-checkbox').forEach(cb => cb.checked = select);
+    }
+
+    function startCompiledQuiz() {
+        const checked = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
+        if (checked.length === 0) {
+            alert("Please select at least one quiz to compile!");
+            return;
+        }
+
+        let compiledQuestions = [];
+        checked.forEach(id => {
+            const qz = db.quizzes.find(q => q.id === id);
+            if (qz) compiledQuestions.push(...qz.questions);
+        });
+
+        compiledQuestions.sort(() => Math.random() - 0.5);
+        initSession("Compiled Custom Quiz (" + checked.length + " topics)", compiledQuestions);
+    }
+
+    function combineAndSaveToLibrary() {
+        const checkedIds = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
+        if (checkedIds.length === 0) {
+            alert("Please select at least one quiz to combine!");
+            return;
+        }
+
+        let compiledQuestions = [];
+        let selectedTitles = [];
+
+        checkedIds.forEach(id => {
+            const qz = db.quizzes.find(q => q.id === id);
+            if (qz) {
+                compiledQuestions.push(...JSON.parse(JSON.stringify(qz.questions)));
+                selectedTitles.push(qz.title);
+            }
+        });
+
+        const defaultTitle = "Combined - " + selectedTitles.slice(0, 3).join(", ") + (selectedTitles.length > 3 ? "..." : "");
+        const userTitle = prompt("Enter a name for the new combined quiz:", defaultTitle);
+        
+        if (userTitle === null) return;
+
+        const newQuizObj = {
+            title: userTitle.trim() || defaultTitle,
+            category: "Combined Set",
+            questions: compiledQuestions
+        };
+
+        const newQuizId = addQuizToLibrary(newQuizObj, false);
+        saveDatabase();
+        renderLibrary();
+
+        switchTab('library-tab');
+        highlightQuizInLibrary(newQuizId);
+        alert(`🎉 Successfully created "${newQuizObj.title}" with ${compiledQuestions.length} questions and saved it to your Library!`);
+    }
+
+    function exportMergedQuizJSON() {
+        const checkedIds = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
+        if (checkedIds.length === 0) {
+            alert("Please select at least one quiz to export!");
+            return;
+        }
+
+        let mergedQuestions = [];
+        let selectedTitles = [];
+
+        checkedIds.forEach(id => {
+            const qz = db.quizzes.find(q => q.id === id);
+            if (qz) {
+                mergedQuestions.push(...qz.questions);
+                selectedTitles.push(qz.title);
+            }
+        });
+
+        const defaultTitle = "Combined - " + selectedTitles.slice(0, 3).join(", ") + (selectedTitles.length > 3 ? "..." : "");
+        const userTitle = prompt("Enter a title for the combined JSON quiz:", defaultTitle);
+        if (userTitle === null) return;
+
+        const exportObj = {
+            title: userTitle.trim() || defaultTitle,
+            category: "Compiled Export",
+            questions: mergedQuestions
+        };
+
+        const filename = (userTitle.trim() || defaultTitle).toLowerCase().replace(/[^a-z0-9]/g, '_') + '.json';
+        downloadJSONFile(exportObj, filename);
+    }
+
+    function exportSelectedQuizArrayJSON() {
+        const checkedIds = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
+        if (checkedIds.length === 0) {
+            alert("Please select at least one quiz to export!");
+            return;
+        }
+
+        let exportList = [];
+        checkedIds.forEach(id => {
+            const qz = db.quizzes.find(q => q.id === id);
+            if (qz) {
+                exportList.push({
+                    title: qz.title,
+                    category: qz.category,
+                    questions: qz.questions
+                });
+            }
+        });
+
+        downloadJSONFile(exportList, `quiz_collection_${checkedIds.length}_items.json`);
+    }
+
+    function downloadJSONFile(dataObj, filename) {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj, null, 2));
+        const dlAnchor = document.createElement('a');
+        dlAnchor.setAttribute("href", dataStr);
+        dlAnchor.setAttribute("download", filename);
+        document.body.appendChild(dlAnchor);
+        dlAnchor.click();
+        dlAnchor.remove();
+    }
+
+    // WRONG QUESTIONS PILE MANAGEMENT
+    function renderWrongPile() {
+        const container = document.getElementById('wrong-questions-list');
+        const keys = Object.keys(db.wrongPile || {});
+        
+        document.getElementById('wrong-count-badge').innerText = keys.length;
+        document.getElementById('start-wrong-quiz-btn').disabled = keys.length === 0;
+
+        if (keys.length === 0) {
+            container.innerHTML = `<p style="color: #718096; text-align: center;">No missed questions recorded yet! Keep taking quizzes to populate this pile.</p>`;
+            return;
+        }
+
+        container.innerHTML = keys.map(key => {
+            const item = db.wrongPile[key];
+            const q = item.question;
+            const streak = item.consecutiveCorrect || 0;
+
+            return `
+                <div class="quiz-item">
+                    <div>
+                        <div style="font-weight: bold; color: var(--primary);">${q.q}</div>
+                        <div class="quiz-meta">Correct Answer: <b>${q.options[q.answer]}</b></div>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span class="badge badge-streak">Streak: ${streak}/3</span>
+                        <button class="btn btn-danger btn-sm" onclick="removeFromWrongPile('${key}')">🗑️</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        renderMath(container);
+    }
+
+    function removeFromWrongPile(key) {
+        delete db.wrongPile[key];
+        saveDatabase();
+        renderWrongPile();
+    }
+
+    function clearWrongPile() {
+        if (confirm("Are you sure you want to clear all recorded missed questions?")) {
+            db.wrongPile = {};
+            saveDatabase();
+            renderWrongPile();
+        }
+    }
+
+    function startWrongPileQuiz() {
+        const keys = Object.keys(db.wrongPile);
+        if (keys.length === 0) return;
+
+        const questions = keys.map(k => db.wrongPile[k].question);
+        questions.sort(() => Math.random() - 0.5);
+
+        initSession("Weak Spots Practice (" + questions.length + " questions)", questions);
+    }
+
+    // FLAG QUESTION TO WEAK SPOTS
+    function toggleFlagCurrentQuestion() {
+        if (!activeSession.questions || activeSession.questions.length === 0) return;
+        const q = activeSession.questions[activeSession.currentIndex];
+        const qKey = getQuestionKey(q);
+
+        if (db.wrongPile[qKey]) {
+            delete db.wrongPile[qKey];
+        } else {
+            db.wrongPile[qKey] = {
+                question: JSON.parse(JSON.stringify(q)),
+                consecutiveCorrect: 0,
+                lastFailed: new Date().toLocaleString() + " (Manually Flagged)"
+            };
+        }
+
+        saveDatabase();
+        renderWrongPile();
+        updateFlagButtonState();
+    }
+
+    function updateFlagButtonState() {
+        const flagBtn = document.getElementById('flag-btn');
+        if (!flagBtn || !activeSession.questions || activeSession.questions.length === 0) return;
+
+        const q = activeSession.questions[activeSession.currentIndex];
+        const qKey = getQuestionKey(q);
+        const isFlagged = !!db.wrongPile[qKey];
+
+        if (isFlagged) {
+            flagBtn.className = "btn btn-warning";
+            flagBtn.innerHTML = "🚩 Flagged to Weak Spots";
+        } else {
+            flagBtn.className = "btn btn-secondary";
+            flagBtn.innerHTML = "🏳️ Flag to Weak Spots";
+        }
+    }
+
+    // QUIZ RUNNER ENGINE
+    function startSingleQuiz(id) {
+        const quiz = db.quizzes.find(q => q.id === id);
+        if (quiz) {
+            initSession(quiz.title, quiz.questions);
+        }
+    }
+
+    function initSession(title, rawQuestions) {
+        const shuffleEnabled = document.getElementById('setting-shuffle-options').checked;
+        const timerSetting = document.getElementById('setting-timer-mode').value;
+
+        let processedQuestions = JSON.parse(JSON.stringify(rawQuestions));
+
+        if (shuffleEnabled) {
+            processedQuestions.forEach(q => {
+                const correctText = q.options[q.answer];
+                q.options.sort(() => Math.random() - 0.5);
+                q.answer = q.options.indexOf(correctText);
+            });
+        }
+
+        activeSession = {
+            title: title,
+            questions: processedQuestions,
+            currentIndex: 0,
+            userAnswers: new Array(processedQuestions.length).fill(null),
+            score: 0,
+            timerMode: timerSetting
+        };
+
+        document.getElementById('runner-tab-btn').disabled = false;
+        document.getElementById('active-quiz-title').innerText = activeSession.title;
+        document.getElementById('quiz-body').style.display = 'block';
+        document.getElementById('quiz-results').style.display = 'none';
+
+        switchTab('runner-tab');
+        setupSessionTimer();
+        loadQuestion();
+    }
+
+    // TIMER SYSTEM
+    function setupSessionTimer() {
+        clearInterval(timerInterval);
+        const timerBadge = document.getElementById('quiz-timer');
+        const mode = activeSession.timerMode;
+
+        if (mode === 'none') {
+            timerBadge.style.display = 'none';
+            return;
+        }
+
+        timerBadge.style.display = 'inline-block';
+
+        if (mode === 'per_question_30') {
+            sessionTimeRemaining = 30;
+        } else if (mode === '10m') {
+            sessionTimeRemaining = 10 * 60;
+        } else if (mode === '30m') {
+            sessionTimeRemaining = 30 * 60;
+        } else if (mode === '60m') {
+            sessionTimeRemaining = 60 * 60;
+        }
+
+        updateTimerBadge();
+
+        timerInterval = setInterval(() => {
+            sessionTimeRemaining--;
+            updateTimerBadge();
+
+            if (sessionTimeRemaining <= 0) {
+                if (activeSession.timerMode === 'per_question_30') {
+                    skipQuestion();
+                } else {
+                    clearInterval(timerInterval);
+                    alert("⏰ Time is up! Finishing session...");
+                    finishSession();
+                }
+            }
+        }, 1000);
+    }
+
+    function updateTimerBadge() {
+        const timerBadge = document.getElementById('quiz-timer');
+        const mins = Math.floor(sessionTimeRemaining / 60);
+        const secs = sessionTimeRemaining % 60;
+        const formatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        
+        timerBadge.innerText = `⏱️ ${formatted}`;
+        if (sessionTimeRemaining <= 10) {
+            timerBadge.style.color = "var(--danger)";
+            timerBadge.style.borderColor = "var(--danger)";
+        } else {
+            timerBadge.style.color = "var(--primary)";
+            timerBadge.style.borderColor = "var(--border)";
+        }
+    }
+
+    function loadQuestion() {
+        if (activeSession.timerMode === 'per_question_30') {
+            sessionTimeRemaining = 30;
+            updateTimerBadge();
+        }
+
+        const q = activeSession.questions[activeSession.currentIndex];
+        document.getElementById('quiz-progress').innerText = `Question ${activeSession.currentIndex + 1} of ${activeSession.questions.length}`;
+        document.getElementById('quiz-score').innerText = `Score: ${activeSession.score}`;
+        document.getElementById('question-text').innerText = `${activeSession.currentIndex + 1}. ${q.q}`;
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+
+        const expBox = document.getElementById('explanation-box');
+        expBox.style.display = 'none';
+
+        const answered = activeSession.userAnswers[activeSession.currentIndex] !== null;
+
+        q.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = `${String.fromCharCode(65 + idx)}. ${opt}`;
+
+            if (answered) {
+                btn.disabled = true;
+                const userChoice = activeSession.userAnswers[activeSession.currentIndex];
+                if (idx === q.answer) btn.classList.add('correct');
+                if (userChoice === idx && userChoice !== q.answer) btn.classList.add('wrong');
+            } else {
+                btn.onclick = (e) => {
+                    if (document.activeElement) document.activeElement.blur();
+                    selectOption(idx);
+                };
+            }
+
+            container.appendChild(btn);
+        });
+
+        if (answered && activeSession.userAnswers[activeSession.currentIndex] !== -1) {
+            showExplanation(activeSession.userAnswers[activeSession.currentIndex] === q.answer);
+        }
+
+        updateFlagButtonState();
+
+        document.getElementById('prev-btn').disabled = activeSession.currentIndex === 0;
+        document.getElementById('next-btn').disabled = !answered;
+        document.getElementById('next-btn').innerText = (activeSession.currentIndex === activeSession.questions.length - 1) ? "Finish Session" : "Next Question";
+
+        renderMath(document.getElementById('quiz-body'));
+    }
+
+    function selectOption(idx) {
+        if (activeSession.userAnswers[activeSession.currentIndex] !== null) return;
+        if (document.activeElement) document.activeElement.blur();
+
+        activeSession.userAnswers[activeSession.currentIndex] = idx;
+        const q = activeSession.questions[activeSession.currentIndex];
+        const qKey = getQuestionKey(q);
+
+        if (idx === q.answer) {
+            activeSession.score++;
+            if (db.wrongPile[qKey]) {
+                db.wrongPile[qKey].consecutiveCorrect = (db.wrongPile[qKey].consecutiveCorrect || 0) + 1;
+                if (db.wrongPile[qKey].consecutiveCorrect >= 3) {
+                    delete db.wrongPile[qKey];
+                }
+            }
+        } else {
+            db.wrongPile[qKey] = {
+                question: JSON.parse(JSON.stringify(q)),
+                consecutiveCorrect: 0,
+                lastFailed: new Date().toLocaleString()
+            };
+        }
+
+        saveDatabase();
+        renderWrongPile();
+        loadQuestion();
+    }
+
+    function skipQuestion() {
+        if (activeSession.userAnswers[activeSession.currentIndex] !== null) return;
+        if (document.activeElement) document.activeElement.blur();
+
+        activeSession.userAnswers[activeSession.currentIndex] = -1;
+        const q = activeSession.questions[activeSession.currentIndex];
+        const qKey = getQuestionKey(q);
+
+        db.wrongPile[qKey] = {
+            question: JSON.parse(JSON.stringify(q)),
+            consecutiveCorrect: 0,
+            lastFailed: new Date().toLocaleString() + " (Skipped)"
+        };
+
+        saveDatabase();
+        renderWrongPile();
+        nextQuestion();
+    }
+
+    function showExplanation(isCorrect) {
+        const q = activeSession.questions[activeSession.currentIndex];
+        const expBox = document.getElementById('explanation-box');
+        expBox.style.display = 'block';
+
+        if (isCorrect) {
+            expBox.className = 'explanation-box correct-bg';
+            expBox.innerHTML = `<b>✓ CORRECT!</b><br>${q.explain || ''}`;
+        } else {
+            expBox.className = 'explanation-box wrong-bg';
+            expBox.innerHTML = `<b>✗ INCORRECT!</b><br>Correct Answer: <b>${String.fromCharCode(65 + q.answer)}. ${q.options[q.answer]}</b><br>${q.explain || ''}`;
+        }
+
+        renderMath(expBox);
+    }
+
+    function nextQuestion() {
+        if (document.activeElement) document.activeElement.blur();
+        if (activeSession.currentIndex < activeSession.questions.length - 1) {
+            activeSession.currentIndex++;
+            loadQuestion();
+        } else {
+            finishSession();
+        }
+    }
+
+    function prevQuestion() {
+        if (document.activeElement) document.activeElement.blur();
+        if (activeSession.currentIndex > 0) {
+            activeSession.currentIndex--;
+            loadQuestion();
+        }
+    }
+
+    function finishSession() {
+        clearInterval(timerInterval);
+        document.getElementById('quiz-body').style.display = 'none';
+        document.getElementById('quiz-results').style.display = 'block';
+
+        const total = activeSession.questions.length;
+        const score = activeSession.score;
+        const pct = Math.round((score / total) * 100);
+
+        document.getElementById('final-score').innerText = `${score} / ${total} (${pct}%)`;
+        document.getElementById('final-msg').innerText = pct >= 70 ? "Great job! Target score achieved." : "Keep studying and re-try!";
+
+        const record = {
+            id: 'hist_' + Date.now(),
+            quizTitle: activeSession.title,
+            date: new Date().toLocaleString(),
+            score: `${score}/${total}`,
+            percentage: `${pct}%`,
+            status: pct >= 70 ? 'PASS' : 'FAIL'
+        };
+
+        db.history.unshift(record);
+        saveDatabase();
+        renderHistory();
+    }
+
+    // KEYBOARD NAVIGATION (SPACEBAR)
+    window.addEventListener('keydown', function(e) {
+        if (e.code === 'Space' || e.key === ' ') {
+            const runnerTab = document.getElementById('runner-tab');
+            if (runnerTab && runnerTab.classList.contains('active')) {
+                const activeTag = document.activeElement ? document.activeElement.tagName : '';
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) return;
+
+                e.preventDefault();
+                e.stopPropagation();
+                if (document.activeElement) document.activeElement.blur();
+
+                handleAdvanceOrSkip();
+            }
+        }
+    });
+
+    // RIGHT-CLICK NAVIGATION
+    window.addEventListener('contextmenu', function(e) {
+        const runnerTab = document.getElementById('runner-tab');
+        if (runnerTab && runnerTab.classList.contains('active')) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (document.activeElement) document.activeElement.blur();
+
+            handleAdvanceOrSkip();
+        }
+    });
+
+    function handleAdvanceOrSkip() {
+        if (document.activeElement) document.activeElement.blur();
+        const answered = activeSession.userAnswers[activeSession.currentIndex] !== null;
+        if (answered) {
+            nextQuestion();
+        } else {
+            skipQuestion();
+        }
+    }
+
+    // HISTORY RENDER
+    function renderHistory() {
+        const tbody = document.getElementById('history-rows');
+        if (db.history.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No history recorded yet.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = db.history.map((h, i) => `
+            <tr>
+                <td>${i + 1}</td>
+                <td><b>${h.quizTitle}</b></td>
+                <td>${h.date}</td>
+                <td>${h.score}</td>
+                <td>${h.percentage}</td>
+                <td style="color: ${h.status === 'PASS' ? 'var(--success)' : 'var(--danger)'}; font-weight: bold;">${h.status}</td>
+            </tr>
+        `).join('');
+    }
+
+    function clearHistory() {
+        if (confirm("Are you sure you want to clear your entire master progress history?")) {
+            db.history = [];
+            saveDatabase();
+            renderHistory();
+        }
+    }
+
+    // SAMPLE DATA LOADS
+    function loadSampleQuiz() {
+        const sample = {
+            title: "PCAR Parts 1-4 Sample Quiz",
+            category: "Civil Air Laws",
+            folder: "Aviation Laws",
+            questions: [
+                {
+                    q: "Under PCAR Part 1, which word is strictly used to denote a mandatory requirement?",
+                    options: ["MAY", "WILL", "SHALL", "SHOULD"],
+                    answer: 2,
+                    explain: "'SHALL' is mandatory under PCAR Part 1."
+                },
+                {
+                    q: "Within how many days must a pilot notify CAAP of a change of address?",
+                    options: ["8 days", "15 days", "30 days", "60 days"],
+                    answer: 2,
+                    explain: "Address changes must be reported within 30 days."
+                }
+            ]
+        };
+
+        const newId = addQuizToLibrary(sample, false);
+        highlightQuizInLibrary(newId);
+    }
+
+    function loadMathSampleQuiz() {
+        const sample = {
+            title: "Physics & Calculus Math Suite",
+            category: "Science & Engineering",
+            folder: "Mathematics & Physics",
+            questions: [
+                {
+                    q: "What is Einstein's mass-energy equivalence equation?",
+                    options: ["\\( E = mc^2 \\)", "\\( F = ma \\)", "\\( E = h\\nu \\)", "\\( P = IV \\)"],
+                    answer: 0,
+                    explain: "Where \\( E \\) is energy, \\( m \\) is mass, and \\( c \\) is the speed of light."
+                },
+                {
+                    q: "What is the solution to the quadratic equation $$ax^2 + bx + c = 0$$?",
+                    options: [
+                        "$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$",
+                        "$$x = \\frac{-b \\pm \\sqrt{b^2 + 4ac}}{2a}$$",
+                        "$$x = \\frac{b \\pm \\sqrt{b^2 - 4ac}}{2a}$$",
+                        "$$x = -b \\pm \\sqrt{b^2 - 4ac}$$"
+                    ],
+                    answer: 0,
+                    explain: "The standard quadratic formula yields the roots of any 2nd degree polynomial."
+                },
+                {
+                    q: "What is the derivative of \\( f(x) = x^n \\) using the power rule?",
+                    options: ["\\( f'(x) = n x^{n-1} \\)", "\\( f'(x) = x^{n+1} \\)", "\\( f'(x) = n x^n \\)", "\\( f'(x) = \\frac{x^n}{n} \\)"],
+                    answer: 0,
+                    explain: "The power rule states that \\( \\frac{d}{dx}[x^n] = n x^{n-1} \\)."
+                }
+            ]
+        };
+
+        const newId = addQuizToLibrary(sample, false);
+        highlightQuizInLibrary(newId);
+    }
+</script>
+
+</body>
+</html>
