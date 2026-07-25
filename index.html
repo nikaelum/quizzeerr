@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light" style="--font-scale: 100%;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Quiz Runner, Study Planner & Math Suite</title>
+    <title>Master Suite — Modern Study Engine & Math Runner</title>
     
-    <!-- MathJax 3 Configuration for LaTeX Mathematical Formatting -->
+    <!-- MathJax 3 Configuration -->
     <script>
         window.MathJax = {
             tex: {
@@ -22,185 +22,237 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <style>
-        :root {
-            --primary: #1a365d;
-            --primary-light: #2b6cb0;
-            --accent: #2c5282;
-            --success: #276749;
-            --success-bg: #c6f6d5;
-            --danger: #9b2c2c;
-            --danger-bg: #fed7d7;
-            --warning: #d69e2e;
-            --warning-bg: #fefcbf;
-            --bg: #edf2f7;
+        /* ==========================================================================
+           VERCEL / NOTION MINIMALIST DESIGN SYSTEM
+           ========================================================================== */
+        :root[data-theme="light"] {
+            --bg: #f8fafc;
             --card: #ffffff;
-            --border: #cbd5e0;
-            --text: #2d3748;
+            --border: #e2e8f0;
+            --border-hover: #cbd5e0;
+            --text-primary: #0f172a;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-bg: #e0f2fe;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --warning: #f59e0b;
+            --warning-bg: #fffbeb;
+            --editor-bg: #0f172a;
+            --editor-text: #38bdf8;
+            --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 30px -4px rgba(0, 0, 0, 0.08);
         }
+
+        :root[data-theme="dark"] {
+            --bg: #090d16;
+            --card: #111827;
+            --border: #1f2937;
+            --border-hover: #374151;
+            --text-primary: #f9fafb;
+            --text-muted: #9ca3af;
+            --accent: #38bdf8;
+            --accent-bg: #075985;
+            --success: #34d399;
+            --success-bg: #064e3b;
+            --danger: #f87171;
+            --danger-bg: #7f1d1d;
+            --warning: #fbbf24;
+            --warning-bg: #78350f;
+            --editor-bg: #030712;
+            --editor-text: #38bdf8;
+            --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 30px -4px rgba(0, 0, 0, 0.5);
+        }
+
+        :root[data-theme="oled"] {
+            --bg: #000000;
+            --card: #0a0a0a;
+            --border: #1a1a1a;
+            --border-hover: #27272a;
+            --text-primary: #ffffff;
+            --text-muted: #737373;
+            --accent: #3b82f6;
+            --accent-bg: #1e3a8a;
+            --success: #10b981;
+            --success-bg: #064e3b;
+            --danger: #ef4444;
+            --danger-bg: #7f1d1d;
+            --warning: #f59e0b;
+            --warning-bg: #78350f;
+            --editor-bg: #000000;
+            --editor-text: #10b981;
+            --shadow: none;
+            --shadow-lg: none;
+        }
+
+        * { box-sizing: border-box; }
+
+        html { font-size: var(--font-scale, 100%); }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
-            color: var(--text);
+            color: var(--text-primary);
             margin: 0;
-            padding: 15px;
-            line-height: 1.5;
+            padding: 20px 15px;
+            line-height: 1.6;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .app-container {
-            max-width: 1080px;
-            margin: 0 auto;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
+        .app-container { max-width: 1080px; margin: 0 auto; }
 
         header {
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 12px;
-            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-badge {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: var(--accent-bg);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .nav-pills {
+            display: flex;
+            gap: 6px;
+            background: var(--card);
+            padding: 5px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+            margin-bottom: 24px;
+        }
+
+        .nav-pill {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+
+        .nav-pill:hover { color: var(--text-primary); background: var(--bg); }
+        .nav-pill.active { background: var(--text-primary); color: var(--bg); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
             flex-wrap: wrap;
             gap: 10px;
         }
 
-        h1 {
-            color: var(--primary);
-            margin: 0;
-            font-size: 1.6rem;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 5px;
-            border-bottom: 2px solid var(--border);
-            margin-bottom: 20px;
-            overflow-x: auto;
-        }
-
-        .tab-btn {
-            padding: 10px 16px;
-            background: #e2e8f0;
-            border: 1px solid var(--border);
-            border-bottom: none;
-            border-radius: 6px 6px 0 0;
-            cursor: pointer;
-            font-weight: bold;
-            color: var(--primary);
-            white-space: nowrap;
-        }
-
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .grid-layout {
-            display: grid;
-            grid-template-columns: 1fr 360px;
-            gap: 20px;
-        }
-
-        @media (max-width: 880px) {
-            .grid-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 15px;
-            background: #ffffff;
-            margin-bottom: 15px;
-        }
-
         .card-title {
-            font-weight: bold;
-            color: var(--primary);
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 8px;
-            margin-bottom: 12px;
-            font-size: 1.1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .settings-bar {
-            background: #f7fafc;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            font-size: 0.9rem;
-        }
-
-        .settings-group {
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .btn {
-            padding: 8px 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 4px;
+            padding: 8px 16px;
+            background: var(--text-primary);
+            color: var(--bg);
+            border: 1px solid transparent;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 0.9rem;
+            font-weight: 600;
+            font-size: 0.88rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+            text-decoration: none;
         }
 
-        .btn:hover { background: var(--primary-light); }
-        .btn-secondary { background: #4a5568; }
-        .btn-success { background: var(--success); }
-        .btn-danger { background: var(--danger); }
-        .btn-warning { background: var(--warning); color: #744210; }
-        .btn-sm { padding: 4px 8px; font-size: 0.8rem; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-secondary { background: var(--card); color: var(--text-primary); border-color: var(--border); }
+        .btn-secondary:hover { border-color: var(--border-hover); background: var(--bg); }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-warning { background: var(--warning); color: #000; }
+        .btn-sm { padding: 5px 10px; font-size: 0.8rem; border-radius: 6px; }
 
+        .btn-icon {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* FOLDERS & DRAG-AND-DROP STYLES */
         .folder-card {
             border: 1px solid var(--border);
-            border-radius: 8px;
-            margin-bottom: 15px;
-            background: #ffffff;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            background: var(--card);
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+        .folder-card.drag-over {
+            border: 2px dashed var(--accent) !important;
+            background: var(--accent-bg) !important;
         }
 
         .folder-header {
-            padding: 10px 14px;
-            background: #f8fafc;
+            padding: 12px 16px;
+            background: var(--bg);
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 6px solid var(--primary);
+            border-left: 6px solid var(--accent);
             user-select: none;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .folder-title-area {
@@ -208,18 +260,11 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
-        }
-
-        .folder-color-badge {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
+            font-weight: 700;
         }
 
         .folder-content {
             padding: 12px;
-            background: #ffffff;
         }
 
         .folder-content.collapsed {
@@ -229,7 +274,7 @@
         .color-swatches {
             display: flex;
             gap: 8px;
-            margin: 8px 0;
+            margin: 10px 0;
             flex-wrap: wrap;
             align-items: center;
         }
@@ -240,280 +285,200 @@
             border-radius: 50%;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: transform 0.1s;
+            transition: transform 0.15s ease;
         }
 
-        .color-swatch:hover {
-            transform: scale(1.15);
-        }
-
-        .color-swatch.selected {
-            border-color: #000;
-            transform: scale(1.15);
-        }
-
-        .folder-modal {
-            background: #f7fafc;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 12px 15px;
-            margin-bottom: 15px;
+        .color-swatch:hover, .color-swatch.selected {
+            transform: scale(1.2);
+            border-color: var(--text-primary);
         }
 
         .quiz-item {
             border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 10px 12px;
+            border-radius: 10px;
+            padding: 12px 16px;
             margin-bottom: 10px;
-            background: #f7fafc;
+            background: var(--card);
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            transition: background-color 0.3s;
-        }
-
-        .quiz-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .quiz-item.highlight {
-            background-color: var(--success-bg) !important;
-            border-color: var(--success) !important;
-        }
-
-        .quiz-info {
-            display: flex;
             align-items: center;
             gap: 12px;
-            flex: 1;
+            transition: all 0.15s ease;
         }
 
-        .quiz-title {
-            font-weight: bold;
-            color: var(--primary);
+        .quiz-item:last-child { margin-bottom: 0; }
+        .quiz-item[draggable="true"] { cursor: grab; user-select: none; }
+        .quiz-item[draggable="true"]:active { cursor: grabbing; opacity: 0.6; }
+        .quiz-item.highlight { background: var(--success-bg) !important; border-color: var(--success) !important; }
+
+        /* TACTILE OPTIONS */
+        .options-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .option-card {
+            padding: 14px 18px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            text-align: left;
+            transition: all 0.15s ease;
+            width: 100%;
         }
 
-        .quiz-meta {
-            font-size: 0.85rem;
-            color: #718096;
+        .option-card:hover:not([disabled]) { border-color: var(--accent); background: var(--accent-bg); transform: translateY(-1px); }
+        .option-card.correct { background: var(--success-bg) !important; border-color: var(--success) !important; color: var(--success) !important; font-weight: 700; }
+        .option-card.wrong { background: var(--danger-bg) !important; border-color: var(--danger) !important; color: var(--danger) !important; }
+
+        .fill-input {
+            width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 8px;
+            font-size: 1rem; background: var(--card); color: var(--text-primary); outline: none;
         }
 
-        .badge {
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: bold;
+        /* 3D FLASHCARDS */
+        .flashcard-stage { perspective: 1000px; width: 100%; max-width: 620px; height: 360px; margin: 24px auto; }
+        .flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; border-radius: 16px; }
+        .flashcard.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 16px;
+            padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;
+            background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow-lg);
         }
 
-        .badge-streak { background: var(--warning-bg); color: #744210; }
-        .badge-folder { background: #e2e8f0; color: #2d3748; }
+        .card-face-back { transform: rotateY(180deg); border-color: var(--accent); }
+        .rating-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 16px; }
+        .rating-pill { padding: 12px; border-radius: 10px; border: none; font-weight: 700; font-size: 0.85rem; cursor: pointer; color: #fff; }
+        .rating-hard { background: var(--danger); }
+        .rating-good { background: var(--warning); color: #000; }
+        .rating-easy { background: var(--success); }
 
-        .quiz-header {
-            display: flex;
-            justify-content: space-between;
-            background: #edf2f7;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            align-items: center;
+        /* TERMINAL & DUAL PANE EDITOR */
+        .editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 820px) { .editor-grid { grid-template-columns: 1fr; } }
+        .code-area { width: 100%; height: 260px; font-family: 'Consolas', 'Courier New', monospace; background: var(--editor-bg); color: var(--editor-text); padding: 12px; border-radius: 10px; border: 1px solid var(--border); font-size: 0.85rem; outline: none; resize: vertical; line-height: 1.4; }
+        .preview-area { border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: var(--card); height: 260px; overflow-y: auto; font-size: 0.9rem; }
+
+        .editor-status-bar {
+            margin-top: 8px; padding: 8px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; background: var(--bg); color: var(--text-muted); border: 1px solid var(--border);
+        }
+
+        /* MODAL POP-OVER */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; z-index: 100;
+        }
+
+        .modal-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; width: 90%; max-width: 480px; box-shadow: var(--shadow-lg); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
+        .metric-tile { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }
+        .metric-num { font-size: 1.8rem; font-weight: 800; color: var(--accent); margin: 4px 0; }
+        .metric-sub { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+
+        /* STICKY NOTES STYLES */
+        .sticky-note-box {
+            margin-top: 16px; padding: 12px; background: var(--warning-bg); border: 1px solid var(--warning); border-radius: 8px; font-size: 0.88rem;
+        }
+
+        .sticky-note-input {
+            width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; margin-top: 6px; background: var(--card); color: var(--text-primary); outline: none;
         }
 
         .timer-badge {
-            background: #ffffff;
-            border: 1px solid var(--border);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-family: monospace;
-            font-size: 0.95rem;
-            color: var(--primary);
-        }
-
-        .options-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 15px;
-        }
-
-        .option-btn {
-            text-align: left;
-            padding: 10px 14px;
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.95rem;
-        }
-
-        .option-btn:hover:not([disabled]) { background: #ebf8ff; }
-        .option-btn.correct { background: var(--success-bg) !important; border-color: var(--success) !important; color: var(--success) !important; font-weight: bold; }
-        .option-btn.wrong { background: var(--danger-bg) !important; border-color: var(--danger) !important; color: var(--danger) !important; }
-
-        .explanation-box {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 5px;
-            display: none;
-            font-size: 0.9rem;
-        }
-
-        .explanation-box.correct-bg { background: var(--success-bg); border: 1px solid var(--success); color: var(--success); }
-        .explanation-box.wrong-bg { background: var(--danger-bg); border: 1px solid var(--danger); color: var(--danger); }
-
-        .keyboard-hint {
-            font-size: 0.8rem;
-            color: #718096;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .code-editor {
-            width: 100%;
-            height: 200px;
-            font-family: 'Consolas', 'Courier New', Courier, monospace;
-            background: #1e1e1e;
-            color: #4ec9b0;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #333;
-            box-sizing: border-box;
-            resize: vertical;
-            font-size: 0.85rem;
-            line-height: 1.4;
-            outline: none;
-        }
-
-        .code-editor:focus {
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 2px rgba(43, 108, 176, 0.3);
-        }
-
-        .editor-status-bar {
-            margin-top: 6px;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            display: block;
-            background: #edf2f7;
-            color: #4a5568;
+            background: var(--card); border: 1px solid var(--border); padding: 4px 10px; border-radius: 12px; font-family: monospace; font-size: 0.95rem; font-weight: 700; color: var(--accent);
         }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; font-size: 0.85rem; }
-        th { background: #edf2f7; color: var(--primary); }
+        th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; font-size: 0.85rem; }
+        th { background: var(--bg); color: var(--text-primary); }
+
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
+        .badge-streak { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning); }
+        .badge-folder { background: var(--accent-bg); color: var(--accent); }
     </style>
 </head>
 <body class="tex2jax_process">
 
 <div class="app-container">
+    <!-- HEADER BAR -->
     <header>
-        <div>
-            <h1>🎯 Master Quiz Runner</h1>
-            <span style="font-size: 0.85rem; color: #4a5568;">Practice custom quizzes, group by colored folders, render LaTeX math, and track overall mastery</span>
+        <div class="brand-logo">
+            <span>✦ Master Suite</span>
+            <span class="brand-badge">PRO v3.5</span>
         </div>
-        <div class="header-actions">
-            <button class="btn btn-secondary btn-sm" onclick="exportAppData()">📤 Export Data</button>
-            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('import-file-input').click()">📥 Import Data</button>
-            <input type="file" id="import-file-input" accept=".json,.html" style="display: none;" onchange="importAppData(event)">
-            <button class="btn btn-secondary btn-sm" onclick="loadSampleQuiz()">PCAR Quiz</button>
-            <button class="btn btn-secondary btn-sm" onclick="loadMathSampleQuiz()"> Math & Science Quiz</button>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
             <button class="btn btn-success btn-sm" onclick="syncToCloud()">☁️ Push to Cloud</button>
             <button class="btn btn-warning btn-sm" onclick="syncFromCloud()">☁️ Pull from Cloud</button>
+            <button class="btn-icon" onclick="toggleQuickToolsModal(true)" title="Options & Tools">⚙️ Options & Tools</button>
         </div>
     </header>
 
-    <div class="settings-bar">
-        <div class="settings-group">
-            <label style="cursor: pointer; font-weight: bold;">
-                <input type="checkbox" id="setting-shuffle-options" checked> 🔀 Shuffle Options (A, B, C, D)
-            </label>
-        </div>
-        <div class="settings-group">
-            <label style="font-weight: bold;">⏱️ Practice Timer:</label>
-            <select id="setting-timer-mode" style="padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border);">
-                <option value="none">Untimed (Default)</option>
-                <option value="per_question_30">30 Sec per Question</option>
-                <option value="10m">10 Minutes Total</option>
-                <option value="30m">30 Minutes Total</option>
-                <option value="60m">60 Minutes Total</option>
-            </select>
+    <!-- PILL NAVIGATION -->
+    <div class="nav-pills">
+        <button class="nav-pill active" onclick="switchTab('library-tab')">📚 Library</button>
+        <button class="nav-pill" onclick="switchTab('compile-tab')">🔀 Handpick & Combine</button>
+        <button class="nav-pill" onclick="switchTab('wrong-tab')">⚠️ Weak Spots (<span id="wrong-count-badge">0</span>)</button>
+        <button class="nav-pill" onclick="switchTab('runner-tab')" id="runner-tab-btn" disabled>📝 Practice Mode</button>
+        <button class="nav-pill" onclick="switchTab('flashcard-tab')">🎴 Flashcards</button>
+        <button class="nav-pill" onclick="switchTab('history-tab')">📊 Analytics</button>
+    </div>
+
+    <!-- RESUME SESSION BANNER -->
+    <div id="resume-session-banner" style="display: none; background: var(--accent-bg); border: 1px solid var(--accent); padding: 12px 18px; border-radius: 12px; margin-bottom: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+        <span style="font-weight: 600; font-size: 0.9rem;">📍 Unfinished Quiz Session Found! Resume where you left off?</span>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn btn-sm btn-success" onclick="resumeSavedSession()">Resume Session</button>
+            <button class="btn btn-sm btn-secondary" onclick="discardSavedSession()">Discard</button>
         </div>
     </div>
 
-    <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('library-tab')">📚 Quiz Library</button>
-        <button class="tab-btn" onclick="switchTab('compile-tab')">🔀 Handpick & Compile</button>
-        <button class="tab-btn" onclick="switchTab('wrong-tab')">⚠️ Weak Spots (<span id="wrong-count-badge">0</span>)</button>
-        <button class="tab-btn" onclick="switchTab('runner-tab')" id="runner-tab-btn" disabled>📝 Practice Mode</button>
-        <button class="tab-btn" onclick="switchTab('history-tab')">📜 Master History</button>
-    </div>
-
-    <!-- TAB 1: LIBRARY -->
+    <!-- TAB 1: LIBRARY & DUAL PANE EDITOR -->
     <div id="library-tab" class="tab-content active">
-        <div class="grid-layout">
+        <div style="display: grid; grid-template-columns: 1fr 420px; gap: 20px;">
             <div>
-                <div class="card" style="margin-bottom: 12px; padding: 10px 15px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
-                        <div style="display: flex; gap: 8px; align-items: center; flex: 1;">
-                            <input type="text" id="library-search-input" placeholder="🔍 Search quizzes by name or topic..." oninput="renderLibrary()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 4px; width: 100%; font-size: 0.85rem;">
-                        </div>
-                        <div style="display: flex; gap: 6px;">
-                            <button class="btn btn-success btn-sm" onclick="toggleFolderForm()">📁 + New Folder</button>
-                            <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(true)">Expand All</button>
-                            <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(false)">Collapse All</button>
-                        </div>
-                    </div>
-
-                    <div id="folder-form-card" class="folder-modal" style="display: none; margin-top: 12px;">
-                        <input type="hidden" id="folder-edit-id" value="">
-                        <div style="font-weight: bold; margin-bottom: 6px; color: var(--primary);" id="folder-form-title">📁 Create New Folder</div>
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                            <input type="text" id="folder-name-input" placeholder="Folder Name (e.g., Physics, Aviation Law)" style="flex: 1; padding: 6px; border: 1px solid var(--border); border-radius: 4px;">
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <span style="font-size: 0.85rem; font-weight: bold;">Color:</span>
-                                <input type="color" id="folder-custom-color" value="#2b6cb0" style="border: none; width: 28px; height: 28px; cursor: pointer; background: transparent;" onchange="selectSwatchColor(this.value)">
-                            </div>
-                        </div>
-
-                        <div class="color-swatches" id="preset-color-swatches"></div>
-
-                        <div style="display: flex; gap: 6px; margin-top: 10px;">
-                            <button class="btn btn-success btn-sm" onclick="saveFolderForm()">Save Folder</button>
-                            <button class="btn btn-secondary btn-sm" onclick="toggleFolderForm(false)">Cancel</button>
-                        </div>
+                <div class="card" style="padding: 14px;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <input type="text" id="library-search-input" placeholder="🔍 Search quizzes by title or category..." oninput="renderLibrary()" style="flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text-primary); outline: none;">
+                        <button class="btn btn-success btn-sm" onclick="toggleFolderModal(true)">📁 + Folder</button>
+                        <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(true)">Expand All</button>
+                        <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(false)">Collapse All</button>
                     </div>
                 </div>
 
                 <div id="quiz-list-container">
-                    <p style="color: #718096; text-align: center;">No quizzes uploaded yet. Upload or paste a quiz on the right panel to get started!</p>
+                    <p style="color: var(--text-muted); text-align: center; padding: 40px 0;">No quizzes in library yet.</p>
                 </div>
             </div>
 
             <div>
                 <div class="card">
-                    <div class="card-title">💻 JSON Terminal / Code Editor</div>
-                    <p style="font-size: 0.8rem; color: #4a5568; margin-top: 0;">Paste JSON or JS objects directly to create a quiz. Supports LaTeX math formula notation: <code>\( E = mc^2 \)</code> or <code>$$ ... $$</code>.</p>
-                    
-                    <textarea id="json-editor-textarea" class="code-editor" spellcheck="false" placeholder='{\n  "title": "Quantum Physics Basics",\n  "category": "Physics",\n  "folder": "Science & Math",\n  "questions": [\n    {\n      "q": "What is Planck&#39;s energy equation?",\n      "options": ["\\( E = h\\nu \\)", "\\( F = ma \\)", "\\( E = mc^2 \\)"],\n      "answer": 0,\n      "explain": "According to Planck, energy equals Planck&#39;s constant times frequency."\n    }\n  ]\n}'></textarea>
-                    
+                    <div class="card-header"><div class="card-title">💻 Terminal / Dual-Pane LaTeX IDE</div></div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Paste JSON or JS objects directly. Supports LaTeX notation: <code>\( E = mc^2 \)</code> or <code>$$ ... $$</code>.</p>
+                    <div class="editor-grid">
+                        <textarea id="json-editor-textarea" class="code-area" spellcheck="false" placeholder='{\n  "title": "Quantum Physics",\n  "category": "Physics",\n  "folder": "Science & Math",\n  "questions": [\n    {\n      "q": "What is Planck&#39;s energy equation?",\n      "type": "mcq",\n      "options": ["\\( E = h\\nu \\)", "\\( F = ma \\)"],\n      "answer": 0,\n      "explain": "E = h * nu"\n    }\n  ]\n}'></textarea>
+                        <div id="live-latex-preview" class="preview-area">
+                            <p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Type equations to preview live!</p>
+                        </div>
+                    </div>
                     <div id="editor-status-msg" class="editor-status-bar">Status: Ready (Paste JSON code)</div>
-
-                    <div style="display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;">
                         <button class="btn btn-success btn-sm" style="flex: 1;" onclick="createQuizFromEditor()">🚀 Create Quiz</button>
-                        <button class="btn btn-warning btn-sm" onclick="runTerminalTest()">⚡ Run Self-Test</button>
+                        <button class="btn btn-warning btn-sm" onclick="runTerminalTest()">⚡ Self-Test</button>
                         <button class="btn btn-secondary btn-sm" onclick="loadTemplateToEditor()">📋 Template</button>
                         <button class="btn btn-danger btn-sm" onclick="clearEditor()">🧹 Clear</button>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-title">📥 Upload File</div>
-                    <p style="font-size: 0.8rem; color: #4a5568;">Select a <code>.json</code> or <code>.html</code> quiz file from your computer.</p>
-                    <input type="file" id="file-input" accept=".json,.html" style="display: none;" onchange="handleFileUpload(event)">
-                    <button class="btn btn-secondary btn-sm" style="width: 100%; text-align: center;" onclick="document.getElementById('file-input').click()">Choose Quiz File</button>
+                    <div class="card-header"><div class="card-title">📥 Import File</div></div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Select a <code>.json</code> or <code>.html</code> quiz file from your computer.</p>
+                    <input type="file" id="file-input" accept=".json,.html" style="display: none;" onchange="importAppData(event)">
+                    <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="document.getElementById('file-input').click()">Choose File...</button>
                 </div>
             </div>
         </div>
@@ -522,20 +487,18 @@
     <!-- TAB 2: COMPILE -->
     <div id="compile-tab" class="tab-content">
         <div class="card">
-            <div class="card-title">
-                <span>🔀 Handpick & Combine Quizzes</span>
+            <div class="card-header">
+                <div class="card-title">🔀 Handpick & Combine Quizzes</div>
                 <div style="display: flex; gap: 6px;">
                     <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllCompile(true)">Select All</button>
                     <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllCompile(false)">Deselect All</button>
                 </div>
             </div>
-            <p style="font-size: 0.9rem;">Select specific quizzes across folders to combine into a new quiz in your library, run a practice session, or export as JSON:</p>
-            
+            <p style="font-size: 0.88rem; color: var(--text-muted);">Select specific quizzes across folders to combine into a custom set, run a practice session, or export JSON:</p>
             <div id="compile-checklist" style="margin: 15px 0;"></div>
-
-            <div style="border-top: 1px solid var(--border); padding-top: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                 <button class="btn btn-success" onclick="startCompiledQuiz()">🚀 Start Practice Session</button>
-                <button class="btn btn-warning" onclick="combineAndSaveToLibrary()">🧩 Create New Combined Quiz in Library</button>
+                <button class="btn btn-warning" onclick="combineAndSaveToLibrary()">🧩 Create Combined Quiz in Library</button>
                 <button class="btn btn-secondary" onclick="exportMergedQuizJSON()">📥 Export Merged JSON</button>
                 <button class="btn btn-secondary" onclick="exportSelectedQuizArrayJSON()">📦 Export Quiz Array JSON</button>
             </div>
@@ -545,71 +508,113 @@
     <!-- TAB 3: WEAK SPOTS -->
     <div id="wrong-tab" class="tab-content">
         <div class="card">
-            <div class="card-title">
-                <span>⚠️ Missed Questions Pile</span>
-                <button class="btn btn-danger btn-sm" onclick="clearWrongPile()">Clear All Missed Questions</button>
+            <div class="card-header">
+                <div class="card-title">⚠️ Missed Questions Pile (Spaced Repetition)</div>
+                <button class="btn btn-danger btn-sm" onclick="clearWrongPile()">Clear All Missed</button>
             </div>
-            <p style="font-size: 0.9rem; color: #4a5568;">
-                Questions you answer incorrectly, skip, or manually flag are collected here. Answer a question correctly <b>3 consecutive times</b> across practice sessions to remove it from this pile!
-            </p>
-
+            <p style="font-size: 0.88rem; color: var(--text-muted);">Questions you answer incorrectly, skip, or manually flag are saved here. Answer a question correctly <b>3 consecutive times</b> to master and remove it!</p>
             <div style="margin-bottom: 15px;">
                 <button class="btn btn-success" id="start-wrong-quiz-btn" onclick="startWrongPileQuiz()">🚀 Practice Weak Spots Now</button>
             </div>
-
-            <div id="wrong-questions-list">
-                <p style="color: #718096; text-align: center;">No missed questions recorded yet! Keep taking quizzes to populate this pile.</p>
-            </div>
+            <div id="wrong-questions-list"></div>
         </div>
     </div>
 
     <!-- TAB 4: PRACTICE MODE -->
     <div id="runner-tab" class="tab-content">
-        <div class="quiz-header">
-            <span id="active-quiz-title">Quiz Title</span>
+        <div class="card" style="padding: 14px 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <b id="active-quiz-title" style="font-size: 1.05rem;">Quiz Title</b>
             <span id="quiz-timer" class="timer-badge" style="display: none;">⏱️ 00:00</span>
-            <span id="quiz-progress">Question 1 of 10</span>
-            <span id="quiz-score">Score: 0</span>
+            <span id="quiz-progress" style="color: var(--text-muted); font-size: 0.9rem;">Question 1 of 10</span>
+            <span id="quiz-score" style="font-weight: 700; color: var(--accent);">Score: 0</span>
         </div>
 
         <div id="quiz-body" class="card">
-            <div id="question-text" style="font-weight: bold; font-size: 1.05rem;">Question text goes here...</div>
-            <div id="options-container" class="options-list"></div>
-            <div id="explanation-box" class="explanation-box"></div>
+            <div id="question-text" style="font-size: 1.1rem; line-height: 1.6; font-weight: 600;">Question goes here...</div>
+            <div id="options-container" class="options-grid"></div>
+            <div id="explanation-box" style="margin-top: 16px; padding: 14px; border-radius: 10px; display: none; font-size: 0.9rem;"></div>
 
-            <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <!-- PERSONAL STICKY NOTES -->
+            <div class="sticky-note-box">
+                <b style="color: var(--warning);">📝 Question Study Note:</b>
+                <input type="text" id="question-note-input" class="sticky-note-input" placeholder="Add personal note for this question..." onchange="saveQuestionStickyNote(this.value)">
+            </div>
+
+            <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                 <button id="prev-btn" class="btn btn-secondary" onclick="prevQuestion()" disabled>Previous</button>
-                <button id="flag-btn" class="btn btn-warning" onclick="toggleFlagCurrentQuestion()">🏳️ Flag to Weak Spots</button>
+                <button id="flag-btn" class="btn btn-warning" onclick="toggleFlagCurrentQuestion()">🏳️ Flag Question</button>
                 <button id="next-btn" class="btn" onclick="nextQuestion()" disabled>Next Question</button>
             </div>
-            <div class="keyboard-hint">💡 Tip: Press <b>Spacebar</b> or <b>Right-Click</b> anywhere to skip or proceed to the next question.</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; text-align: center;">💡 Tip: Press <b>Spacebar</b> or <b>Right-Click</b> anywhere to skip or advance to the next question.</div>
         </div>
 
-        <div id="quiz-results" class="card" style="display: none; text-align: center;">
-            <h2>🎉 Practice Session Complete!</h2>
-            <div id="final-score" style="font-size: 2rem; font-weight: bold; color: var(--primary); margin: 15px 0;">0 / 0 (0%)</div>
-            <p id="final-msg"></p>
+        <div id="quiz-results" class="card" style="display: none; text-align: center; padding: 40px;">
+            <h2>🎉 Practice Completed!</h2>
+            <div id="final-score" style="font-size: 2.2rem; font-weight: 800; color: var(--accent); margin: 15px 0;">0 / 0 (0%)</div>
+            <p id="final-msg" style="color: var(--text-muted);"></p>
             <button class="btn" onclick="switchTab('library-tab')">Return to Library</button>
         </div>
     </div>
 
-    <!-- TAB 5: HISTORY -->
+    <!-- TAB 5: FLASHCARD MODE -->
+    <div id="flashcard-tab" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🎴 Flashcard Deck Review</div>
+                <select id="flashcard-deck-select" onchange="FlashcardEngine.loadSelectedDeck()" style="padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); font-weight: 600;">
+                    <option value="">Select a Deck...</option>
+                </select>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
+                <span id="fc-deck-title">Deck: None</span>
+                <span id="fc-deck-counts">Remaining: 0 | Mastered: 0</span>
+            </div>
+
+            <div class="flashcard-stage">
+                <div id="active-flashcard" class="flashcard" onclick="FlashcardEngine.flipCard()">
+                    <div class="card-face">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); font-weight: bold;">
+                            <span>QUESTION</span><span id="fc-card-num">Card #1</span>
+                        </div>
+                        <div id="fc-front-text" style="font-size: 1.2rem; text-align: center; margin: auto;">Select a deck to start!</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">💡 Click or Spacebar to Flip</div>
+                    </div>
+                    <div class="card-face card-face-back">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); font-weight: bold;">
+                            <span>ANSWER</span><span>REVEALED</span>
+                        </div>
+                        <div id="fc-back-text" style="font-size: 1.1rem; text-align: center; margin: auto;">Answer details...</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">Rate recall difficulty:</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-bar">
+                <button class="rating-pill rating-hard" onclick="FlashcardEngine.rateCard('hard')">🔴 Hard [1]</button>
+                <button class="rating-pill rating-good" onclick="FlashcardEngine.rateCard('good')">🟡 Good [2]</button>
+                <button class="rating-pill rating-easy" onclick="FlashcardEngine.rateCard('easy')">🟢 Easy [3]</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 6: ANALYTICS -->
     <div id="history-tab" class="tab-content">
         <div class="card">
-            <div class="card-title">
-                <span>📜 Master Progress History</span>
+            <div class="card-header">
+                <div class="card-title">📊 Analytics & Performance</div>
                 <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear History</button>
             </div>
+            <div class="metrics-grid">
+                <div class="metric-tile"><div class="metric-sub">Mastery</div><div id="analytic-accuracy" class="metric-num">0%</div></div>
+                <div class="metric-tile"><div class="metric-sub">Sessions</div><div id="analytic-sessions" class="metric-num">0</div></div>
+                <div class="metric-tile"><div class="metric-sub">Weak Spots</div><div id="analytic-weakspots" class="metric-num">0</div></div>
+                <div class="metric-tile"><div class="metric-sub">Retention EF</div><div id="analytic-srs-score" class="metric-num">2.50</div></div>
+            </div>
+
             <table>
                 <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Quiz Name</th>
-                        <th>Date Completed</th>
-                        <th>Score</th>
-                        <th>Percentage</th>
-                        <th>Status</th>
-                    </tr>
+                    <tr><th>#</th><th>Quiz Name</th><th>Date Completed</th><th>Score</th><th>Pct</th><th>Status</th></tr>
                 </thead>
                 <tbody id="history-rows">
                     <tr><td colspan="6" style="text-align: center;">No history recorded yet.</td></tr>
@@ -619,1211 +624,1053 @@
     </div>
 </div>
 
+<!-- FOLDER MODAL -->
+<div id="folder-modal" class="modal-overlay">
+    <div class="modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <b style="font-size: 1.1rem;" id="folder-modal-title">📁 Create Folder</b>
+            <button class="btn-sm btn-secondary" onclick="toggleFolderModal(false)">✕ Close</button>
+        </div>
+        <input type="hidden" id="folder-edit-id" value="">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+                <label style="font-weight: 600; font-size: 0.85rem;">Folder Name:</label>
+                <input type="text" id="folder-name-input" placeholder="e.g., Aviation Law, Physics" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);">
+            </div>
+            <div>
+                <label style="font-weight: 600; font-size: 0.85rem;">Folder Accent Color:</label>
+                <div style="display: flex; gap: 8px; align-items: center; margin-top: 6px;">
+                    <input type="color" id="folder-custom-color" value="#0284c7" style="border: none; width: 32px; height: 32px; cursor: pointer; background: transparent;" onchange="selectSwatchColor(this.value)">
+                    <span id="folder-color-label" style="font-size: 0.85rem; font-weight: bold;">#0284c7</span>
+                </div>
+                <div class="color-swatches" id="preset-color-swatches"></div>
+            </div>
+            <button class="btn btn-success" onclick="saveFolderForm()">Save Folder</button>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT QUIZ MODAL -->
+<div id="edit-quiz-modal" class="modal-overlay">
+    <div class="modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <b style="font-size: 1.1rem;">✏️ Edit Quiz Details</b>
+            <button class="btn-sm btn-secondary" onclick="toggleEditQuizModal(false)">✕ Close</button>
+        </div>
+        <input type="hidden" id="edit-quiz-id" value="">
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+                <label style="font-weight: 600; font-size: 0.85rem;">Quiz Title:</label>
+                <input type="text" id="edit-quiz-title-input" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);">
+            </div>
+            <div>
+                <label style="font-weight: 600; font-size: 0.85rem;">Category:</label>
+                <input type="text" id="edit-quiz-category-input" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);">
+            </div>
+            <div>
+                <label style="font-weight: 600; font-size: 0.85rem;">Folder:</label>
+                <select id="edit-quiz-folder-select" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);"></select>
+            </div>
+            <button class="btn btn-success" onclick="saveEditedQuizDetails()">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- OPTIONS & TOOLS MODAL -->
+<div id="tools-modal" class="modal-overlay">
+    <div class="modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <b style="font-size: 1.1rem;">⚙️ Options & Settings</b>
+            <button class="btn-sm btn-secondary" onclick="toggleQuickToolsModal(false)">✕ Close</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+                <label style="font-weight: 600; font-size: 0.85rem;">Theme Palette:</label>
+                <select id="theme-select" onchange="QuizAppStore.setTheme(this.value)" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);">
+                    <option value="light">☀️ Light Slate</option>
+                    <option value="dark">🌙 Dark Slate</option>
+                    <option value="oled">🖤 OLED Pitch Black</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="font-weight: 600; font-size: 0.85rem;">Font Scale (A11y):</label>
+                <select id="font-scale-select" onchange="setFontScale(this.value)" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);">
+                    <option value="100%">Standard (100%)</option>
+                    <option value="115%">Medium (115%)</option>
+                    <option value="130%">Large (130%)</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="font-weight: 600; font-size: 0.85rem;">⏱️ Practice Timer Mode:</label>
+                <select id="setting-timer-mode" onchange="QuizAppStore.updateSetting('timerMode', this.value)" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);">
+                    <option value="none">Untimed (Default)</option>
+                    <option value="per_question_30">30 Sec per Question</option>
+                    <option value="10m">10 Minutes Total</option>
+                    <option value="30m">30 Minutes Total</option>
+                    <option value="60m">60 Minutes Total</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="cursor: pointer; font-weight: 600; font-size: 0.85rem;">
+                    <input type="checkbox" id="setting-shuffle-options" onchange="QuizAppStore.updateSetting('shuffleOptions', this.checked)"> 🔀 Shuffle Options (A, B, C, D)
+                </label>
+            </div>
+
+            <div>
+                <label style="font-weight: 600; font-size: 0.85rem;">Audio Synthesizer Effects:</label>
+                <button class="btn btn-secondary btn-sm" id="audio-toggle-btn" onclick="AudioEngine.toggleMute()" style="width: 100%; margin-top: 4px;">🔊 Sound: ON</button>
+            </div>
+
+            <div>
+                <label style="font-weight: 600; font-size: 0.85rem;">Backup, Cloud & Samples:</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px;">
+                    <button class="btn btn-secondary btn-sm" onclick="exportAppData()">📤 Export Data</button>
+                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('file-input').click()">📥 Import File</button>
+                    <button class="btn btn-success btn-sm" onclick="syncToCloud()">☁️ Cloud Push</button>
+                    <button class="btn btn-warning btn-sm" onclick="syncFromCloud()">☁️ Cloud Pull</button>
+                    <button class="btn btn-secondary btn-sm" onclick="loadSampleQuiz()">PCAR Law Sample</button>
+                    <button class="btn btn-secondary btn-sm" onclick="loadMathSampleQuiz()">STEM Math Sample</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    const COLOR_PRESETS = [
-        '#2b6cb0', '#276749', '#9b2c2c', '#6b46c1', 
-        '#d69e2e', '#2c7a7b', '#4c51bf', '#4a5568'
-    ];
+/* ==========================================================================
+   COMPLETE MASTER ENGINE LOGIC
+   ========================================================================== */
 
-    let db = {
-        folders: [],    
-        quizzes: [],    
-        history: [],    
-        wrongPile: {}   
-    };
+const COLOR_PRESETS = ['#0284c7', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b', '#14b8a6', '#6366f1', '#64748b'];
+let selectedFormColor = '#0284c7';
 
-    let activeSession = {
-        title: "",
-        questions: [],
-        currentIndex: 0,
-        userAnswers: [],
-        score: 0,
-        timerMode: "none"
-    };
-
-    let timerInterval = null;
-    let sessionTimeRemaining = 0;
-    let selectedFormColor = '#2b6cb0';
-
-    window.onload = function() {
-        loadDatabase();
-        renderColorSwatches();
-        renderLibrary();
-        renderHistory();
-        renderWrongPile();
-        setupCodeEditor();
-    };
-
-    function renderMath(node) {
-        if (window.MathJax && window.MathJax.typesetPromise) {
-            window.MathJax.typesetPromise(node ? [node] : []).catch(err => console.error("MathJax error:", err));
-        }
+const AudioEngine = (function() {
+    let ctx = null, muted = false;
+    function initCtx() { if (!ctx) { const AudioCtx = window.AudioContext || window.webkitAudioContext; if (AudioCtx) ctx = new AudioCtx(); } }
+    function playTone(freq, type, duration, gainVal = 0.1) {
+        if (muted) return;
+        try {
+            initCtx(); if (!ctx) return; if (ctx.state === 'suspended') ctx.resume();
+            const osc = ctx.createOscillator(), gain = ctx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(gainVal, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(); osc.stop(ctx.currentTime + duration);
+        } catch (e) {}
     }
+    return {
+        playCorrect: () => { playTone(523.25, 'triangle', 0.15); setTimeout(() => playTone(659.25, 'triangle', 0.25), 100); },
+        playWrong: () => { playTone(220, 'sawtooth', 0.2); setTimeout(() => playTone(196, 'sawtooth', 0.3), 120); },
+        playFlip: () => playTone(400, 'sine', 0.05),
+        toggleMute: () => {
+            muted = !muted;
+            document.getElementById('audio-toggle-btn').innerText = muted ? "🔇 Sound: OFF" : "🔊 Sound: ON";
+            QuizAppStore.updateSetting('audioMuted', muted);
+        }
+    };
+})();
 
-    function loadDatabase() {
-        const saved = localStorage.getItem('master_quiz_runner_db');
+function normalizeQuestion(q) {
+    if (!q) return null;
+    let type = q.type || (Array.isArray(q.answer) ? "multi-select" : typeof q.answer === "string" ? "fill-blank" : "mcq");
+    return {
+        id: q.id || 'q_' + Math.random().toString(36).substr(2, 9),
+        q: q.q || q.question || "Untitled Question",
+        type: type,
+        options: Array.isArray(q.options) ? [...q.options] : [],
+        answer: q.answer !== undefined ? q.answer : 0,
+        explain: q.explain || q.explanation || ""
+    };
+}
+
+function getQuestionKey(q) {
+    if (q.id) return q.id;
+    const text = (q.q || '').trim().toLowerCase();
+    const opts = (q.options || []).join('|').trim().toLowerCase();
+    return text + '___' + opts;
+}
+
+let db = {
+    folders: [],
+    quizzes: [],
+    history: [],
+    wrongPile: {},
+    questionNotes: {},
+    settings: { theme: 'light', fontScale: '100%', audioMuted: false, shuffleOptions: true, timerMode: 'none' }
+};
+
+const QuizAppStore = (function() {
+    const STORAGE_KEY = 'master_quiz_runner_db';
+
+    function loadState() {
+        const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
-            try { 
-                db = JSON.parse(saved); 
-                if (!db.folders) db.folders = [];
-                if (!db.quizzes) db.quizzes = [];
-                if (!db.history) db.history = [];
-                if (!db.wrongPile) db.wrongPile = {};
-            } catch(e) { 
-                console.error("Error loading DB", e); 
-            }
-        }
-    }
-
-    function saveDatabase() {
-        localStorage.setItem('master_quiz_runner_db', JSON.stringify(db));
-    }
-
-    function getQuestionKey(q) {
-        if (q.id) return q.id;
-        const text = (q.q || '').trim().toLowerCase();
-        const opts = (q.options || []).join('|').trim().toLowerCase();
-        return text + '___' + opts;
-    }
-
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-        const targetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
-        if (targetBtn) targetBtn.classList.add('active');
-
-        document.getElementById(tabId).classList.add('active');
-
-        if (tabId === 'compile-tab') renderCompileChecklist();
-        if (tabId === 'wrong-tab') renderWrongPile();
-    }
-
-    function exportAppData() {
-        downloadJSONFile(db, `master_quiz_backup_${new Date().toISOString().split('T')[0]}.json`);
-    }
-
-    function importAppData(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
             try {
-                let text = e.target.result;
-
-                if (file.name.endsWith('.html') || text.includes('<html') || text.includes('<script')) {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(text, 'html');
-                    const scriptTag = doc.getElementById('quiz-data');
-                    if (scriptTag) {
-                        text = scriptTag.textContent;
-                    } else {
-                        throw new Error("HTML file must contain a <script id='quiz-data' type='application/json'> block.");
-                    }
-                }
-
-                const parsed = flexibleJSONParse(text);
-                if (!parsed) throw new Error("File is empty or invalid JSON.");
-
-                if (typeof parsed === 'object' && !Array.isArray(parsed) && (parsed.quizzes || parsed.history || parsed.wrongPile)) {
-                    if (confirm("Replace existing database with imported backup? Click OK to Replace, Cancel to Merge.")) {
-                        db = {
-                            folders: parsed.folders || [],
-                            quizzes: parsed.quizzes || [],
-                            history: parsed.history || [],
-                            wrongPile: parsed.wrongPile || {}
-                        };
-                    } else {
-                        db.folders = [...db.folders, ...(parsed.folders || [])];
-                        db.quizzes = [...db.quizzes, ...(parsed.quizzes || [])];
-                        db.history = [...db.history, ...(parsed.history || [])];
-                        db.wrongPile = { ...db.wrongPile, ...(parsed.wrongPile || {}) };
-                    }
-                    saveDatabase();
-                    renderLibrary();
-                    renderHistory();
-                    renderWrongPile();
-                    alert("Database imported successfully!");
-                    return;
-                }
-
-                const quizList = Array.isArray(parsed) ? parsed : [parsed];
-                let count = 0;
-                let firstNewId = null;
-
-                for (let quizObj of quizList) {
-                    if (quizObj && quizObj.questions && Array.isArray(quizObj.questions) && quizObj.questions.length > 0) {
-                        const newId = addQuizToLibrary(quizObj, false);
-                        if (!firstNewId) firstNewId = newId;
-                        count++;
-                    }
-                }
-
-                if (count > 0) {
-                    saveDatabase();
-                    renderLibrary();
-                    renderHistory();
-                    renderWrongPile();
-                    if (firstNewId) highlightQuizInLibrary(firstNewId);
-                    alert(`Successfully imported ${count} quiz(zes) into your Library!`);
-                } else {
-                    alert("Invalid structure. Make sure the JSON file contains a 'questions' array.");
-                }
-
-            } catch (err) {
-                alert("Import Failed: " + err.message);
-            }
-        };
-        reader.readAsText(file);
-        event.target.value = '';
+                const parsed = JSON.parse(saved);
+                db.folders = parsed.folders || [];
+                db.quizzes = (parsed.quizzes || []).map(q => { q.questions = (q.questions || []).map(normalizeQuestion); return q; });
+                db.history = parsed.history || [];
+                db.wrongPile = parsed.wrongPile || {};
+                db.questionNotes = parsed.questionNotes || {};
+                db.settings = { ...db.settings, ...(parsed.settings || {}) };
+            } catch (e) {}
+        }
+        applyTheme(db.settings.theme);
+        setFontScale(db.settings.fontScale || '100%');
+        document.getElementById('theme-select').value = db.settings.theme || 'light';
+        document.getElementById('font-scale-select').value = db.settings.fontScale || '100%';
+        document.getElementById('setting-shuffle-options').checked = !!db.settings.shuffleOptions;
+        document.getElementById('setting-timer-mode').value = db.settings.timerMode || 'none';
     }
 
-    function handleFileUpload(event) {
-        importAppData(event);
-    }
+    function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
+    function applyTheme(t) { document.documentElement.setAttribute('data-theme', t || 'light'); }
 
-    function flexibleJSONParse(rawText) {
-        if (!rawText || !rawText.trim()) throw new Error("Terminal is empty.");
+    return {
+        init: () => loadState(),
+        saveDatabase: saveState,
+        setTheme: (t) => { db.settings.theme = t; applyTheme(t); saveState(); },
+        updateSetting: (k, v) => { db.settings[k] = v; saveState(); },
+        addQuiz: (qz) => {
+            qz.questions = (qz.questions || []).map(normalizeQuestion);
+            qz.id = qz.id || 'quiz_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+            qz.folderId = resolveFolderForQuiz(qz);
+            db.quizzes.push(qz);
+            saveState();
+            return qz.id;
+        }
+    };
+})();
 
-        let clean = rawText.trim();
-        clean = clean.replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
-        clean = clean.replace(/\/\/.*/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
-        clean = clean.replace(/,\s*([}\]])/g, '$1');
+function setFontScale(scale) {
+    document.documentElement.style.setProperty('--font-scale', scale);
+    QuizAppStore.updateSetting('fontScale', scale);
+}
 
+/* ==========================================================================
+   FLEXIBLE JSON PARSER
+   ========================================================================== */
+
+function flexibleJSONParse(rawText) {
+    if (!rawText || !rawText.trim()) throw new Error("Terminal text is empty.");
+    let clean = rawText.trim();
+    clean = clean.replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
+    clean = clean.replace(/\/\/.*/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
+    clean = clean.replace(/,\s*([}\]])/g, '$1');
+
+    try {
+        return JSON.parse(clean);
+    } catch (e1) {
+        let fixed = clean.replace(/([{,]\s*)([a-zA-Z0-9_$]+)\s*:/g, '$1"$2":');
+        fixed = fixed.replace(/'([^'\\]*(\\.[^'\\]*)*)'/g, '"$1"');
+        fixed = fixed.replace(/,\s*([}\]])/g, '$1');
         try {
-            return JSON.parse(clean);
-        } catch (e1) {
-            let fixed = clean.replace(/([{,]\s*)([a-zA-Z0-9_$]+)\s*:/g, '$1"$2":');
-            fixed = fixed.replace(/'([^'\\]*(\\.[^'\\]*)*)'/g, '"$1"');
-            fixed = fixed.replace(/,\s*([}\]])/g, '$1');
-
+            return JSON.parse(fixed);
+        } catch (e2) {
             try {
-                return JSON.parse(fixed);
-            } catch (e2) {
-                try {
-                    return (new Function("return (" + clean + ")"))();
-                } catch (e3) {
-                    throw new Error("Syntax error: " + e1.message);
-                }
+                return (new Function("return (" + clean + ")"))();
+            } catch (e3) {
+                throw new Error("Syntax error: " + e1.message);
             }
         }
     }
+}
 
-    function renderColorSwatches() {
-        const container = document.getElementById('preset-color-swatches');
-        if (!container) return;
+/* ==========================================================================
+   FOLDER MANAGEMENT & DRAG AND DROP
+   ========================================================================== */
 
-        container.innerHTML = COLOR_PRESETS.map(hex => `
-            <div class="color-swatch ${hex === selectedFormColor ? 'selected' : ''}" 
-                 style="background-color: ${hex};" 
-                 onclick="selectSwatchColor('${hex}')"></div>
-        `).join('');
+let draggedQuizId = null;
+function handleDragStart(e, id) { draggedQuizId = id; e.dataTransfer.setData('text/plain', id); }
+function handleDragOver(e) { e.preventDefault(); }
+function handleDragEnter(e, id) { e.preventDefault(); const el = document.getElementById(`folder-card-${id}`); if (el) el.classList.add('drag-over'); }
+function handleDragLeave(e, id) { const el = document.getElementById(`folder-card-${id}`); if (el) el.classList.remove('drag-over'); }
+
+function handleDrop(e, targetFolderId) {
+    e.preventDefault();
+    const el = document.getElementById(`folder-card-${targetFolderId}`); if (el) el.classList.remove('drag-over');
+    if (!draggedQuizId) return;
+    const qz = db.quizzes.find(q => q.id === draggedQuizId);
+    if (qz) { qz.folderId = targetFolderId || null; QuizAppStore.saveDatabase(); AudioEngine.playFlip(); renderLibrary(); }
+    draggedQuizId = null;
+}
+
+function renderColorSwatches() {
+    const container = document.getElementById('preset-color-swatches');
+    if (!container) return;
+    container.innerHTML = COLOR_PRESETS.map(hex => `
+        <div class="color-swatch ${hex === selectedFormColor ? 'selected' : ''}" 
+             style="background-color: ${hex};" 
+             onclick="selectSwatchColor('${hex}')"></div>
+    `).join('');
+}
+
+function selectSwatchColor(hex) {
+    selectedFormColor = hex;
+    document.getElementById('folder-custom-color').value = hex;
+    document.getElementById('folder-color-label').innerText = hex;
+    renderColorSwatches();
+}
+
+function toggleFolderModal(show) {
+    const card = document.getElementById('folder-modal');
+    card.style.display = show ? 'flex' : 'none';
+    if (show) {
+        document.getElementById('folder-edit-id').value = '';
+        document.getElementById('folder-name-input').value = '';
+        document.getElementById('folder-modal-title').innerText = '📁 Create New Folder';
+        selectSwatchColor('#0284c7');
+    }
+}
+
+function openEditFolderForm(folderId) {
+    const folder = db.folders.find(f => f.id === folderId);
+    if (!folder) return;
+    toggleFolderModal(true);
+    document.getElementById('folder-edit-id').value = folder.id;
+    document.getElementById('folder-name-input').value = folder.name;
+    document.getElementById('folder-modal-title').innerText = '✏️ Edit Folder';
+    selectSwatchColor(folder.color || '#0284c7');
+}
+
+function saveFolderForm() {
+    const nameInput = document.getElementById('folder-name-input').value.trim();
+    const editId = document.getElementById('folder-edit-id').value;
+    if (!nameInput) return alert("Please enter a folder name.");
+
+    if (editId) {
+        const folder = db.folders.find(f => f.id === editId);
+        if (folder) { folder.name = nameInput; folder.color = selectedFormColor; }
+    } else {
+        db.folders.push({ id: 'folder_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4), name: nameInput, color: selectedFormColor, collapsed: false });
+    }
+    QuizAppStore.saveDatabase(); renderLibrary(); toggleFolderModal(false);
+}
+
+function deleteFolder(folderId) {
+    const folder = db.folders.find(f => f.id === folderId); if (!folder) return;
+    const assigned = db.quizzes.filter(q => q.folderId === folderId);
+    let deleteQuizzesToo = false;
+    if (assigned.length > 0) {
+        deleteQuizzesToo = confirm(`Folder "${folder.name}" contains ${assigned.length} quiz(zes).\n\nClick OK to delete folder AND quizzes.\nClick Cancel to keep quizzes (move to Unorganized).`);
+    }
+    if (deleteQuizzesToo) { db.quizzes = db.quizzes.filter(q => q.folderId !== folderId); }
+    else { db.quizzes.forEach(q => { if (q.folderId === folderId) q.folderId = null; }); }
+    db.folders = db.folders.filter(f => f.id !== folderId);
+    QuizAppStore.saveDatabase(); renderLibrary();
+}
+
+function toggleFolderCollapse(folderId) {
+    const folder = db.folders.find(f => f.id === folderId);
+    if (folder) { folder.collapsed = !folder.collapsed; QuizAppStore.saveDatabase(); renderLibrary(); }
+}
+
+function toggleAllFolders(expand) {
+    db.folders.forEach(f => f.collapsed = !expand);
+    QuizAppStore.saveDatabase(); renderLibrary();
+}
+
+function moveQuizToFolder(quizId, folderId) {
+    const q = db.quizzes.find(x => x.id === quizId);
+    if (q) { q.folderId = folderId || null; QuizAppStore.saveDatabase(); renderLibrary(); }
+}
+
+function resolveFolderForQuiz(quizObj) {
+    const folderProp = quizObj.folder || quizObj.folderName;
+    if (quizObj.folderId && db.folders.some(f => f.id === quizObj.folderId)) return quizObj.folderId;
+    if (folderProp && typeof folderProp === 'string' && folderProp.trim()) {
+        const clean = folderProp.trim();
+        const existing = db.folders.find(f => f.name.toLowerCase() === clean.toLowerCase());
+        if (existing) return existing.id;
+        const newF = { id: 'folder_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4), name: clean, color: '#0284c7', collapsed: false };
+        db.folders.push(newF); return newF.id;
+    }
+    return null;
+}
+
+function startFolderPracticeSession(folderId) {
+    const folder = db.folders.find(f => f.id === folderId); if (!folder) return;
+    const folderQuizzes = db.quizzes.filter(q => q.folderId === folderId);
+    if (folderQuizzes.length === 0) return alert("No quizzes in this folder!");
+    let combined = []; folderQuizzes.forEach(q => combined.push(...q.questions));
+    combined.sort(() => Math.random() - 0.5);
+    initSession(`Folder Practice: ${folder.name} (${combined.length} Qs)`, combined);
+}
+
+/* ==========================================================================
+   LIBRARY RENDER & EDIT MODAL
+   ========================================================================== */
+
+function renderLibrary() {
+    const container = document.getElementById('quiz-list-container');
+    const searchTerm = (document.getElementById('library-search-input')?.value || '').toLowerCase().trim();
+
+    if (db.quizzes.length === 0) {
+        container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 40px 0;">No quizzes in library yet. Create or import one to begin!</p>`;
+        return;
     }
 
-    function selectSwatchColor(hex) {
-        selectedFormColor = hex;
-        document.getElementById('folder-custom-color').value = hex;
-        renderColorSwatches();
-    }
+    let filtered = db.quizzes.filter(q => !searchTerm || q.title.toLowerCase().includes(searchTerm) || (q.category && q.category.toLowerCase().includes(searchTerm)));
+    let folderMap = {}; db.folders.forEach(f => folderMap[f.id] = { ...f, quizzes: [] });
+    let unorganized = [];
+    filtered.forEach(q => { if (q.folderId && folderMap[q.folderId]) folderMap[q.folderId].quizzes.push(q); else unorganized.push(q); });
 
-    function toggleFolderForm(show) {
-        const card = document.getElementById('folder-form-card');
-        if (show === undefined) show = card.style.display === 'none';
-        
-        card.style.display = show ? 'block' : 'none';
-
-        if (show) {
-            document.getElementById('folder-edit-id').value = '';
-            document.getElementById('folder-name-input').value = '';
-            document.getElementById('folder-form-title').innerText = '📁 Create New Folder';
-            selectSwatchColor('#2b6cb0');
-            document.getElementById('folder-name-input').focus();
-        }
-    }
-
-    function openEditFolderForm(folderId) {
-        const folder = db.folders.find(f => f.id === folderId);
-        if (!folder) return;
-
-        toggleFolderForm(true);
-        document.getElementById('folder-edit-id').value = folder.id;
-        document.getElementById('folder-name-input').value = folder.name;
-        document.getElementById('folder-form-title').innerText = '✏️ Edit Folder';
-        selectSwatchColor(folder.color || '#2b6cb0');
-    }
-
-    function saveFolderForm() {
-        const nameInput = document.getElementById('folder-name-input').value.trim();
-        const editId = document.getElementById('folder-edit-id').value;
-
-        if (!nameInput) {
-            alert("Please enter a folder name.");
-            return;
-        }
-
-        if (editId) {
-            const folder = db.folders.find(f => f.id === editId);
-            if (folder) {
-                folder.name = nameInput;
-                folder.color = selectedFormColor;
-            }
-        } else {
-            const newFolder = {
-                id: 'folder_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-                name: nameInput,
-                color: selectedFormColor,
-                collapsed: false
-            };
-            db.folders.push(newFolder);
-        }
-
-        saveDatabase();
-        renderLibrary();
-        toggleFolderForm(false);
-    }
-
-    function deleteFolder(folderId) {
-        const folder = db.folders.find(f => f.id === folderId);
-        if (!folder) return;
-
-        const assignedQuizzes = db.quizzes.filter(q => q.folderId === folderId);
-        let deleteQuizzesToo = false;
-
-        if (assignedQuizzes.length > 0) {
-            const choice = confirm(`Folder "${folder.name}" contains ${assignedQuizzes.length} quiz(zes).\n\nClick OK to delete the folder AND its quizzes.\nClick Cancel to keep the quizzes (they will be moved to Unorganized).`);
-            deleteQuizzesToo = choice;
-        }
-
-        if (deleteQuizzesToo) {
-            db.quizzes = db.quizzes.filter(q => q.folderId !== folderId);
-        } else {
-            db.quizzes.forEach(q => {
-                if (q.folderId === folderId) q.folderId = null;
-            });
-        }
-
-        db.folders = db.folders.filter(f => f.id !== folderId);
-        saveDatabase();
-        renderLibrary();
-    }
-
-    function toggleFolderCollapse(folderId) {
-        const folder = db.folders.find(f => f.id === folderId);
-        if (folder) {
-            folder.collapsed = !folder.collapsed;
-            saveDatabase();
-            renderLibrary();
-        }
-    }
-
-    function toggleAllFolders(expand) {
-        db.folders.forEach(f => f.collapsed = !expand);
-        saveDatabase();
-        renderLibrary();
-    }
-
-    function moveQuizToFolder(quizId, folderId) {
-        const quiz = db.quizzes.find(q => q.id === quizId);
-        if (quiz) {
-            quiz.folderId = folderId || null;
-            saveDatabase();
-            renderLibrary();
-        }
-    }
-
-    function resolveFolderForQuiz(quizObj) {
-        const folderProp = quizObj.folder || quizObj.folderName;
-        const folderId = quizObj.folderId;
-
-        if (folderId && db.folders.some(f => f.id === folderId)) {
-            return folderId;
-        }
-
-        if (folderProp && typeof folderProp === 'string' && folderProp.trim()) {
-            const nameClean = folderProp.trim();
-            const existing = db.folders.find(f => f.name.toLowerCase() === nameClean.toLowerCase());
-            if (existing) {
-                return existing.id;
-            } else {
-                const newFolder = {
-                    id: 'folder_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-                    name: nameClean,
-                    color: '#2b6cb0',
-                    collapsed: false
-                };
-                db.folders.push(newFolder);
-                return newFolder.id;
-            }
-        }
-        return null;
-    }
-
-    function startFolderPracticeSession(folderId) {
-        const folder = db.folders.find(f => f.id === folderId);
-        if (!folder) return;
-
-        const folderQuizzes = db.quizzes.filter(q => q.folderId === folderId);
-        if (folderQuizzes.length === 0) {
-            alert("No quizzes in this folder to practice!");
-            return;
-        }
-
-        let combinedQuestions = [];
-        folderQuizzes.forEach(q => combinedQuestions.push(...q.questions));
-        combinedQuestions.sort(() => Math.random() - 0.5);
-
-        initSession(`Folder Practice: ${folder.name} (${combinedQuestions.length} Qs)`, combinedQuestions);
-    }
-
-    function setupCodeEditor() {
-        const textarea = document.getElementById('json-editor-textarea');
-        if (!textarea) return;
-
-        textarea.addEventListener('keydown', function(e) {
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                const start = this.selectionStart;
-                const end = this.selectionEnd;
-                this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
-                this.selectionStart = this.selectionEnd = start + 2;
-                validateEditorLive();
-            }
-        });
-
-        textarea.addEventListener('input', validateEditorLive);
-    }
-
-    function validateEditorLive() {
-        const rawText = document.getElementById('json-editor-textarea').value.trim();
-        if (!rawText) {
-            showEditorStatus("Status: Ready (Paste JSON code)", "#4a5568", "#edf2f7");
-            return;
-        }
-
-        try {
-            flexibleJSONParse(rawText);
-            showEditorStatus("Status: Valid JSON / JS Object ✓", "var(--success)", "var(--success-bg)");
-        } catch (err) {
-            showEditorStatus(`Status: Invalid Syntax ✗ (${err.message})`, "var(--danger)", "var(--danger-bg)");
-        }
-    }
-
-    function createQuizFromEditor() {
-        const rawText = document.getElementById('json-editor-textarea').value.trim();
-        if (!rawText) {
-            showEditorStatus("Status: Please paste or enter JSON code first ⚠️", "var(--danger)", "var(--danger-bg)");
-            return;
-        }
-
-        try {
-            const parsed = flexibleJSONParse(rawText);
-            const quizList = Array.isArray(parsed) ? parsed : [parsed];
-            let count = 0;
-            let firstNewId = null;
-
-            for (let quizObj of quizList) {
-                if (quizObj && quizObj.questions && Array.isArray(quizObj.questions) && quizObj.questions.length > 0) {
-                    const newId = addQuizToLibrary(quizObj, false);
-                    if (!firstNewId) firstNewId = newId;
-                    count++;
-                } else {
-                    throw new Error("Each quiz object must contain a 'questions' array with at least 1 question.");
-                }
-            }
-
-            showEditorStatus(`Status: Success! Created ${count} quiz(zes) 🎉`, "var(--success)", "var(--success-bg)");
-            document.getElementById('json-editor-textarea').value = '';
-
-            if (firstNewId) highlightQuizInLibrary(firstNewId);
-
-        } catch (err) {
-            showEditorStatus(`Status: Error - ${err.message}`, "var(--danger)", "var(--danger-bg)");
-        }
-    }
-
-    function runTerminalTest() {
-        const testPayload = {
-            title: "Physics & Equations Test",
-            category: "Science",
-            folder: "Science & Engineering",
-            questions: [
-                {
-                    q: "What is Einstein's mass-energy formula?",
-                    options: ["\\( E = mc^2 \\)", "\\( F = ma \\)", "\\( E = h\\nu \\)", "\\( P = IV \\)"],
-                    answer: 0,
-                    explain: "Where \\( E \\) is energy, \\( m \\) is mass, and \\( c \\) is the speed of light."
-                }
-            ]
-        };
-
-        document.getElementById('json-editor-textarea').value = JSON.stringify(testPayload, null, 2);
-        validateEditorLive();
-        createQuizFromEditor();
-    }
-
-    function showEditorStatus(msg, color, bgColor) {
-        const statusDiv = document.getElementById('editor-status-msg');
-        statusDiv.style.color = color;
-        statusDiv.style.backgroundColor = bgColor;
-        statusDiv.innerText = msg;
-    }
-
-    function clearEditor() {
-        document.getElementById('json-editor-textarea').value = '';
-        showEditorStatus("Status: Ready (Paste JSON code)", "#4a5568", "#edf2f7");
-    }
-
-    function loadTemplateToEditor() {
-        const template = {
-            title: "Calculus & Geometry Fundamentals",
-            category: "Mathematics",
-            folder: "Mathematics",
-            questions: [
-                {
-                    q: "What is the derivative of \\( f(x) = x^n \\) using the power rule?",
-                    options: ["\\( f'(x) = n x^{n-1} \\)", "\\( f'(x) = x^{n+1} \\)", "\\( f'(x) = n x^n \\)", "\\( f'(x) = \\frac{x^n}{n} \\)"],
-                    answer: 0,
-                    explain: "The power rule states that \\( \\frac{d}{dx}[x^n] = n x^{n-1} \\)."
-                },
-                {
-                    q: "What is the Pythagorean formula for right triangles?",
-                    options: ["$$a^2 + b^2 = c^2$$", "$$a + b = c$$", "$$a^2 - b^2 = c^2$$", "$$ab = c^2$$"],
-                    answer: 0,
-                    explain: "Where \\( a \\) and \\( b \\) are legs, and \\( c \\) is the hypotenuse."
-                }
-            ]
-        };
-
-        document.getElementById('json-editor-textarea').value = JSON.stringify(template, null, 2);
-        validateEditorLive();
-    }
-
-    function addQuizToLibrary(quizObj, showNotice = true) {
-        const folderId = resolveFolderForQuiz(quizObj);
-
-        const newQuiz = {
-            id: 'quiz_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-            title: quizObj.title || "Untitled Quiz",
-            category: quizObj.category || "General",
-            folderId: folderId,
-            questions: quizObj.questions
-        };
-
-        db.quizzes.push(newQuiz);
-        saveDatabase();
-        renderLibrary();
-
-        if (showNotice) {
-            alert(`Successfully added "${newQuiz.title}" (${newQuiz.questions.length} questions)!`);
-        }
-
-        return newQuiz.id;
-    }
-
-    function highlightQuizInLibrary(quizId) {
-        setTimeout(() => {
-            const items = document.querySelectorAll('.quiz-item');
-            items.forEach(el => {
-                if (el.getAttribute('data-quiz-id') === quizId) {
-                    el.classList.add('highlight');
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    setTimeout(() => el.classList.remove('highlight'), 2000);
-                }
-            });
-        }, 100);
-    }
-
-    function renderLibrary() {
-        const container = document.getElementById('quiz-list-container');
-        const searchTerm = (document.getElementById('library-search-input')?.value || '').toLowerCase().trim();
-
-        if (db.quizzes.length === 0) {
-            container.innerHTML = `<p style="color: #718096; text-align: center;">No quizzes uploaded yet. Upload or paste a quiz on the right panel to get started!</p>`;
-            return;
-        }
-
-        let filteredQuizzes = db.quizzes.filter(q => {
-            if (!searchTerm) return true;
-            return q.title.toLowerCase().includes(searchTerm) || q.category.toLowerCase().includes(searchTerm);
-        });
-
-        let folderMap = {};
-        db.folders.forEach(f => {
-            folderMap[f.id] = { ...f, quizzes: [] };
-        });
-
-        let unorganizedQuizzes = [];
-
-        filteredQuizzes.forEach(q => {
-            if (q.folderId && folderMap[q.folderId]) {
-                folderMap[q.folderId].quizzes.push(q);
-            } else {
-                unorganizedQuizzes.push(q);
-            }
-        });
-
-        let html = '';
-
-        db.folders.forEach(folder => {
-            const fGroup = folderMap[folder.id];
-            const qList = fGroup ? fGroup.quizzes : [];
-
-            if (searchTerm && qList.length === 0) return;
-
-            html += `
-                <div class="folder-card">
-                    <div class="folder-header" style="border-left-color: ${folder.color || '#2b6cb0'};">
-                        <div class="folder-title-area" onclick="toggleFolderCollapse('${folder.id}')">
-                            <span style="font-size: 0.8rem;">${folder.collapsed ? '▶' : '▼'}</span>
-                            <span class="folder-color-badge" style="background-color: ${folder.color || '#2b6cb0'};"></span>
-                            <b style="color: var(--primary); font-size: 1rem;">📂 ${folder.name}</b>
-                            <span class="badge badge-folder">${qList.length} Quiz${qList.length === 1 ? '' : 'zes'}</span>
-                        </div>
-                        <div style="display: flex; gap: 6px; align-items: center;">
-                            <button class="btn btn-success btn-sm" onclick="startFolderPracticeSession('${folder.id}')" ${qList.length === 0 ? 'disabled' : ''}>🚀 Practice Folder</button>
-                            <button class="btn btn-secondary btn-sm" onclick="openEditFolderForm('${folder.id}')">✏️ Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteFolder('${folder.id}')">🗑️</button>
-                        </div>
+    let html = '';
+    db.folders.forEach(folder => {
+        const qList = folderMap[folder.id] ? folderMap[folder.id].quizzes : [];
+        if (searchTerm && qList.length === 0) return;
+        html += `
+            <div class="folder-card" id="folder-card-${folder.id}" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event, '${folder.id}')" ondragleave="handleDragLeave(event, '${folder.id}')" ondrop="handleDrop(event, '${folder.id}')">
+                <div class="folder-header" style="border-left-color: ${folder.color || 'var(--accent)'};">
+                    <div class="folder-title-area" onclick="toggleFolderCollapse('${folder.id}')">
+                        <span>${folder.collapsed ? '▶' : '▼'}</span>
+                        <b>📂 ${folder.name}</b>
+                        <span class="badge badge-folder">${qList.length} Quiz${qList.length === 1 ? '' : 'zes'}</span>
                     </div>
-                    <div class="folder-content ${folder.collapsed ? 'collapsed' : ''}">
-                        ${qList.length === 0 ? `<p style="font-size: 0.85rem; color: #a0aec0; margin: 5px 0;">No quizzes in this folder. Select "Move to Folder..." on any quiz below to add it!</p>` : ''}
-                        ${qList.map(q => renderQuizItemHTML(q)).join('')}
+                    <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                        <button class="btn btn-success btn-sm" onclick="startFolderPracticeSession('${folder.id}')" ${qList.length === 0 ? 'disabled' : ''}>🚀 Practice Folder</button>
+                        <button class="btn btn-secondary btn-sm" onclick="openEditFolderForm('${folder.id}')">✏️ Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteFolder('${folder.id}')">🗑️</button>
                     </div>
                 </div>
-            `;
-        });
+                <div class="folder-content ${folder.collapsed ? 'collapsed' : ''}">
+                    ${qList.length === 0 ? `<p style="font-size: 0.82rem; color: var(--text-muted); margin: 5px 0;">Drag quizzes here or use dropdown to organize!</p>` : ''}
+                    ${qList.map(q => renderQuizItemHTML(q)).join('')}
+                </div>
+            </div>
+        `;
+    });
 
-        if (unorganizedQuizzes.length > 0 || db.folders.length === 0) {
-            html += `
-                <div class="folder-card">
-                    <div class="folder-header" style="border-left-color: #718096; background: #edf2f7;">
-                        <div class="folder-title-area">
-                            <b style="color: var(--primary); font-size: 0.95rem;">📁 Unorganized / General Quizzes</b>
-                            <span class="badge badge-folder">${unorganizedQuizzes.length} Quiz${unorganizedQuizzes.length === 1 ? '' : 'zes'}</span>
-                        </div>
-                    </div>
-                    <div class="folder-content">
-                        ${unorganizedQuizzes.map(q => renderQuizItemHTML(q)).join('')}
+    if (unorganized.length > 0 || db.folders.length === 0) {
+        html += `
+            <div class="folder-card" id="folder-card-unorganized" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event, '')" ondragleave="handleDragLeave(event, '')" ondrop="handleDrop(event, '')">
+                <div class="folder-header" style="border-left-color: var(--text-muted);">
+                    <div class="folder-title-area">
+                        <b>📁 Unorganized (${unorganized.length})</b>
                     </div>
                 </div>
-            `;
-        }
-
-        container.innerHTML = html || `<p style="color: #718096; text-align: center;">No matching quizzes found for "${searchTerm}".</p>`;
-        renderMath(container);
-    }
-
-    function renderQuizItemHTML(q) {
-        const folderOptions = db.folders.map(f => 
-            `<option value="${f.id}" ${q.folderId === f.id ? 'selected' : ''}>📁 ${f.name}</option>`
-        ).join('');
-
-        return `
-            <div class="quiz-item" data-quiz-id="${q.id}">
-                <div class="quiz-info">
-                    <div>
-                        <div class="quiz-title">${q.title}</div>
-                        <div class="quiz-meta">${q.questions.length} Questions | Category: ${q.category}</div>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                    <select class="btn-sm" onchange="moveQuizToFolder('${q.id}', this.value)" style="padding: 4px 6px; border-radius: 4px; border: 1px solid var(--border); font-size: 0.8rem; background: #fff;">
-                        <option value="">Move to Folder...</option>
-                        <option value="">(Unorganized)</option>
-                        ${folderOptions}
-                    </select>
-                    <button class="btn btn-sm" onclick="startSingleQuiz('${q.id}')">Run</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteQuiz('${q.id}')">🗑️</button>
+                <div class="folder-content">
+                    ${unorganized.map(q => renderQuizItemHTML(q)).join('')}
                 </div>
             </div>
         `;
     }
 
-    function deleteQuiz(id) {
-        if (confirm("Are you sure you want to remove this quiz from your library?")) {
-            db.quizzes = db.quizzes.filter(q => q.id !== id);
-            saveDatabase();
-            renderLibrary();
-        }
+    container.innerHTML = html;
+    renderMath(container);
+}
+
+function renderQuizItemHTML(q) {
+    const folderOptions = db.folders.map(f => `<option value="${f.id}" ${q.folderId === f.id ? 'selected' : ''}>📁 ${f.name}</option>`).join('');
+    return `
+        <div class="quiz-item" data-quiz-id="${q.id}" draggable="true" ondragstart="handleDragStart(event, '${q.id}')">
+            <div>
+                <b style="color: var(--text-primary);">${q.title}</b>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">${q.questions.length} Questions | ${q.category || 'General'}</div>
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                <select class="btn-sm" onchange="moveQuizToFolder('${q.id}', this.value)" style="padding: 4px 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); font-size: 0.8rem;">
+                    <option value="">Move to Folder...</option>
+                    <option value="">(Unorganized)</option>
+                    ${folderOptions}
+                </select>
+                <button class="btn btn-sm" onclick="startSingleQuiz('${q.id}')">▶ Run</button>
+                <button class="btn btn-secondary btn-sm" onclick="openEditQuizModal('${q.id}')">✏️ Edit</button>
+                <button class="btn btn-secondary btn-sm" onclick="cloneQuiz('${q.id}')">📋 Clone</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteQuiz('${q.id}')">🗑️</button>
+            </div>
+        </div>
+    `;
+}
+
+function cloneQuiz(id) {
+    const qz = db.quizzes.find(q => q.id === id); if (!qz) return;
+    const cloned = JSON.parse(JSON.stringify(qz));
+    cloned.id = 'quiz_' + Date.now(); cloned.title = `${qz.title} (Copy)`;
+    db.quizzes.push(cloned); QuizAppStore.saveDatabase(); renderLibrary();
+}
+
+function deleteQuiz(id) {
+    if (confirm("Delete this quiz from your library?")) {
+        db.quizzes = db.quizzes.filter(q => q.id !== id);
+        QuizAppStore.saveDatabase(); renderLibrary();
     }
+}
 
-    function renderCompileChecklist() {
-        const container = document.getElementById('compile-checklist');
-        if (db.quizzes.length === 0) {
-            container.innerHTML = `<p style="color: #718096;">Upload quizzes first to use the compilation tool.</p>`;
-            return;
-        }
+function openEditQuizModal(id) {
+    const qz = db.quizzes.find(q => q.id === id); if (!qz) return;
+    document.getElementById('edit-quiz-id').value = qz.id;
+    document.getElementById('edit-quiz-title-input').value = qz.title;
+    document.getElementById('edit-quiz-category-input').value = qz.category || 'General';
+    const sel = document.getElementById('edit-quiz-folder-select');
+    sel.innerHTML = '<option value="">(Unorganized)</option>' + db.folders.map(f => `<option value="${f.id}" ${qz.folderId === f.id ? 'selected':''}>📁 ${f.name}</option>`).join('');
+    toggleEditQuizModal(true);
+}
 
-        let folderMap = {};
-        db.folders.forEach(f => folderMap[f.id] = { ...f, quizzes: [] });
-        let unorganized = [];
+function toggleEditQuizModal(show) { document.getElementById('edit-quiz-modal').style.display = show ? 'flex' : 'none'; }
 
-        db.quizzes.forEach(q => {
-            if (q.folderId && folderMap[q.folderId]) folderMap[q.folderId].quizzes.push(q);
-            else unorganized.push(q);
-        });
-
-        let html = '';
-
-        db.folders.forEach(folder => {
-            const list = folderMap[folder.id].quizzes;
-            if (list.length === 0) return;
-
-            html += `
-                <div style="margin-bottom: 12px; border-left: 4px solid ${folder.color || '#2b6cb0'}; padding-left: 10px;">
-                    <div style="font-weight: bold; color: var(--primary); margin-bottom: 5px;">📂 ${folder.name}</div>
-                    ${list.map(q => `
-                        <div style="margin-bottom: 4px; margin-left: 10px;">
-                            <label style="cursor: pointer;">
-                                <input type="checkbox" class="compile-checkbox" value="${q.id}">
-                                <b>${q.title}</b> (${q.questions.length} questions)
-                            </label>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        });
-
-        if (unorganized.length > 0) {
-            html += `
-                <div style="margin-bottom: 12px; border-left: 4px solid #718096; padding-left: 10px;">
-                    <div style="font-weight: bold; color: var(--primary); margin-bottom: 5px;">📁 Unorganized / General</div>
-                    ${unorganized.map(q => `
-                        <div style="margin-bottom: 4px; margin-left: 10px;">
-                            <label style="cursor: pointer;">
-                                <input type="checkbox" class="compile-checkbox" value="${q.id}">
-                                <b>${q.title}</b> (${q.questions.length} questions)
-                            </label>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        container.innerHTML = html;
-        renderMath(container);
+function saveEditedQuizDetails() {
+    const id = document.getElementById('edit-quiz-id').value;
+    const qz = db.quizzes.find(q => q.id === id);
+    if (qz) {
+        qz.title = document.getElementById('edit-quiz-title-input').value.trim() || qz.title;
+        qz.category = document.getElementById('edit-quiz-category-input').value.trim() || 'General';
+        qz.folderId = document.getElementById('edit-quiz-folder-select').value || null;
+        QuizAppStore.saveDatabase(); toggleEditQuizModal(false); renderLibrary();
     }
+}
 
-    function toggleSelectAllCompile(select) {
-        document.querySelectorAll('.compile-checkbox').forEach(cb => cb.checked = select);
-    }
-
-    function startCompiledQuiz() {
-        const checked = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
-        if (checked.length === 0) {
-            alert("Please select at least one quiz to compile!");
-            return;
-        }
-
-        let compiledQuestions = [];
-        checked.forEach(id => {
-            const qz = db.quizzes.find(q => q.id === id);
-            if (qz) compiledQuestions.push(...qz.questions);
-        });
-
-        compiledQuestions.sort(() => Math.random() - 0.5);
-        initSession("Compiled Custom Quiz (" + checked.length + " topics)", compiledQuestions);
-    }
-
-    function combineAndSaveToLibrary() {
-        const checkedIds = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
-        if (checkedIds.length === 0) {
-            alert("Please select at least one quiz to combine!");
-            return;
-        }
-
-        let compiledQuestions = [];
-        let selectedTitles = [];
-
-        checkedIds.forEach(id => {
-            const qz = db.quizzes.find(q => q.id === id);
-            if (qz) {
-                compiledQuestions.push(...JSON.parse(JSON.stringify(qz.questions)));
-                selectedTitles.push(qz.title);
+function highlightQuizInLibrary(quizId) {
+    setTimeout(() => {
+        const items = document.querySelectorAll('.quiz-item');
+        items.forEach(el => {
+            if (el.getAttribute('data-quiz-id') === quizId) {
+                el.classList.add('highlight'); el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => el.classList.remove('highlight'), 2000);
             }
         });
+    }, 100);
+}
 
-        const defaultTitle = "Combined - " + selectedTitles.slice(0, 3).join(", ") + (selectedTitles.length > 3 ? "..." : "");
-        const userTitle = prompt("Enter a name for the new combined quiz:", defaultTitle);
-        
-        if (userTitle === null) return;
+/* ==========================================================================
+   TERMINAL & DUAL-PANE LATEX IDE
+   ========================================================================== */
 
-        const newQuizObj = {
-            title: userTitle.trim() || defaultTitle,
-            category: "Combined Set",
-            questions: compiledQuestions
-        };
+function setupLiveEditor() {
+    const ta = document.getElementById('json-editor-textarea');
+    if (!ta) return;
 
-        const newQuizId = addQuizToLibrary(newQuizObj, false);
-        saveDatabase();
-        renderLibrary();
+    ta.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = this.selectionStart, end = this.selectionEnd;
+            this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
+            this.selectionStart = this.selectionEnd = start + 2;
+            validateEditorLive();
+        }
+    });
 
-        switchTab('library-tab');
-        highlightQuizInLibrary(newQuizId);
-        alert(`🎉 Successfully created "${newQuizObj.title}" with ${compiledQuestions.length} questions and saved it to your Library!`);
+    ta.addEventListener('input', validateEditorLive);
+}
+
+function validateEditorLive() {
+    const rawText = document.getElementById('json-editor-textarea').value.trim();
+    const preview = document.getElementById('live-latex-preview');
+    if (!rawText) {
+        showEditorStatus("Status: Ready (Paste JSON code)", "var(--text-muted)");
+        preview.innerHTML = `<p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Type equations to preview live!</p>`;
+        return;
     }
 
-    function exportMergedQuizJSON() {
-        const checkedIds = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
-        if (checkedIds.length === 0) {
-            alert("Please select at least one quiz to export!");
-            return;
-        }
+    try {
+        const parsed = flexibleJSONParse(rawText);
+        const qz = Array.isArray(parsed) ? parsed[0] : parsed;
+        let html = `<b>${qz.title || 'Preview Quiz'}</b><br>`;
+        (qz.questions || []).forEach((q, i) => { html += `<div style="margin-top:6px;"><b>Q${i+1}:</b> ${q.q || q.question}</div>`; });
+        preview.innerHTML = html; renderMath(preview);
+        showEditorStatus("Status: Valid JSON / JS Object ✓", "var(--success)");
+    } catch (err) {
+        showEditorStatus(`Status: Syntax Warning (${err.message})`, "var(--danger)");
+    }
+}
 
-        let mergedQuestions = [];
-        let selectedTitles = [];
+function showEditorStatus(msg, color) {
+    const el = document.getElementById('editor-status-msg');
+    el.style.color = color; el.innerText = msg;
+}
 
-        checkedIds.forEach(id => {
-            const qz = db.quizzes.find(q => q.id === id);
-            if (qz) {
-                mergedQuestions.push(...qz.questions);
-                selectedTitles.push(qz.title);
+function createQuizFromEditor() {
+    const rawText = document.getElementById('json-editor-textarea').value.trim();
+    if (!rawText) return alert("Terminal is empty!");
+    try {
+        const parsed = flexibleJSONParse(rawText);
+        const quizList = Array.isArray(parsed) ? parsed : [parsed];
+        let count = 0, firstId = null;
+        for (let qz of quizList) {
+            if (qz && qz.questions && Array.isArray(qz.questions)) {
+                const newId = QuizAppStore.addQuiz(qz);
+                if (!firstId) firstId = newId;
+                count++;
             }
-        });
-
-        const defaultTitle = "Combined - " + selectedTitles.slice(0, 3).join(", ") + (selectedTitles.length > 3 ? "..." : "");
-        const userTitle = prompt("Enter a title for the combined JSON quiz:", defaultTitle);
-        if (userTitle === null) return;
-
-        const exportObj = {
-            title: userTitle.trim() || defaultTitle,
-            category: "Compiled Export",
-            questions: mergedQuestions
-        };
-
-        const filename = (userTitle.trim() || defaultTitle).toLowerCase().replace(/[^a-z0-9]/g, '_') + '.json';
-        downloadJSONFile(exportObj, filename);
-    }
-
-    function exportSelectedQuizArrayJSON() {
-        const checkedIds = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
-        if (checkedIds.length === 0) {
-            alert("Please select at least one quiz to export!");
-            return;
         }
+        renderLibrary(); clearEditor();
+        if (firstId) highlightQuizInLibrary(firstId);
+        alert(`Successfully created ${count} quiz(zes)!`);
+    } catch(err) { alert("Error parsing input: " + err.message); }
+}
 
-        let exportList = [];
-        checkedIds.forEach(id => {
-            const qz = db.quizzes.find(q => q.id === id);
-            if (qz) {
-                exportList.push({
-                    title: qz.title,
-                    category: qz.category,
-                    questions: qz.questions
-                });
-            }
-        });
+function runTerminalTest() {
+    const testPayload = {
+        title: "Physics & Mass-Energy Equivalence",
+        category: "Physics",
+        folder: "Science & Engineering",
+        questions: [{
+            q: "What is Einstein's mass-energy equation?",
+            options: ["\\( E = mc^2 \\)", "\\( F = ma \\)", "\\( E = h\\nu \\)"],
+            answer: 0,
+            explain: "Where E is energy, m is mass, and c is the speed of light."
+        }]
+    };
+    document.getElementById('json-editor-textarea').value = JSON.stringify(testPayload, null, 2);
+    validateEditorLive(); createQuizFromEditor();
+}
 
-        downloadJSONFile(exportList, `quiz_collection_${checkedIds.length}_items.json`);
+function clearEditor() {
+    document.getElementById('json-editor-textarea').value = '';
+    validateEditorLive();
+}
+
+function loadTemplateToEditor() {
+    const template = {
+        title: "Calculus Fundamentals",
+        category: "STEM",
+        folder: "Mathematics",
+        questions: [{
+            q: "What is the derivative of \\( f(x) = x^n \\)?",
+            options: ["\\( f'(x) = n x^{n-1} \\)", "\\( f'(x) = x^{n+1} \\)"],
+            answer: 0,
+            explain: "Power rule: \\( \\frac{d}{dx}[x^n] = n x^{n-1} \\)."
+        }]
+    };
+    document.getElementById('json-editor-textarea').value = JSON.stringify(template, null, 2);
+    validateEditorLive();
+}
+
+/* ==========================================================================
+   HANDPICK & COMPILE
+   ========================================================================== */
+
+function renderCompileChecklist() {
+    const container = document.getElementById('compile-checklist');
+    if (db.quizzes.length === 0) {
+        container.innerHTML = `<p style="color: var(--text-muted);">No quizzes available to compile.</p>`;
+        return;
+    }
+    let folderMap = {}; db.folders.forEach(f => folderMap[f.id] = { ...f, quizzes: [] });
+    let unorganized = [];
+    db.quizzes.forEach(q => { if (q.folderId && folderMap[q.folderId]) folderMap[q.folderId].quizzes.push(q); else unorganized.push(q); });
+
+    let html = '';
+    db.folders.forEach(folder => {
+        const list = folderMap[folder.id].quizzes; if (list.length === 0) return;
+        html += `<div style="margin-bottom: 12px; border-left: 4px solid ${folder.color || 'var(--accent)'}; padding-left: 10px;">
+            <b style="color: var(--text-primary);">📂 ${folder.name}</b>
+            ${list.map(q => `<div style="margin: 4px 0 4px 10px;"><label style="cursor:pointer;"><input type="checkbox" class="compile-checkbox" value="${q.id}"> <b>${q.title}</b> (${q.questions.length} Qs)</label></div>`).join('')}
+        </div>`;
+    });
+
+    if (unorganized.length > 0) {
+        html += `<div style="margin-bottom: 12px; border-left: 4px solid var(--text-muted); padding-left: 10px;">
+            <b style="color: var(--text-primary);">📁 Unorganized</b>
+            ${unorganized.map(q => `<div style="margin: 4px 0 4px 10px;"><label style="cursor:pointer;"><input type="checkbox" class="compile-checkbox" value="${q.id}"> <b>${q.title}</b> (${q.questions.length} Qs)</label></div>`).join('')}
+        </div>`;
+    }
+    container.innerHTML = html; renderMath(container);
+}
+
+function toggleSelectAllCompile(select) { document.querySelectorAll('.compile-checkbox').forEach(cb => cb.checked = select); }
+
+function startCompiledQuiz() {
+    const checked = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
+    if (checked.length === 0) return alert("Select at least one quiz!");
+    let compiled = [];
+    checked.forEach(id => { const qz = db.quizzes.find(q => q.id === id); if (qz) compiled.push(...qz.questions); });
+    compiled.sort(() => Math.random() - 0.5);
+    initSession(`Compiled Set (${checked.length} Topics)`, compiled);
+}
+
+function combineAndSaveToLibrary() {
+    const checked = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
+    if (checked.length === 0) return alert("Select at least one quiz!");
+    let compiled = [], titles = [];
+    checked.forEach(id => { const qz = db.quizzes.find(q => q.id === id); if (qz) { compiled.push(...JSON.parse(JSON.stringify(qz.questions))); titles.push(qz.title); } });
+    const name = prompt("Enter title for compiled quiz:", "Combined - " + titles.slice(0, 2).join(", "));
+    if (!name) return;
+    const newId = QuizAppStore.addQuiz({ title: name.trim(), category: "Combined", questions: compiled });
+    switchTab('library-tab'); renderLibrary(); highlightQuizInLibrary(newId);
+}
+
+function exportMergedQuizJSON() {
+    const checked = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
+    if (checked.length === 0) return alert("Select quizzes to export!");
+    let questions = [];
+    checked.forEach(id => { const qz = db.quizzes.find(q => q.id === id); if (qz) questions.push(...qz.questions); });
+    downloadJSONFile({ title: "Merged Quiz Export", questions }, "merged_quiz.json");
+}
+
+function exportSelectedQuizArrayJSON() {
+    const checked = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
+    if (checked.length === 0) return alert("Select quizzes to export!");
+    let list = db.quizzes.filter(q => checked.includes(q.id));
+    downloadJSONFile(list, "quiz_collection.json");
+}
+
+/* ==========================================================================
+   WEAK SPOTS & SPACED REPETITION
+   ========================================================================== */
+
+function renderWrongPile() {
+    const container = document.getElementById('wrong-questions-list');
+    const keys = Object.keys(db.wrongPile || {});
+    document.getElementById('wrong-count-badge').innerText = keys.length;
+    document.getElementById('start-wrong-quiz-btn').disabled = keys.length === 0;
+
+    if (keys.length === 0) {
+        container.innerHTML = `<p style="color: var(--text-muted); text-align: center;">No missed questions recorded yet!</p>`;
+        return;
     }
 
-    function downloadJSONFile(dataObj, filename) {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj, null, 2));
-        const dlAnchor = document.createElement('a');
-        dlAnchor.setAttribute("href", dataStr);
-        dlAnchor.setAttribute("download", filename);
-        document.body.appendChild(dlAnchor);
-        dlAnchor.click();
-        dlAnchor.remove();
-    }
-
-    function renderWrongPile() {
-        const container = document.getElementById('wrong-questions-list');
-        const keys = Object.keys(db.wrongPile || {});
-        
-        document.getElementById('wrong-count-badge').innerText = keys.length;
-        document.getElementById('start-wrong-quiz-btn').disabled = keys.length === 0;
-
-        if (keys.length === 0) {
-            container.innerHTML = `<p style="color: #718096; text-align: center;">No missed questions recorded yet! Keep taking quizzes to populate this pile.</p>`;
-            return;
-        }
-
-        container.innerHTML = keys.map(key => {
-            const item = db.wrongPile[key];
-            const q = item.question;
-            const streak = item.consecutiveCorrect || 0;
-
-            return `
-                <div class="quiz-item">
-                    <div>
-                        <div style="font-weight: bold; color: var(--primary);">${q.q}</div>
-                        <div class="quiz-meta">Correct Answer: <b>${q.options[q.answer]}</b></div>
-                    </div>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <span class="badge badge-streak">Streak: ${streak}/3</span>
-                        <button class="btn btn-danger btn-sm" onclick="removeFromWrongPile('${key}')">🗑️</button>
-                    </div>
+    container.innerHTML = keys.map(key => {
+        const item = db.wrongPile[key];
+        const q = item.question;
+        const streak = item.consecutiveCorrect || 0;
+        const ansText = q.options[q.answer] || String(q.answer);
+        return `
+            <div class="quiz-item">
+                <div>
+                    <b>${q.q}</b>
+                    <div style="font-size:0.8rem; color:var(--text-muted);">Answer: <b>${ansText}</b></div>
                 </div>
-            `;
-        }).join('');
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <span class="badge badge-streak">Streak: ${streak}/3</span>
+                    <button class="btn btn-danger btn-sm" onclick="removeFromWrongPile('${key}')">🗑️</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    renderMath(container);
+}
 
-        renderMath(container);
-    }
+function removeFromWrongPile(key) { delete db.wrongPile[key]; QuizAppStore.saveDatabase(); renderWrongPile(); }
+function clearWrongPile() { if (confirm("Clear all recorded missed questions?")) { db.wrongPile = {}; QuizAppStore.saveDatabase(); renderWrongPile(); } }
 
-    function removeFromWrongPile(key) {
-        delete db.wrongPile[key];
-        saveDatabase();
-        renderWrongPile();
-    }
+function startWrongPileQuiz() {
+    const keys = Object.keys(db.wrongPile); if (keys.length === 0) return;
+    const questions = keys.map(k => db.wrongPile[k].question).sort(() => Math.random() - 0.5);
+    initSession(`Weak Spots Practice (${questions.length} Qs)`, questions);
+}
 
-    function clearWrongPile() {
-        if (confirm("Are you sure you want to clear all recorded missed questions?")) {
-            db.wrongPile = {};
-            saveDatabase();
-            renderWrongPile();
-        }
-    }
+/* ==========================================================================
+   PRACTICE RUNNER & SESSION RESUME
+   ========================================================================== */
 
-    function startWrongPileQuiz() {
-        const keys = Object.keys(db.wrongPile);
-        if (keys.length === 0) return;
+let activeSession = { title: "", questions: [], currentIndex: 0, userAnswers: [], score: 0, timerMode: 'none' };
+let timerInterval = null, sessionTimeRemaining = 0;
 
-        const questions = keys.map(k => db.wrongPile[k].question);
-        questions.sort(() => Math.random() - 0.5);
+function initSession(title, rawQuestions) {
+    const shuffleEnabled = document.getElementById('setting-shuffle-options').checked;
+    const timerSetting = document.getElementById('setting-timer-mode').value;
+    let questions = JSON.parse(JSON.stringify(rawQuestions));
 
-        initSession("Weak Spots Practice (" + questions.length + " questions)", questions);
-    }
-
-    function toggleFlagCurrentQuestion() {
-        if (!activeSession.questions || activeSession.questions.length === 0) return;
-        const q = activeSession.questions[activeSession.currentIndex];
-        const qKey = getQuestionKey(q);
-
-        if (db.wrongPile[qKey]) {
-            delete db.wrongPile[qKey];
-        } else {
-            db.wrongPile[qKey] = {
-                question: JSON.parse(JSON.stringify(q)),
-                consecutiveCorrect: 0,
-                lastFailed: new Date().toLocaleString() + " (Manually Flagged)"
-            };
-        }
-
-        saveDatabase();
-        renderWrongPile();
-        updateFlagButtonState();
-    }
-
-    function updateFlagButtonState() {
-        const flagBtn = document.getElementById('flag-btn');
-        if (!flagBtn || !activeSession.questions || activeSession.questions.length === 0) return;
-
-        const q = activeSession.questions[activeSession.currentIndex];
-        const qKey = getQuestionKey(q);
-        const isFlagged = !!db.wrongPile[qKey];
-
-        if (isFlagged) {
-            flagBtn.className = "btn btn-warning";
-            flagBtn.innerHTML = "🚩 Flagged to Weak Spots";
-        } else {
-            flagBtn.className = "btn btn-secondary";
-            flagBtn.innerHTML = "🏳️ Flag to Weak Spots";
-        }
-    }
-
-    function startSingleQuiz(id) {
-        const quiz = db.quizzes.find(q => q.id === id);
-        if (quiz) {
-            initSession(quiz.title, quiz.questions);
-        }
-    }
-
-    function initSession(title, rawQuestions) {
-        const shuffleEnabled = document.getElementById('setting-shuffle-options').checked;
-        const timerSetting = document.getElementById('setting-timer-mode').value;
-
-        let processedQuestions = JSON.parse(JSON.stringify(rawQuestions));
-
-        if (shuffleEnabled) {
-            processedQuestions.forEach(q => {
+    if (shuffleEnabled) {
+        questions.forEach(q => {
+            if (q.type === 'mcq' || q.type === 'true-false') {
                 const correctText = q.options[q.answer];
                 q.options.sort(() => Math.random() - 0.5);
                 q.answer = q.options.indexOf(correctText);
-            });
-        }
-
-        activeSession = {
-            title: title,
-            questions: processedQuestions,
-            currentIndex: 0,
-            userAnswers: new Array(processedQuestions.length).fill(null),
-            score: 0,
-            timerMode: timerSetting
-        };
-
-        document.getElementById('runner-tab-btn').disabled = false;
-        document.getElementById('active-quiz-title').innerText = activeSession.title;
-        document.getElementById('quiz-body').style.display = 'block';
-        document.getElementById('quiz-results').style.display = 'none';
-
-        switchTab('runner-tab');
-        setupSessionTimer();
-        loadQuestion();
-    }
-
-    function setupSessionTimer() {
-        clearInterval(timerInterval);
-        const timerBadge = document.getElementById('quiz-timer');
-        const mode = activeSession.timerMode;
-
-        if (mode === 'none') {
-            timerBadge.style.display = 'none';
-            return;
-        }
-
-        timerBadge.style.display = 'inline-block';
-
-        if (mode === 'per_question_30') {
-            sessionTimeRemaining = 30;
-        } else if (mode === '10m') {
-            sessionTimeRemaining = 10 * 60;
-        } else if (mode === '30m') {
-            sessionTimeRemaining = 30 * 60;
-        } else if (mode === '60m') {
-            sessionTimeRemaining = 60 * 60;
-        }
-
-        updateTimerBadge();
-
-        timerInterval = setInterval(() => {
-            sessionTimeRemaining--;
-            updateTimerBadge();
-
-            if (sessionTimeRemaining <= 0) {
-                if (activeSession.timerMode === 'per_question_30') {
-                    skipQuestion();
-                } else {
-                    clearInterval(timerInterval);
-                    alert("⏰ Time is up! Finishing session...");
-                    finishSession();
-                }
             }
-        }, 1000);
+        });
     }
 
-    function updateTimerBadge() {
-        const timerBadge = document.getElementById('quiz-timer');
-        const mins = Math.floor(sessionTimeRemaining / 60);
-        const secs = sessionTimeRemaining % 60;
-        const formatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        
-        timerBadge.innerText = `⏱️ ${formatted}`;
-        if (sessionTimeRemaining <= 10) {
-            timerBadge.style.color = "var(--danger)";
-            timerBadge.style.borderColor = "var(--danger)";
-        } else {
-            timerBadge.style.color = "var(--primary)";
-            timerBadge.style.borderColor = "var(--border)";
+    activeSession = { title, questions, currentIndex: 0, userAnswers: new Array(questions.length).fill(null), score: 0, timerMode: timerSetting };
+    document.getElementById('runner-tab-btn').disabled = false;
+    document.getElementById('active-quiz-title').innerText = title;
+    document.getElementById('quiz-body').style.display = 'block';
+    document.getElementById('quiz-results').style.display = 'none';
+
+    switchTab('runner-tab'); setupSessionTimer(); loadQuestion();
+}
+
+function setupSessionTimer() {
+    clearInterval(timerInterval);
+    const badge = document.getElementById('quiz-timer');
+    const mode = activeSession.timerMode;
+    if (mode === 'none') { badge.style.display = 'none'; return; }
+    badge.style.display = 'inline-block';
+
+    if (mode === 'per_question_30') sessionTimeRemaining = 30;
+    else if (mode === '10m') sessionTimeRemaining = 600;
+    else if (mode === '30m') sessionTimeRemaining = 1800;
+    else if (mode === '60m') sessionTimeRemaining = 3600;
+
+    updateTimerBadge();
+    timerInterval = setInterval(() => {
+        sessionTimeRemaining--; updateTimerBadge();
+        if (sessionTimeRemaining <= 0) {
+            if (activeSession.timerMode === 'per_question_30') skipQuestion();
+            else { clearInterval(timerInterval); alert("⏰ Time is up!"); finishSession(); }
         }
+    }, 1000);
+}
+
+function updateTimerBadge() {
+    const badge = document.getElementById('quiz-timer');
+    const mins = Math.floor(sessionTimeRemaining / 60), secs = sessionTimeRemaining % 60;
+    badge.innerText = `⏱️ ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+}
+
+function evaluateAnswer(q, userInput) {
+    const qType = q.type || 'mcq';
+    if (qType === 'mcq' || qType === 'true-false') return { isCorrect: userInput === q.answer, correctText: q.options[q.answer] || String(q.answer) };
+    if (qType === 'multi-select') {
+        const correctSet = new Set(Array.isArray(q.answer) ? q.answer : [q.answer]);
+        const userSet = new Set(Array.isArray(userInput) ? userInput : []);
+        let isCorrect = correctSet.size === userSet.size;
+        if (isCorrect) for (let val of correctSet) if (!userSet.has(val)) { isCorrect = false; break; }
+        return { isCorrect, correctText: Array.from(correctSet).map(i => q.options[i]).join(', ') };
     }
+    if (qType === 'fill-blank') {
+        const cleanInput = String(userInput || '').trim().toLowerCase();
+        const valid = (Array.isArray(q.answer) ? q.answer : [q.answer]).map(a => String(a).trim().toLowerCase());
+        return { isCorrect: valid.includes(cleanInput), correctText: valid.join(' / ') };
+    }
+    return { isCorrect: false, correctText: '' };
+}
 
-    function loadQuestion() {
-        if (activeSession.timerMode === 'per_question_30') {
-            sessionTimeRemaining = 30;
-            updateTimerBadge();
-        }
+function loadQuestion() {
+    if (activeSession.timerMode === 'per_question_30') { sessionTimeRemaining = 30; updateTimerBadge(); }
 
-        const q = activeSession.questions[activeSession.currentIndex];
-        document.getElementById('quiz-progress').innerText = `Question ${activeSession.currentIndex + 1} of ${activeSession.questions.length}`;
-        document.getElementById('quiz-score').innerText = `Score: ${activeSession.score}`;
-        document.getElementById('question-text').innerText = `${activeSession.currentIndex + 1}. ${q.q}`;
+    const q = activeSession.questions[activeSession.currentIndex];
+    document.getElementById('quiz-progress').innerText = `Question ${activeSession.currentIndex + 1} of ${activeSession.questions.length}`;
+    document.getElementById('quiz-score').innerText = `Score: ${activeSession.score}`;
+    document.getElementById('question-text').innerHTML = `<b>${activeSession.currentIndex + 1}.</b> ${q.q}`;
 
-        const container = document.getElementById('options-container');
-        container.innerHTML = '';
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+    const expBox = document.getElementById('explanation-box'); expBox.style.display = 'none';
 
-        const expBox = document.getElementById('explanation-box');
-        expBox.style.display = 'none';
+    const answered = activeSession.userAnswers[activeSession.currentIndex] !== null;
+    const userAnswer = activeSession.userAnswers[activeSession.currentIndex];
 
-        const answered = activeSession.userAnswers[activeSession.currentIndex] !== null;
-
+    if (q.type === 'mcq' || q.type === 'true-false') {
         q.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = `${String.fromCharCode(65 + idx)}. ${opt}`;
-
+            btn.className = 'option-card';
+            btn.innerHTML = `<b>${String.fromCharCode(65 + idx)}.</b> ${opt}`;
             if (answered) {
                 btn.disabled = true;
-                const userChoice = activeSession.userAnswers[activeSession.currentIndex];
                 if (idx === q.answer) btn.classList.add('correct');
-                if (userChoice === idx && userChoice !== q.answer) btn.classList.add('wrong');
-            } else {
-                btn.onclick = (e) => {
-                    if (document.activeElement) document.activeElement.blur();
-                    selectOption(idx);
-                };
-            }
-
+                if (userAnswer === idx && userAnswer !== q.answer) btn.classList.add('wrong');
+            } else { btn.onclick = () => submitAnswer(idx); }
             container.appendChild(btn);
         });
+    } else if (q.type === 'fill-blank') {
+        const input = document.createElement('input');
+        input.type = 'text'; input.className = 'fill-input';
+        input.placeholder = 'Type answer here...';
+        input.value = (userAnswer !== null && userAnswer !== -1) ? String(userAnswer) : '';
+        input.disabled = answered;
+        container.appendChild(input);
 
-        if (answered && activeSession.userAnswers[activeSession.currentIndex] !== -1) {
-            showExplanation(activeSession.userAnswers[activeSession.currentIndex] === q.answer);
+        if (!answered) {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-success'; btn.innerText = 'Submit Answer';
+            btn.onclick = () => submitAnswer(input.value.trim());
+            container.appendChild(btn);
         }
-
-        updateFlagButtonState();
-
-        document.getElementById('prev-btn').disabled = activeSession.currentIndex === 0;
-        document.getElementById('next-btn').disabled = !answered;
-        document.getElementById('next-btn').innerText = (activeSession.currentIndex === activeSession.questions.length - 1) ? "Finish Session" : "Next Question";
-
-        renderMath(document.getElementById('quiz-body'));
     }
 
-    function selectOption(idx) {
-        if (activeSession.userAnswers[activeSession.currentIndex] !== null) return;
-        if (document.activeElement) document.activeElement.blur();
+    if (answered && userAnswer !== -1) showExplanation(userAnswer === q.answer);
 
-        activeSession.userAnswers[activeSession.currentIndex] = idx;
-        const q = activeSession.questions[activeSession.currentIndex];
-        const qKey = getQuestionKey(q);
+    const qKey = getQuestionKey(q);
+    document.getElementById('question-note-input').value = (db.questionNotes || {})[qKey] || '';
+    updateFlagButtonState(); saveSessionBackup();
 
-        if (idx === q.answer) {
-            activeSession.score++;
-            if (db.wrongPile[qKey]) {
-                db.wrongPile[qKey].consecutiveCorrect = (db.wrongPile[qKey].consecutiveCorrect || 0) + 1;
-                if (db.wrongPile[qKey].consecutiveCorrect >= 3) {
-                    delete db.wrongPile[qKey];
-                }
+    document.getElementById('prev-btn').disabled = activeSession.currentIndex === 0;
+    document.getElementById('next-btn').disabled = !answered;
+    document.getElementById('next-btn').innerText = (activeSession.currentIndex === activeSession.questions.length - 1) ? "Finish Session" : "Next Question";
+    renderMath(document.getElementById('quiz-body'));
+}
+
+function submitAnswer(val) {
+    if (activeSession.userAnswers[activeSession.currentIndex] !== null) return;
+    activeSession.userAnswers[activeSession.currentIndex] = val;
+    const q = activeSession.questions[activeSession.currentIndex];
+    const res = evaluateAnswer(q, val); const qKey = getQuestionKey(q);
+
+    if (res.isCorrect) {
+        activeSession.score++; AudioEngine.playCorrect();
+        if (db.wrongPile[qKey]) {
+            db.wrongPile[qKey].consecutiveCorrect = (db.wrongPile[qKey].consecutiveCorrect || 0) + 1;
+            if (db.wrongPile[qKey].consecutiveCorrect >= 3) delete db.wrongPile[qKey];
+        }
+    } else {
+        AudioEngine.playWrong();
+        db.wrongPile[qKey] = { question: JSON.parse(JSON.stringify(q)), consecutiveCorrect: 0, lastFailed: new Date().toLocaleString() };
+    }
+
+    QuizAppStore.saveDatabase(); renderWrongPile(); loadQuestion();
+}
+
+function skipQuestion() {
+    if (activeSession.userAnswers[activeSession.currentIndex] !== null) return;
+    activeSession.userAnswers[activeSession.currentIndex] = -1;
+    const q = activeSession.questions[activeSession.currentIndex]; const qKey = getQuestionKey(q);
+    db.wrongPile[qKey] = { question: JSON.parse(JSON.stringify(q)), consecutiveCorrect: 0, lastFailed: new Date().toLocaleString() + " (Skipped)" };
+    QuizAppStore.saveDatabase(); renderWrongPile(); nextQuestion();
+}
+
+function showExplanation(isCorrect) {
+    const q = activeSession.questions[activeSession.currentIndex];
+    const expBox = document.getElementById('explanation-box'); expBox.style.display = 'block';
+    if (isCorrect) {
+        expBox.style.background = 'var(--success-bg)'; expBox.style.color = 'var(--success)';
+        expBox.innerHTML = `<b>✓ CORRECT!</b><br>${q.explain || ''}`;
+    } else {
+        expBox.style.background = 'var(--danger-bg)'; expBox.style.color = 'var(--danger)';
+        expBox.innerHTML = `<b>✗ INCORRECT!</b><br>Correct Answer: <b>${q.options[q.answer] || q.answer}</b><br>${q.explain || ''}`;
+    }
+    renderMath(expBox);
+}
+
+function saveQuestionStickyNote(text) {
+    const q = activeSession.questions[activeSession.currentIndex]; const qKey = getQuestionKey(q);
+    if (!db.questionNotes) db.questionNotes = {};
+    db.questionNotes[qKey] = text.trim(); QuizAppStore.saveDatabase();
+}
+
+function toggleFlagCurrentQuestion() {
+    const q = activeSession.questions[activeSession.currentIndex]; const qKey = getQuestionKey(q);
+    if (db.wrongPile[qKey]) delete db.wrongPile[qKey];
+    else db.wrongPile[qKey] = { question: JSON.parse(JSON.stringify(q)), consecutiveCorrect: 0, lastFailed: new Date().toLocaleString() + " (Flagged)" };
+    QuizAppStore.saveDatabase(); renderWrongPile(); updateFlagButtonState();
+}
+
+function updateFlagButtonState() {
+    const flagBtn = document.getElementById('flag-btn'); if (!flagBtn) return;
+    const q = activeSession.questions[activeSession.currentIndex]; const qKey = getQuestionKey(q);
+    const isFlagged = !!db.wrongPile[qKey];
+    flagBtn.className = isFlagged ? "btn btn-warning" : "btn btn-secondary";
+    flagBtn.innerHTML = isFlagged ? "🚩 Flagged to Weak Spots" : "🏳️ Flag to Weak Spots";
+}
+
+function nextQuestion() {
+    if (activeSession.currentIndex < activeSession.questions.length - 1) { activeSession.currentIndex++; loadQuestion(); }
+    else finishSession();
+}
+
+function prevQuestion() { if (activeSession.currentIndex > 0) { activeSession.currentIndex--; loadQuestion(); } }
+
+function finishSession() {
+    clearInterval(timerInterval);
+    document.getElementById('quiz-body').style.display = 'none';
+    document.getElementById('quiz-results').style.display = 'block';
+    localStorage.removeItem('active_quiz_session_backup');
+
+    const total = activeSession.questions.length, score = activeSession.score;
+    const pct = Math.round((score / total) * 100);
+    document.getElementById('final-score').innerText = `${score} / ${total} (${pct}%)`;
+    document.getElementById('final-msg').innerText = pct >= 70 ? "Target score achieved! 🎉" : "Keep practicing to improve!";
+
+    db.history.unshift({ id: 'hist_' + Date.now(), quizTitle: activeSession.title, date: new Date().toLocaleString(), score: `${score}/${total}`, percentage: `${pct}%`, status: pct >= 70 ? 'PASS' : 'FAIL' });
+    QuizAppStore.saveDatabase(); renderHistory();
+}
+
+function saveSessionBackup() { localStorage.setItem('active_quiz_session_backup', JSON.stringify(activeSession)); }
+
+function checkSavedSession() {
+    const saved = localStorage.getItem('active_quiz_session_backup');
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            if (parsed && parsed.questions && parsed.questions.length > 0) document.getElementById('resume-session-banner').style.display = 'flex';
+        } catch(e) {}
+    }
+}
+
+function resumeSavedSession() {
+    const saved = localStorage.getItem('active_quiz_session_backup');
+    if (saved) {
+        activeSession = JSON.parse(saved);
+        document.getElementById('runner-tab-btn').disabled = false;
+        document.getElementById('active-quiz-title').innerText = activeSession.title;
+        document.getElementById('resume-session-banner').style.display = 'none';
+        switchTab('runner-tab'); loadQuestion();
+    }
+}
+
+function discardSavedSession() {
+    localStorage.removeItem('active_quiz_session_backup');
+    document.getElementById('resume-session-banner').style.display = 'none';
+}
+
+function startSingleQuiz(id) {
+    const qz = db.quizzes.find(q => q.id === id); if (qz) initSession(qz.title, qz.questions);
+}
+
+/* ==========================================================================
+   FLASHCARD ENGINE
+   ========================================================================== */
+
+const FlashcardEngine = (function() {
+    let activeDeck = [], masteredCount = 0, currentIndex = 0, isFlipped = false;
+    return {
+        init: () => {
+            const sel = document.getElementById('flashcard-deck-select'); if (!sel) return;
+            sel.innerHTML = '<option value="">Select a Deck...</option>' + db.quizzes.map(q => `<option value="${q.id}">${q.title}</option>`).join('');
+        },
+        loadSelectedDeck: () => {
+            const id = document.getElementById('flashcard-deck-select').value;
+            const qz = db.quizzes.find(x => x.id === id); if (!qz) return;
+            activeDeck = JSON.parse(JSON.stringify(qz.questions)).sort(() => Math.random() - 0.5);
+            masteredCount = 0; currentIndex = 0;
+            document.getElementById('fc-deck-title').innerText = `Deck: ${qz.title}`;
+            FlashcardEngine.render();
+        },
+        flipCard: () => {
+            const cardEl = document.getElementById('active-flashcard');
+            isFlipped = !isFlipped; cardEl.classList.toggle('flipped', isFlipped);
+            AudioEngine.playFlip(); renderMath(cardEl);
+        },
+        render: () => {
+            const cardEl = document.getElementById('active-flashcard');
+            cardEl.classList.remove('flipped'); isFlipped = false;
+            document.getElementById('fc-deck-counts').innerText = `Remaining: ${activeDeck.length} | Mastered: ${masteredCount}`;
+            if (!activeDeck || activeDeck.length === 0) {
+                document.getElementById('fc-front-text').innerHTML = "🎉 <b>Deck Mastered!</b>";
+                return;
             }
-        } else {
-            db.wrongPile[qKey] = {
-                question: JSON.parse(JSON.stringify(q)),
-                consecutiveCorrect: 0,
-                lastFailed: new Date().toLocaleString()
-            };
+            const q = activeDeck[currentIndex];
+            document.getElementById('fc-card-num').innerText = `Card #${currentIndex + 1}`;
+            document.getElementById('fc-front-text').innerHTML = `<b>${q.q}</b>`;
+            const evalRes = evaluateAnswer(q, q.answer);
+            document.getElementById('fc-back-text').innerHTML = `<b>Answer:</b> ${evalRes.correctText}<br><small style="color:var(--text-muted);">${q.explain || ''}</small>`;
+            renderMath(cardEl);
+        },
+        rateCard: (rating) => {
+            if (!activeDeck || activeDeck.length === 0) return;
+            const card = activeDeck.splice(currentIndex, 1)[0];
+            if (rating === 'hard') activeDeck.push(card);
+            else if (rating === 'easy') { masteredCount++; AudioEngine.playCorrect(); }
+            if (currentIndex >= activeDeck.length) currentIndex = 0;
+            FlashcardEngine.render();
         }
+    };
+})();
 
-        saveDatabase();
-        renderWrongPile();
-        loadQuestion();
+/* ==========================================================================
+   ANALYTICS & MASTER HISTORY
+   ========================================================================== */
+
+function renderHistory() {
+    const tbody = document.getElementById('history-rows');
+    if (!db.history || db.history.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No history recorded yet.</td></tr>`;
+        document.getElementById('analytic-accuracy').innerText = '0%';
+        document.getElementById('analytic-sessions').innerText = '0';
+        document.getElementById('analytic-weakspots').innerText = Object.keys(db.wrongPile || {}).length;
+        return;
     }
 
-    function skipQuestion() {
-        if (activeSession.userAnswers[activeSession.currentIndex] !== null) return;
-        if (document.activeElement) document.activeElement.blur();
-
-        activeSession.userAnswers[activeSession.currentIndex] = -1;
-        const q = activeSession.questions[activeSession.currentIndex];
-        const qKey = getQuestionKey(q);
-
-        db.wrongPile[qKey] = {
-            question: JSON.parse(JSON.stringify(q)),
-            consecutiveCorrect: 0,
-            lastFailed: new Date().toLocaleString() + " (Skipped)"
-        };
-
-        saveDatabase();
-        renderWrongPile();
-        nextQuestion();
-    }
-
-    function showExplanation(isCorrect) {
-        const q = activeSession.questions[activeSession.currentIndex];
-        const expBox = document.getElementById('explanation-box');
-        expBox.style.display = 'block';
-
-        if (isCorrect) {
-            expBox.className = 'explanation-box correct-bg';
-            expBox.innerHTML = `<b>✓ CORRECT!</b><br>${q.explain || ''}`;
-        } else {
-            expBox.className = 'explanation-box wrong-bg';
-            expBox.innerHTML = `<b>✗ INCORRECT!</b><br>Correct Answer: <b>${String.fromCharCode(65 + q.answer)}. ${q.options[q.answer]}</b><br>${q.explain || ''}`;
-        }
-
-        renderMath(expBox);
-    }
-
-    function nextQuestion() {
-        if (document.activeElement) document.activeElement.blur();
-        if (activeSession.currentIndex < activeSession.questions.length - 1) {
-            activeSession.currentIndex++;
-            loadQuestion();
-        } else {
-            finishSession();
-        }
-    }
-
-    function prevQuestion() {
-        if (document.activeElement) document.activeElement.blur();
-        if (activeSession.currentIndex > 0) {
-            activeSession.currentIndex--;
-            loadQuestion();
-        }
-    }
-
-    function finishSession() {
-        clearInterval(timerInterval);
-        document.getElementById('quiz-body').style.display = 'none';
-        document.getElementById('quiz-results').style.display = 'block';
-
-        const total = activeSession.questions.length;
-        const score = activeSession.score;
-        const pct = Math.round((score / total) * 100);
-
-        document.getElementById('final-score').innerText = `${score} / ${total} (${pct}%)`;
-        document.getElementById('final-msg').innerText = pct >= 70 ? "Great job! Target score achieved." : "Keep studying and re-try!";
-
-        const record = {
-            id: 'hist_' + Date.now(),
-            quizTitle: activeSession.title,
-            date: new Date().toLocaleString(),
-            score: `${score}/${total}`,
-            percentage: `${pct}%`,
-            status: pct >= 70 ? 'PASS' : 'FAIL'
-        };
-
-        db.history.unshift(record);
-        saveDatabase();
-        renderHistory();
-    }
-
-    window.addEventListener('keydown', function(e) {
-        if (e.code === 'Space' || e.key === ' ') {
-            const runnerTab = document.getElementById('runner-tab');
-            if (runnerTab && runnerTab.classList.contains('active')) {
-                const activeTag = document.activeElement ? document.activeElement.tagName : '';
-                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) return;
-
-                e.preventDefault();
-                e.stopPropagation();
-                if (document.activeElement) document.activeElement.blur();
-
-                handleAdvanceOrSkip();
-            }
-        }
-    });
-
-    window.addEventListener('contextmenu', function(e) {
-        const runnerTab = document.getElementById('runner-tab');
-        if (runnerTab && runnerTab.classList.contains('active')) {
-            e.preventDefault();
-            e.stopPropagation();
-            if (document.activeElement) document.activeElement.blur();
-
-            handleAdvanceOrSkip();
-        }
-    });
-
-    function handleAdvanceOrSkip() {
-        if (document.activeElement) document.activeElement.blur();
-        const answered = activeSession.userAnswers[activeSession.currentIndex] !== null;
-        if (answered) {
-            nextQuestion();
-        } else {
-            skipQuestion();
-        }
-    }
-
-    function renderHistory() {
-        const tbody = document.getElementById('history-rows');
-        if (db.history.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No history recorded yet.</td></tr>`;
-            return;
-        }
-
-        tbody.innerHTML = db.history.map((h, i) => `
+    let totalScore = 0, totalPossible = 0;
+    tbody.innerHTML = db.history.map((h, i) => {
+        const parts = (h.score || '0/0').split('/');
+        totalScore += parseInt(parts[0]) || 0; totalPossible += parseInt(parts[1]) || 0;
+        return `
             <tr>
                 <td>${i + 1}</td>
                 <td><b>${h.quizTitle}</b></td>
@@ -1832,140 +1679,178 @@
                 <td>${h.percentage}</td>
                 <td style="color: ${h.status === 'PASS' ? 'var(--success)' : 'var(--danger)'}; font-weight: bold;">${h.status}</td>
             </tr>
-        `).join('');
-    }
+        `;
+    }).join('');
 
-    function clearHistory() {
-        if (confirm("Are you sure you want to clear your entire master progress history?")) {
-            db.history = [];
-            saveDatabase();
-            renderHistory();
-        }
-    }
+    const acc = totalPossible > 0 ? Math.round((totalScore / totalPossible) * 100) : 0;
+    document.getElementById('analytic-accuracy').innerText = `${acc}%`;
+    document.getElementById('analytic-sessions').innerText = db.history.length;
+    document.getElementById('analytic-weakspots').innerText = Object.keys(db.wrongPile || {}).length;
+}
 
-    function loadSampleQuiz() {
-        const sample = {
-            title: "PCAR Parts 1-4 Sample Quiz",
-            category: "Civil Air Laws",
-            folder: "Aviation Laws",
-            questions: [
-                {
-                    q: "Under PCAR Part 1, which word is strictly used to denote a mandatory requirement?",
-                    options: ["MAY", "WILL", "SHALL", "SHOULD"],
-                    answer: 2,
-                    explain: "'SHALL' is mandatory under PCAR Part 1."
-                },
-                {
-                    q: "Within how many days must a pilot notify CAAP of a change of address?",
-                    options: ["8 days", "15 days", "30 days", "60 days"],
-                    answer: 2,
-                    explain: "Address changes must be reported within 30 days."
-                }
-            ]
-        };
+function clearHistory() { if (confirm("Clear all master progress history?")) { db.history = []; QuizAppStore.saveDatabase(); renderHistory(); } }
 
-        const newId = addQuizToLibrary(sample, false);
-        highlightQuizInLibrary(newId);
-    }
+/* ==========================================================================
+   IMPORT, EXPORT, SAMPLES & UI CONTROLS
+   ========================================================================== */
 
-    function loadMathSampleQuiz() {
-        const sample = {
-            title: "Physics & Calculus Math Suite",
-            category: "Science & Engineering",
-            folder: "Mathematics & Physics",
-            questions: [
-                {
-                    q: "What is Einstein's mass-energy equivalence equation?",
-                    options: ["\\( E = mc^2 \\)", "\\( F = ma \\)", "\\( E = h\\nu \\)", "\\( P = IV \\)"],
-                    answer: 0,
-                    explain: "Where \\( E \\) is energy, \\( m \\) is mass, and \\( c \\) is the speed of light."
-                },
-                {
-                    q: "What is the solution to the quadratic equation $$ax^2 + bx + c = 0$$?",
-                    options: [
-                        "$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$",
-                        "$$x = \\frac{-b \\pm \\sqrt{b^2 + 4ac}}{2a}$$",
-                        "$$x = \\frac{b \\pm \\sqrt{b^2 - 4ac}}{2a}$$",
-                        "$$x = -b \\pm \\sqrt{b^2 - 4ac}$$"
-                    ],
-                    answer: 0,
-                    explain: "The standard quadratic formula yields the roots of any 2nd degree polynomial."
-                },
-                {
-                    q: "What is the derivative of \\( f(x) = x^n \\) using the power rule?",
-                    options: ["\\( f'(x) = n x^{n-1} \\)", "\\( f'(x) = x^{n+1} \\)", "\\( f'(x) = n x^n \\)", "\\( f'(x) = \\frac{x^n}{n} \\)"],
-                    answer: 0,
-                    explain: "The power rule states that \\( \\frac{d}{dx}[x^n] = n x^{n-1} \\)."
-                }
-            ]
-        };
+function exportAppData() { downloadJSONFile(db, `master_quiz_backup_${new Date().toISOString().split('T')[0]}.json`); }
 
-        const newId = addQuizToLibrary(sample, false);
-        highlightQuizInLibrary(newId);
-    }
-
-    // ==========================================
-    // CLOUD SYNC LOGIC (FIXED)
-    // ==========================================
-
-    async function syncToCloud() {
-        if (!window.firebaseDb) return alert("Firebase is initializing or failed to load. Please wait a few seconds and try again.");
-        
-        const syncKey = prompt("Enter a Cloud Sync ID (e.g. your secret username or email) to push your data:", localStorage.getItem('sync_user_key') || "default_user");
-        if (!syncKey) return;
-        localStorage.setItem('sync_user_key', syncKey);
-
-        const localDataString = localStorage.getItem('master_quiz_runner_db') || JSON.stringify(db);
-
+function importAppData(event) {
+    const file = event.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
         try {
-            const { doc, setDoc } = window.firestoreTools;
-            await setDoc(doc(window.firebaseDb, "user_sync", syncKey.trim()), {
-                payload: localDataString,
-                updatedAt: new Date().toISOString()
-            });
-            alert(`✅ Data successfully pushed to cloud under key: "${syncKey.trim()}"`);
-        } catch (err) {
-            console.error("Sync error:", err);
-            alert("❌ Sync failed: " + err.message + "\n\nNote: Make sure your Firebase Firestore Rules allow read/write!");
-        }
-    }
-
-    async function syncFromCloud() {
-        if (!window.firebaseDb) return alert("Firebase is initializing or failed to load. Please wait a few seconds and try again.");
-
-        const syncKey = prompt("Enter your Cloud Sync ID to pull your saved data:", localStorage.getItem('sync_user_key') || "default_user");
-        if (!syncKey) return;
-
-        try {
-            const { doc, getDoc } = window.firestoreTools;
-            const docSnap = await getDoc(doc(window.firebaseDb, "user_sync", syncKey.trim()));
-
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                if (data && data.payload) {
-                    localStorage.setItem('master_quiz_runner_db', data.payload);
-                    localStorage.setItem('sync_user_key', syncKey.trim());
-                    
-                    loadDatabase();
-                    renderLibrary();
-                    renderHistory();
-                    renderWrongPile();
-                    
-                    alert(`✅ Data pulled successfully from cloud key: "${syncKey.trim()}"`);
-                } else {
-                    alert("⚠️ Document found, but payload is empty.");
+            let text = e.target.result;
+            if (file.name.endsWith('.html') || text.includes('<html')) {
+                const parser = new DOMParser(), doc = parser.parseFromString(text, 'html');
+                const scriptTag = doc.getElementById('quiz-data');
+                if (scriptTag) text = scriptTag.textContent;
+            }
+            const parsed = flexibleJSONParse(text);
+            if (parsed.quizzes || parsed.history || parsed.wrongPile) {
+                if (confirm("Replace existing database with backup? Click Cancel to Merge.")) { db = parsed; }
+                else {
+                    db.folders = [...db.folders, ...(parsed.folders || [])];
+                    db.quizzes = [...db.quizzes, ...(parsed.quizzes || [])];
+                    db.history = [...db.history, ...(parsed.history || [])];
+                    db.wrongPile = { ...db.wrongPile, ...(parsed.wrongPile || {}) };
                 }
             } else {
-                alert(`⚠️ No cloud record found for Sync Key: "${syncKey.trim()}"`);
+                const list = Array.isArray(parsed) ? parsed : [parsed];
+                list.forEach(qz => QuizAppStore.addQuiz(qz));
             }
-        } catch (err) {
-            console.error("Fetch error:", err);
-            alert("❌ Could not fetch cloud data: " + err.message + "\n\nNote: Check your Firebase Firestore Security Rules!");
-        }
+            QuizAppStore.saveDatabase(); renderLibrary(); renderHistory(); renderWrongPile(); alert("Import successful!");
+        } catch(err) { alert("Import failed: " + err.message); }
+    };
+    reader.readAsText(file); event.target.value = '';
+}
+
+function downloadJSONFile(dataObj, filename) {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj, null, 2));
+    const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", filename);
+    document.body.appendChild(dl); dl.click(); dl.remove();
+}
+
+function loadSampleQuiz() {
+    const newId = QuizAppStore.addQuiz({
+        title: "PCAR Aviation Law Sample", category: "Aviation", folder: "Civil Air Laws",
+        questions: [
+            { q: "Under PCAR Part 1, which word denotes a mandatory requirement?", type: "mcq", options: ["MAY", "WILL", "SHALL", "SHOULD"], answer: 2, explain: "'SHALL' is strictly mandatory." },
+            { q: "Within how many days must a pilot notify CAAP of an address change?", type: "mcq", options: ["15 days", "30 days", "60 days"], answer: 1, explain: "Notification must occur within 30 days." }
+        ]
+    });
+    renderLibrary(); highlightQuizInLibrary(newId);
+}
+
+function loadMathSampleQuiz() {
+    const newId = QuizAppStore.addQuiz({
+        title: "STEM Math & Calculus Suite", category: "STEM", folder: "Mathematics",
+        questions: [
+            { q: "What is Einstein's mass-energy equation?", type: "mcq", options: ["\\( E = mc^2 \\)", "\\( F = ma \\)"], answer: 0, explain: "Mass-energy equivalence." },
+            { q: "Solution to quadratic equation $$ax^2 + bx + c = 0$$:", type: "mcq", options: ["$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$", "$$x = -b \\pm \\sqrt{b^2 - 4ac}$$"], answer: 0, explain: "Quadratic formula." }
+        ]
+    });
+    renderLibrary(); highlightQuizInLibrary(newId);
+}
+
+function renderMath(node) {
+    if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise(node ? [node] : []).catch(e => {});
     }
+}
+
+function switchTab(id) {
+    document.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    const btn = Array.from(document.querySelectorAll('.nav-pill')).find(b => b.getAttribute('onclick').includes(id));
+    if (btn) btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+    if (id === 'compile-tab') renderCompileChecklist();
+    if (id === 'wrong-tab') renderWrongPile();
+    if (id === 'flashcard-tab') FlashcardEngine.init();
+    if (id === 'history-tab') renderHistory();
+}
+
+function toggleQuickToolsModal(show) { document.getElementById('tools-modal').style.display = show ? 'flex' : 'none'; }
+
+/* KEYBOARD & MOUSE SHORTCUTS IN RUNNER & FLASHCARDS */
+window.addEventListener('keydown', function(e) {
+    const runnerTab = document.getElementById('runner-tab');
+    const flashcardTab = document.getElementById('flashcard-tab');
+
+    if (runnerTab && runnerTab.classList.contains('active')) {
+        const activeTag = document.activeElement ? document.activeElement.tagName : '';
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) return;
+        if (e.code === 'Space' || e.key === ' ') {
+            e.preventDefault();
+            const answered = activeSession.userAnswers[activeSession.currentIndex] !== null;
+            if (answered) nextQuestion(); else skipQuestion();
+        }
+    } else if (flashcardTab && flashcardTab.classList.contains('active')) {
+        if (e.code === 'Space' || e.key === ' ') { e.preventDefault(); FlashcardEngine.flipCard(); }
+        if (e.key === '1') FlashcardEngine.rateCard('hard');
+        if (e.key === '2') FlashcardEngine.rateCard('good');
+        if (e.key === '3') FlashcardEngine.rateCard('easy');
+    }
+});
+
+window.addEventListener('contextmenu', function(e) {
+    const runnerTab = document.getElementById('runner-tab');
+    if (runnerTab && runnerTab.classList.contains('active')) {
+        e.preventDefault();
+        const answered = activeSession.userAnswers[activeSession.currentIndex] !== null;
+        if (answered) nextQuestion(); else skipQuestion();
+    }
+});
+
+/* ==========================================================================
+   FIREBASE CLOUD SYNC
+   ========================================================================== */
+
+async function syncToCloud() {
+    if (!window.firebaseDb) return alert("Firebase initializing. Please wait...");
+    const syncKey = prompt("Enter Cloud Sync ID (e.g. secret username or email):", localStorage.getItem('sync_user_key') || "default_user");
+    if (!syncKey) return;
+    localStorage.setItem('sync_user_key', syncKey.trim());
+    try {
+        const { doc, setDoc } = window.firestoreTools;
+        await setDoc(doc(window.firebaseDb, "user_sync", syncKey.trim()), {
+            payload: JSON.stringify(db),
+            updatedAt: new Date().toISOString()
+        });
+        alert(`✅ Data pushed to cloud key: "${syncKey.trim()}"`);
+    } catch (err) { alert("❌ Sync failed: " + err.message); }
+}
+
+async function syncFromCloud() {
+    if (!window.firebaseDb) return alert("Firebase initializing. Please wait...");
+    const syncKey = prompt("Enter Cloud Sync ID to pull data:", localStorage.getItem('sync_user_key') || "default_user");
+    if (!syncKey) return;
+    try {
+        const { doc, getDoc } = window.firestoreTools;
+        const docSnap = await getDoc(doc(window.firebaseDb, "user_sync", syncKey.trim()));
+        if (docSnap.exists() && docSnap.data().payload) {
+            db = JSON.parse(docSnap.data().payload);
+            localStorage.setItem('sync_user_key', syncKey.trim());
+            QuizAppStore.saveDatabase(); renderLibrary(); renderHistory(); renderWrongPile();
+            alert(`✅ Data pulled successfully from cloud key: "${syncKey.trim()}"`);
+        } else { alert("⚠️ No record found for that key."); }
+    } catch (err) { alert("❌ Cloud pull failed: " + err.message); }
+}
+
+window.onload = function() {
+    QuizAppStore.init();
+    renderColorSwatches();
+    setupLiveEditor();
+    renderLibrary();
+    renderWrongPile();
+    renderHistory();
+    checkSavedSession();
+};
 </script>
 
-<!-- Firebase SDK Imports -->
+<!-- FIREBASE SDK INITIALIZATION -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -1981,14 +1866,11 @@
 
   try {
     const app = initializeApp(firebaseConfig);
-    const firebaseDb = getFirestore(app);
-
-    // Bind to window using firebaseDb to prevent variable collisions with local db
-    window.firebaseDb = firebaseDb;
+    window.firebaseDb = getFirestore(app);
     window.firestoreTools = { doc, setDoc, getDoc };
     console.log("Firebase initialized successfully.");
   } catch (err) {
-    console.error("Firebase Initialization Error:", err);
+    console.error("Firebase Init Error:", err);
   }
 </script>
 
