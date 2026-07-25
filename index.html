@@ -460,7 +460,7 @@
                     <div class="card-header"><div class="card-title">💻 Terminal / Dual-Pane LaTeX IDE</div></div>
                     <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Paste JSON or JS objects directly. Supports LaTeX notation: <code>\( E = mc^2 \)</code> or <code>$$ ... $$</code>.</p>
                     <div class="editor-grid">
-                        <textarea id="json-editor-textarea" class="code-area" spellcheck="false" placeholder='{\n  "title": "Quantum Physics",\n  "category": "Physics",\n  "folder": "Science & Math",\n  "questions": [\n    {\n      "q": "What is Planck&#39;s energy equation?",\n      "type": "mcq",\n      "options": ["\\( E = h\\nu \\)", "\\( F = ma \\)"],\n      "answer": 0,\n      "explain": "E = h * nu"\n    }\n  ]\n}'></textarea>
+                        <textarea id="json-editor-textarea" class="code-area" spellcheck="false" placeholder='{\n  "title": "Quantum Physics",\n  "category": "Physics",\n  "folder": "Science & Math",\n  "questions": [\n    {\n      "q": "What is Plancks energy equation?",\n      "type": "mcq",\n      "options": ["\\( E = h\\nu \\)", "\\( F = ma \\)"],\n      "answer": 0,\n      "explain": "E = h * nu"\n    }\n  ]\n}'></textarea>
                         <div id="live-latex-preview" class="preview-area">
                             <p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Type equations to preview live!</p>
                         </div>
@@ -1209,7 +1209,7 @@ function runTerminalTest() {
         category: "Physics",
         folder: "Science & Engineering",
         questions: [{
-            q: "What is Einstein's mass-energy equation?",
+            q: "What is Einsteins mass-energy equation?",
             options: ["\\( E = mc^2 \\)", "\\( F = ma \\)", "\\( E = h\\nu \\)"],
             answer: 0,
             explain: "Where E is energy, m is mass, and c is the speed of light."
@@ -1226,15 +1226,29 @@ function clearEditor() {
 
 function loadTemplateToEditor() {
     const template = {
-        title: "Calculus Fundamentals",
+        title: "Calculus & Algebra Fundamentals",
         category: "STEM",
         folder: "Mathematics",
-        questions: [{
-            q: "What is the derivative of \\( f(x) = x^n \\)?",
-            options: ["\\( f'(x) = n x^{n-1} \\)", "\\( f'(x) = x^{n+1} \\)"],
-            answer: 0,
-            explain: "Power rule: \\( \\frac{d}{dx}[x^n] = n x^{n-1} \\)."
-        }]
+        questions: [
+            {
+                q: "What is the derivative of \\( f(x) = x^n \\)?",
+                type: "mcq",
+                options: ["\\( f'(x) = n x^{n-1} \\)", "\\( f'(x) = x^{n+1} \\)"],
+                answer: 0,
+                explain: "Power rule: \\( \\frac{d}{dx}[x^n] = n x^{n-1} \\)."
+            },
+            {
+                q: "Select all valid properties of logarithms:",
+                type: "multi-select",
+                options: [
+                    "\\( \\log(ab) = \\log(a) + \\log(b) \\)",
+                    "\\( \\log(a/b) = \\log(a) - \\log(b) \\)",
+                    "\\( \\log(a+b) = \\log(a)\\log(b) \\)"
+                ],
+                answer: [0, 1],
+                explain: "Multiplication and division operations inside logs translate directly to addition and subtraction respectively."
+            }
+        ]
     };
     document.getElementById('json-editor-textarea').value = JSON.stringify(template, null, 2);
     validateEditorLive();
@@ -1328,7 +1342,12 @@ function renderWrongPile() {
         const item = db.wrongPile[key];
         const q = item.question;
         const streak = item.consecutiveCorrect || 0;
-        const ansText = q.options[q.answer] || String(q.answer);
+        let ansText = '';
+        if (Array.isArray(q.answer)) {
+            ansText = q.answer.map(idx => q.options[idx] || idx).join(', ');
+        } else {
+            ansText = q.options[q.answer] || String(q.answer);
+        }
         return `
             <div class="quiz-item">
                 <div>
@@ -1360,6 +1379,8 @@ function startWrongPileQuiz() {
 
 let activeSession = { title: "", questions: [], currentIndex: 0, userAnswers: [], score: 0, timerMode: 'none' };
 let timerInterval = null, sessionTimeRemaining = 0;
+let lastLoadedIndex = -1;
+let currentMultiSelects = [];
 
 function initSession(title, rawQuestions) {
     const shuffleEnabled = document.getElementById('setting-shuffle-options').checked;
@@ -1381,6 +1402,9 @@ function initSession(title, rawQuestions) {
     document.getElementById('active-quiz-title').innerText = title;
     document.getElementById('quiz-body').style.display = 'block';
     document.getElementById('quiz-results').style.display = 'none';
+
+    lastLoadedIndex = -1;
+    currentMultiSelects = [];
 
     switchTab('runner-tab'); setupSessionTimer(); loadQuestion();
 }
@@ -1420,8 +1444,13 @@ function evaluateAnswer(q, userInput) {
         const correctSet = new Set(Array.isArray(q.answer) ? q.answer : [q.answer]);
         const userSet = new Set(Array.isArray(userInput) ? userInput : []);
         let isCorrect = correctSet.size === userSet.size;
-        if (isCorrect) for (let val of correctSet) if (!userSet.has(val)) { isCorrect = false; break; }
-        return { isCorrect, correctText: Array.from(correctSet).map(i => q.options[i]).join(', ') };
+        if (isCorrect) {
+            for (let val of correctSet) {
+                if (!userSet.has(val)) { isCorrect = false; break; }
+            }
+        }
+        const correctLabels = Array.from(correctSet).map(i => `${String.fromCharCode(65 + i)}: ${q.options[i] || i}`);
+        return { isCorrect, correctText: correctLabels.join(', ') };
     }
     if (qType === 'fill-blank') {
         const cleanInput = String(userInput || '').trim().toLowerCase();
@@ -1435,6 +1464,13 @@ function loadQuestion() {
     if (activeSession.timerMode === 'per_question_30') { sessionTimeRemaining = 30; updateTimerBadge(); }
 
     const q = activeSession.questions[activeSession.currentIndex];
+    
+    // Manage multi-select temporary buffer resets between navigation steps
+    if (activeSession.currentIndex !== lastLoadedIndex) {
+        currentMultiSelects = [];
+        lastLoadedIndex = activeSession.currentIndex;
+    }
+
     document.getElementById('quiz-progress').innerText = `Question ${activeSession.currentIndex + 1} of ${activeSession.questions.length}`;
     document.getElementById('quiz-score').innerText = `Score: ${activeSession.score}`;
     document.getElementById('question-text').innerHTML = `<b>${activeSession.currentIndex + 1}.</b> ${q.q}`;
@@ -1458,6 +1494,59 @@ function loadQuestion() {
             } else { btn.onclick = () => submitAnswer(idx); }
             container.appendChild(btn);
         });
+    } else if (q.type === 'multi-select') {
+        const tip = document.createElement('div');
+        tip.style.fontSize = '0.85rem';
+        tip.style.color = 'var(--text-muted)';
+        tip.style.marginBottom = '8px';
+        tip.innerText = 'Select all that apply, then click Submit.';
+        container.appendChild(tip);
+
+        const correctSet = new Set(Array.isArray(q.answer) ? q.answer : [q.answer]);
+        const finalChoices = answered ? (Array.isArray(userAnswer) ? userAnswer : []) : currentMultiSelects;
+
+        q.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-card';
+            btn.innerHTML = `<b>${String.fromCharCode(65 + idx)}.</b> ${opt}`;
+
+            if (answered) {
+                btn.disabled = true;
+                const isCorrectChoice = correctSet.has(idx);
+                const isSelectedByUser = finalChoices.includes(idx);
+                if (isCorrectChoice) {
+                    btn.classList.add('correct');
+                } else if (isSelectedByUser) {
+                    btn.classList.add('wrong');
+                }
+            } else {
+                if (finalChoices.includes(idx)) {
+                    btn.style.borderColor = 'var(--accent)';
+                    btn.style.background = 'var(--accent-bg)';
+                }
+                btn.onclick = () => {
+                    const pos = currentMultiSelects.indexOf(idx);
+                    if (pos > -1) {
+                        currentMultiSelects.splice(pos, 1);
+                    } else {
+                        currentMultiSelects.push(idx);
+                    }
+                    loadQuestion();
+                };
+            }
+            container.appendChild(btn);
+        });
+
+        if (!answered) {
+            const submitBtn = document.createElement('button');
+            submitBtn.className = 'btn btn-success';
+            submitBtn.innerText = 'Submit Selection';
+            submitBtn.style.marginTop = '10px';
+            submitBtn.onclick = () => {
+                submitAnswer([...currentMultiSelects]);
+            };
+            container.appendChild(submitBtn);
+        }
     } else if (q.type === 'fill-blank') {
         const input = document.createElement('input');
         input.type = 'text'; input.className = 'fill-input';
@@ -1474,7 +1563,10 @@ function loadQuestion() {
         }
     }
 
-    if (answered && userAnswer !== -1) showExplanation(userAnswer === q.answer);
+    if (answered && userAnswer !== -1) {
+        const evalRes = evaluateAnswer(q, userAnswer);
+        showExplanation(evalRes.isCorrect);
+    }
 
     const qKey = getQuestionKey(q);
     document.getElementById('question-note-input').value = (db.questionNotes || {})[qKey] || '';
@@ -1517,12 +1609,20 @@ function skipQuestion() {
 function showExplanation(isCorrect) {
     const q = activeSession.questions[activeSession.currentIndex];
     const expBox = document.getElementById('explanation-box'); expBox.style.display = 'block';
+    
+    let correctText = '';
+    if (Array.isArray(q.answer)) {
+        correctText = q.answer.map(idx => q.options[idx] ? String.fromCharCode(65 + idx) + ": " + q.options[idx] : idx).join(', ');
+    } else {
+        correctText = q.options[q.answer] !== undefined ? String.fromCharCode(65 + q.answer) + ": " + q.options[q.answer] : q.answer;
+    }
+
     if (isCorrect) {
         expBox.style.background = 'var(--success-bg)'; expBox.style.color = 'var(--success)';
         expBox.innerHTML = `<b>✓ CORRECT!</b><br>${q.explain || ''}`;
     } else {
         expBox.style.background = 'var(--danger-bg)'; expBox.style.color = 'var(--danger)';
-        expBox.innerHTML = `<b>✗ INCORRECT!</b><br>Correct Answer: <b>${q.options[q.answer] || q.answer}</b><br>${q.explain || ''}`;
+        expBox.innerHTML = `<b>✗ INCORRECT!</b><br>Correct Answer: <b>${correctText}</b><br>${q.explain || ''}`;
     }
     renderMath(expBox);
 }
@@ -1644,8 +1744,14 @@ const FlashcardEngine = (function() {
         rateCard: (rating) => {
             if (!activeDeck || activeDeck.length === 0) return;
             const card = activeDeck.splice(currentIndex, 1)[0];
-            if (rating === 'hard') activeDeck.push(card);
-            else if (rating === 'easy') { masteredCount++; AudioEngine.playCorrect(); }
+            if (rating === 'hard') {
+                activeDeck.push(card);
+            } else if (rating === 'good') {
+                activeDeck.push(card);
+            } else if (rating === 'easy') { 
+                masteredCount++; 
+                AudioEngine.playCorrect(); 
+            }
             if (currentIndex >= activeDeck.length) currentIndex = 0;
             FlashcardEngine.render();
         }
@@ -1747,7 +1853,8 @@ function loadMathSampleQuiz() {
     const newId = QuizAppStore.addQuiz({
         title: "STEM Math & Calculus Suite", category: "STEM", folder: "Mathematics",
         questions: [
-            { q: "What is Einstein's mass-energy equation?", type: "mcq", options: ["\\( E = mc^2 \\)", "\\( F = ma \\)"], answer: 0, explain: "Mass-energy equivalence." },
+            { q: "What is Einsteins mass-energy equation?", type: "mcq", options: ["\\( E = mc^2 \\)", "\\( F = ma \\)"], answer: 0, explain: "Mass-energy equivalence." },
+            { q: "Which of the following are prime numbers?", type: "multi-select", options: ["2", "4", "9", "11"], answer: [0, 3], explain: "2 and 11 have no positive divisors other than 1 and themselves." },
             { q: "Solution to quadratic equation $$ax^2 + bx + c = 0$$:", type: "mcq", options: ["$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$", "$$x = -b \\pm \\sqrt{b^2 - 4ac}$$"], answer: 0, explain: "Quadratic formula." }
         ]
     });
