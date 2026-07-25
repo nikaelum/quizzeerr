@@ -529,7 +529,7 @@
             <span id="quiz-score" style="font-weight: 700; color: var(--accent);">Score: 0</span>
         </div>
 
-        <div id="quiz-body" class="card">
+        <div id="quiz-body" class="card" style="cursor: pointer;" title="Once answered, clicking open card areas will proceed to the next question automatically.">
             <div id="question-text" style="font-size: 1.1rem; line-height: 1.6; font-weight: 600;">Question goes here...</div>
             <div id="options-container" class="options-grid"></div>
             <div id="explanation-box" style="margin-top: 16px; padding: 14px; border-radius: 10px; display: none; font-size: 0.9rem;"></div>
@@ -545,7 +545,7 @@
                 <button id="flag-btn" class="btn btn-warning" onclick="toggleFlagCurrentQuestion()">🏳️ Flag Question</button>
                 <button id="next-btn" class="btn" onclick="nextQuestion()" disabled>Next Question</button>
             </div>
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; text-align: center;">💡 Tip: Press <b>Spacebar</b> or <b>Right-Click</b> anywhere to skip or advance to the next question.</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; text-align: center;">💡 Tip: Press <b>Spacebar</b> or <b>Click anywhere in the card</b> to proceed to the next question.</div>
         </div>
 
         <div id="quiz-results" class="card" style="display: none; text-align: center; padding: 40px;">
@@ -568,7 +568,7 @@
 
             <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
                 <span id="fc-deck-title">Deck: None</span>
-                <span id="fc-deck-counts">Remaining: 0 | Mastered: 0</span>
+                <span id="fc-deck-counts">Remaining Review Queue: 0 | Scheduled Mastered: 0</span>
             </div>
 
             <div class="flashcard-stage">
@@ -594,6 +594,36 @@
                 <button class="rating-pill rating-hard" onclick="FlashcardEngine.rateCard('hard')">🔴 Hard [1]</button>
                 <button class="rating-pill rating-good" onclick="FlashcardEngine.rateCard('good')">🟡 Good [2]</button>
                 <button class="rating-pill rating-easy" onclick="FlashcardEngine.rateCard('easy')">🟢 Easy [3]</button>
+            </div>
+
+            <div style="margin-top: 15px; display: flex; gap: 8px;">
+                <button class="btn btn-secondary btn-sm" onclick="FlashcardEngine.toggleMasteredListView()">📋 Manage Scheduled Mastery Review Deck</button>
+                <button class="btn btn-secondary btn-sm" id="fc-undo-btn" onclick="FlashcardEngine.undo()" style="display: inline-flex; align-items: center;" disabled>↩ Undo Rating</button>
+            </div>
+        </div>
+
+        <!-- SRS MASTERY MANAGEMENT SUBPANEL -->
+        <div id="mastered-cards-view" class="card" style="display: none; margin-top: 15px;">
+            <div class="card-header">
+                <div class="card-title">📋 Scheduled Review Deck & Mastery Status</div>
+                <button class="btn btn-secondary btn-sm" onclick="FlashcardEngine.toggleMasteredListView()">✕ Close</button>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0;">These cards have active spaced repetition intervals. Once their interval expires, they automatically re-enter the study deck list.</p>
+            <div style="overflow-x: auto; max-height: 400px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Card / Prompt</th>
+                            <th>Ease Factor</th>
+                            <th>Study Interval (Days)</th>
+                            <th>Status / Expiration</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mastered-cards-rows">
+                        <tr><td colspan="5" style="text-align: center;">No scheduled mastery records stored.</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -788,6 +818,7 @@ function normalizeQuestion(q) {
 }
 
 function getQuestionKey(q) {
+    if (!q) return '';
     if (q.id) return q.id;
     const text = (q.q || '').trim().toLowerCase();
     const opts = (q.options || []).join('|').trim().toLowerCase();
@@ -799,6 +830,7 @@ let db = {
     quizzes: [],
     history: [],
     wrongPile: {},
+    flashcardSRS: {}, // Holds persistent scheduled review intervals
     questionNotes: {},
     settings: { theme: 'light', fontScale: '100%', audioMuted: false, shuffleOptions: true, timerMode: 'none' }
 };
@@ -815,6 +847,7 @@ const QuizAppStore = (function() {
                 db.quizzes = (parsed.quizzes || []).map(q => { q.questions = (q.questions || []).map(normalizeQuestion); return q; });
                 db.history = parsed.history || [];
                 db.wrongPile = parsed.wrongPile || {};
+                db.flashcardSRS = parsed.flashcardSRS || {};
                 db.questionNotes = parsed.questionNotes || {};
                 db.settings = { ...db.settings, ...(parsed.settings || {}) };
             } catch (e) {}
@@ -1209,7 +1242,7 @@ function runTerminalTest() {
         category: "Physics",
         folder: "Science & Engineering",
         questions: [{
-            q: "What is Einsteins mass-energy equation?",
+            q: "What is Einstein's mass-energy equation?",
             options: ["\\( E = mc^2 \\)", "\\( F = ma \\)", "\\( E = h\\nu \\)"],
             answer: 0,
             explain: "Where E is energy, m is mass, and c is the speed of light."
@@ -1226,7 +1259,7 @@ function clearEditor() {
 
 function loadTemplateToEditor() {
     const template = {
-        title: "Calculus & Algebra Fundamentals",
+        title: "STEM Calculus & Algebra Suite",
         category: "STEM",
         folder: "Mathematics",
         questions: [
@@ -1246,7 +1279,7 @@ function loadTemplateToEditor() {
                     "\\( \\log(a+b) = \\log(a)\\log(b) \\)"
                 ],
                 answer: [0, 1],
-                explain: "Multiplication and division operations inside logs translate directly to addition and subtraction respectively."
+                explain: "Multiplication and division operations inside logarithms translate to addition and subtraction respectively."
             }
         ]
     };
@@ -1491,7 +1524,7 @@ function loadQuestion() {
                 btn.disabled = true;
                 if (idx === q.answer) btn.classList.add('correct');
                 if (userAnswer === idx && userAnswer !== q.answer) btn.classList.add('wrong');
-            } else { btn.onclick = () => submitAnswer(idx); }
+            } else { btn.onclick = (e) => { e.stopPropagation(); submitAnswer(idx); }; }
             container.appendChild(btn);
         });
     } else if (q.type === 'multi-select') {
@@ -1524,7 +1557,8 @@ function loadQuestion() {
                     btn.style.borderColor = 'var(--accent)';
                     btn.style.background = 'var(--accent-bg)';
                 }
-                btn.onclick = () => {
+                btn.onclick = (e) => {
+                    e.stopPropagation();
                     const pos = currentMultiSelects.indexOf(idx);
                     if (pos > -1) {
                         currentMultiSelects.splice(pos, 1);
@@ -1542,7 +1576,8 @@ function loadQuestion() {
             submitBtn.className = 'btn btn-success';
             submitBtn.innerText = 'Submit Selection';
             submitBtn.style.marginTop = '10px';
-            submitBtn.onclick = () => {
+            submitBtn.onclick = (e) => {
+                e.stopPropagation();
                 submitAnswer([...currentMultiSelects]);
             };
             container.appendChild(submitBtn);
@@ -1558,7 +1593,10 @@ function loadQuestion() {
         if (!answered) {
             const btn = document.createElement('button');
             btn.className = 'btn btn-success'; btn.innerText = 'Submit Answer';
-            btn.onclick = () => submitAnswer(input.value.trim());
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                submitAnswer(input.value.trim());
+            }
             container.appendChild(btn);
         }
     }
@@ -1703,23 +1741,69 @@ function startSingleQuiz(id) {
 }
 
 /* ==========================================================================
-   FLASHCARD ENGINE
+   FLASHCARD ENGINE WITH SPACED REPETITION (SM2 / ANKI METHOD)
    ========================================================================== */
 
 const FlashcardEngine = (function() {
     let activeDeck = [], masteredCount = 0, currentIndex = 0, isFlipped = false;
+    let flashcardHistoryStack = []; // Step-by-step studying snapshot undo stack
+
+    function getRemainingTimeString(ms) {
+        const diff = ms - Date.now();
+        if (diff <= 0) return "Expired (Due now)";
+        const mins = Math.ceil(diff / (1000 * 60));
+        if (mins < 60) return `Due in ${mins} min${mins === 1 ? '' : 's'}`;
+        const hours = Math.ceil(diff / (1000 * 60 * 60));
+        if (hours < 24) return `Due in ${hours} hour${hours === 1 ? '' : 's'}`;
+        const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+        return `Due in ${days} day${days === 1 ? '' : 's'}`;
+    }
+
+    function saveUndoState() {
+        flashcardHistoryStack.push({
+            activeDeck: JSON.parse(JSON.stringify(activeDeck)),
+            masteredCount: masteredCount,
+            currentIndex: currentIndex,
+            srsSnapshot: JSON.parse(JSON.stringify(db.flashcardSRS))
+        });
+        if (flashcardHistoryStack.length > 25) {
+            flashcardHistoryStack.shift();
+        }
+        document.getElementById('fc-undo-btn').disabled = false;
+    }
+
     return {
         init: () => {
             const sel = document.getElementById('flashcard-deck-select'); if (!sel) return;
             sel.innerHTML = '<option value="">Select a Deck...</option>' + db.quizzes.map(q => `<option value="${q.id}">${q.title}</option>`).join('');
+            if (!db.flashcardSRS) db.flashcardSRS = {};
         },
         loadSelectedDeck: () => {
             const id = document.getElementById('flashcard-deck-select').value;
             const qz = db.quizzes.find(x => x.id === id); if (!qz) return;
-            activeDeck = JSON.parse(JSON.stringify(qz.questions)).sort(() => Math.random() - 0.5);
-            masteredCount = 0; currentIndex = 0;
+            
+            // Filter card elements into Active/Due reviews vs Mastered scheduled in the future
+            activeDeck = [];
+            masteredCount = 0;
+            flashcardHistoryStack = [];
+            document.getElementById('fc-undo-btn').disabled = true;
+
+            qz.questions.forEach(q => {
+                const qKey = getQuestionKey(q);
+                const srs = db.flashcardSRS[qKey];
+                if (!srs || srs.nextReview <= Date.now()) {
+                    activeDeck.push(q);
+                } else {
+                    masteredCount++;
+                }
+            });
+
+            // Randomize active queue array
+            activeDeck.sort(() => Math.random() - 0.5);
+            currentIndex = 0;
             document.getElementById('fc-deck-title').innerText = `Deck: ${qz.title}`;
             FlashcardEngine.render();
+            FlashcardEngine.renderMasteredList();
         },
         flipCard: () => {
             const cardEl = document.getElementById('active-flashcard');
@@ -1729,9 +1813,10 @@ const FlashcardEngine = (function() {
         render: () => {
             const cardEl = document.getElementById('active-flashcard');
             cardEl.classList.remove('flipped'); isFlipped = false;
-            document.getElementById('fc-deck-counts').innerText = `Remaining: ${activeDeck.length} | Mastered: ${masteredCount}`;
+            document.getElementById('fc-deck-counts').innerText = `Remaining Review Queue: ${activeDeck.length} | Scheduled Mastered: ${masteredCount}`;
             if (!activeDeck || activeDeck.length === 0) {
-                document.getElementById('fc-front-text').innerHTML = "🎉 <b>Deck Mastered!</b>";
+                document.getElementById('fc-front-text').innerHTML = "🎉 <b>Review Queue Cleared!</b><br><small style='color:var(--text-muted);'>No cards currently expired or due. Mastered reviews will return dynamically.</small>";
+                document.getElementById('fc-back-text').innerHTML = "All active cards have been processed.";
                 return;
             }
             const q = activeDeck[currentIndex];
@@ -1743,17 +1828,140 @@ const FlashcardEngine = (function() {
         },
         rateCard: (rating) => {
             if (!activeDeck || activeDeck.length === 0) return;
-            const card = activeDeck.splice(currentIndex, 1)[0];
+            
+            saveUndoState();
+
+            const card = activeDeck[currentIndex];
+            const qKey = getQuestionKey(card);
+            
+            // Retrieve or initialize SM2 Spaced Repetition details
+            let srs = db.flashcardSRS[qKey] || { ease: 2.50, interval: 0, repetition: 0, nextReview: 0 };
+
             if (rating === 'hard') {
-                activeDeck.push(card);
+                // Hard reset interval, decrease ease, card remains in immediate local study deck
+                srs.repetition = 0;
+                srs.interval = 0;
+                srs.ease = Math.max(1.3, srs.ease - 0.2);
+                srs.nextReview = Date.now();
+
+                activeDeck.splice(currentIndex, 1);
+                activeDeck.push(card); // Recycle card to the back of the queue
+                AudioEngine.playWrong();
             } else if (rating === 'good') {
-                activeDeck.push(card);
-            } else if (rating === 'easy') { 
-                masteredCount++; 
-                AudioEngine.playCorrect(); 
+                // Standard recall step interval progression
+                if (srs.repetition === 0) srs.interval = 1; // 1 day
+                else if (srs.repetition === 1) srs.interval = 3; // 3 days
+                else srs.interval = Math.ceil(srs.interval * srs.ease);
+
+                srs.repetition += 1;
+                srs.nextReview = Date.now() + srs.interval * 24 * 60 * 60 * 1000;
+
+                // Mastery achieved: Card leaves active review queue
+                activeDeck.splice(currentIndex, 1);
+                masteredCount++;
+                AudioEngine.playCorrect();
+            } else if (rating === 'easy') {
+                // Large interval progression step and Ease increase
+                if (srs.repetition === 0) srs.interval = 3; // 3 days
+                else if (srs.repetition === 1) srs.interval = 6; // 6 days
+                else srs.interval = Math.ceil(srs.interval * srs.ease * 1.5);
+
+                srs.ease = Math.min(5.00, srs.ease + 0.15);
+                srs.repetition += 1;
+                srs.nextReview = Date.now() + srs.interval * 24 * 60 * 60 * 1000;
+
+                // Card leaves active review queue
+                activeDeck.splice(currentIndex, 1);
+                masteredCount++;
+                AudioEngine.playCorrect();
             }
-            if (currentIndex >= activeDeck.length) currentIndex = 0;
+
+            db.flashcardSRS[qKey] = srs;
+            QuizAppStore.saveDatabase();
+
+            if (activeDeck.length === 0) {
+                currentIndex = 0;
+            } else {
+                if (currentIndex >= activeDeck.length) {
+                    currentIndex = 0;
+                }
+            }
+
             FlashcardEngine.render();
+            FlashcardEngine.renderMasteredList();
+        },
+        undo: () => {
+            if (flashcardHistoryStack.length === 0) return;
+            const state = flashcardHistoryStack.pop();
+            
+            activeDeck = state.activeDeck;
+            masteredCount = state.masteredCount;
+            currentIndex = state.currentIndex;
+            db.flashcardSRS = state.srsSnapshot;
+
+            QuizAppStore.saveDatabase();
+            AudioEngine.playFlip();
+
+            if (flashcardHistoryStack.length === 0) {
+                document.getElementById('fc-undo-btn').disabled = true;
+            }
+
+            FlashcardEngine.render();
+            FlashcardEngine.renderMasteredList();
+        },
+        toggleMasteredListView: () => {
+            const view = document.getElementById('mastered-cards-view');
+            const show = view.style.display === 'none';
+            view.style.display = show ? 'block' : 'none';
+            if (show) FlashcardEngine.renderMasteredList();
+        },
+        renderMasteredList: () => {
+            const rowsContainer = document.getElementById('mastered-cards-rows');
+            const activeId = document.getElementById('flashcard-deck-select').value;
+            const qz = db.quizzes.find(x => x.id === activeId);
+
+            if (!qz || !db.flashcardSRS) {
+                rowsContainer.innerHTML = '<tr><td colspan="5" style="text-align: center;">Select an active study deck to inspect mastery review timelines.</td></tr>';
+                return;
+            }
+
+            // Filter down questions inside selected deck that have active study progress records
+            const mastered = qz.questions.filter(q => db.flashcardSRS[getQuestionKey(q)]);
+
+            if (mastered.length === 0) {
+                rowsContainer.innerHTML = '<tr><td colspan="5" style="text-align: center;">No scheduled mastery review timers logged in this deck yet.</td></tr>';
+                return;
+            }
+
+            rowsContainer.innerHTML = mastered.map(q => {
+                const qKey = getQuestionKey(q);
+                const srs = db.flashcardSRS[qKey];
+                const status = getRemainingTimeString(srs.nextReview);
+                const intervalDays = srs.interval || 0;
+                return `
+                    <tr>
+                        <td><b>${q.q}</b></td>
+                        <td>${srs.ease.toFixed(2)}</td>
+                        <td>${intervalDays} Day${intervalDays === 1 ? '' : 's'}</td>
+                        <td><span class="badge ${srs.nextReview > Date.now() ? 'badge-folder' : 'badge-streak'}">${status}</span></td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="FlashcardEngine.forceExpiration('${qKey}')" title="Forces review interval to expire immediately for study testing">⚡ Expire Review</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            renderMath(rowsContainer);
+        },
+        forceExpiration: (qKey) => {
+            if (db.flashcardSRS[qKey]) {
+                db.flashcardSRS[qKey].nextReview = Date.now() - 1000; // Expired
+                QuizAppStore.saveDatabase();
+                FlashcardEngine.renderMasteredList();
+                
+                // Recalculate review queues
+                const activeId = document.getElementById('flashcard-deck-select').value;
+                if (activeId) FlashcardEngine.loadSelectedDeck();
+            }
         }
     };
 })();
@@ -1821,6 +2029,7 @@ function importAppData(event) {
                     db.quizzes = [...db.quizzes, ...(parsed.quizzes || [])];
                     db.history = [...db.history, ...(parsed.history || [])];
                     db.wrongPile = { ...db.wrongPile, ...(parsed.wrongPile || {}) };
+                    db.flashcardSRS = { ...db.flashcardSRS, ...(parsed.flashcardSRS || {}) };
                 }
             } else {
                 const list = Array.isArray(parsed) ? parsed : [parsed];
@@ -1853,7 +2062,7 @@ function loadMathSampleQuiz() {
     const newId = QuizAppStore.addQuiz({
         title: "STEM Math & Calculus Suite", category: "STEM", folder: "Mathematics",
         questions: [
-            { q: "What is Einsteins mass-energy equation?", type: "mcq", options: ["\\( E = mc^2 \\)", "\\( F = ma \\)"], answer: 0, explain: "Mass-energy equivalence." },
+            { q: "What is Einstein's mass-energy equation?", type: "mcq", options: ["\\( E = mc^2 \\)", "\\( F = ma \\)"], answer: 0, explain: "Mass-energy equivalence." },
             { q: "Which of the following are prime numbers?", type: "multi-select", options: ["2", "4", "9", "11"], answer: [0, 3], explain: "2 and 11 have no positive divisors other than 1 and themselves." },
             { q: "Solution to quadratic equation $$ax^2 + bx + c = 0$$:", type: "mcq", options: ["$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$", "$$x = -b \\pm \\sqrt{b^2 - 4ac}$$"], answer: 0, explain: "Quadratic formula." }
         ]
@@ -1881,7 +2090,24 @@ function switchTab(id) {
 
 function toggleQuickToolsModal(show) { document.getElementById('tools-modal').style.display = show ? 'flex' : 'none'; }
 
-/* KEYBOARD & MOUSE SHORTCUTS IN RUNNER & FLASHCARDS */
+/* ==========================================================================
+   INTERACTIVE SHORTCUT & WINDOW EVENT HANDLERS
+   ========================================================================== */
+
+// Window-level Practice Mode tap anywhere to proceed click trigger
+document.getElementById('runner-tab').addEventListener('click', function(e) {
+    if (activeSession && activeSession.questions && activeSession.userAnswers) {
+        const answered = activeSession.userAnswers[activeSession.currentIndex] !== null;
+        if (answered) {
+            // Exclude active elements to allow flagging questions, writing study notes, or navigating tabs
+            const interactive = e.target.closest('input, textarea, button, select, a, .nav-pill');
+            if (!interactive) {
+                nextQuestion();
+            }
+        }
+    }
+});
+
 window.addEventListener('keydown', function(e) {
     const runnerTab = document.getElementById('runner-tab');
     const flashcardTab = document.getElementById('flashcard-tab');
@@ -1895,6 +2121,9 @@ window.addEventListener('keydown', function(e) {
             if (answered) nextQuestion(); else skipQuestion();
         }
     } else if (flashcardTab && flashcardTab.classList.contains('active')) {
+        const activeTag = document.activeElement ? document.activeElement.tagName : '';
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) return;
+
         if (e.code === 'Space' || e.key === ' ') { e.preventDefault(); FlashcardEngine.flipCard(); }
         if (e.key === '1') FlashcardEngine.rateCard('hard');
         if (e.key === '2') FlashcardEngine.rateCard('good');
