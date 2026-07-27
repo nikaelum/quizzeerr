@@ -813,15 +813,20 @@ function normalizeQuestion(q) {
         type: type,
         options: Array.isArray(q.options) ? [...q.options] : [],
         answer: q.answer !== undefined ? q.answer : 0,
-        explain: q.explain || q.explanation || ""
+        explain: q.explain || q.explanation || "",
+        sourceQuizTitle: q.sourceQuizTitle || ""
     };
 }
 
 function getQuestionKey(q) {
     if (!q) return '';
+    // Priority 1: Check if an explicit Wrong Pile mapping key exists
+    if (q._wrongPileKey) return q._wrongPileKey;
+    // Priority 2: Standard question ID
     if (q.id) return q.id;
+    // Priority 3: Fallback content hash (sort options so shuffling options doesn't mutate key)
     const text = (q.q || '').trim().toLowerCase();
-    const opts = (q.options || []).join('|').trim().toLowerCase();
+    const opts = (q.options || []).slice().sort().join('|').trim().toLowerCase();
     return text + '___' + opts;
 }
 
@@ -869,7 +874,11 @@ const QuizAppStore = (function() {
         setTheme: (t) => { db.settings.theme = t; applyTheme(t); saveState(); },
         updateSetting: (k, v) => { db.settings[k] = v; saveState(); },
         addQuiz: (qz) => {
-            qz.questions = (qz.questions || []).map(normalizeQuestion);
+            qz.questions = (qz.questions || []).map(q => {
+                const norm = normalizeQuestion(q);
+                norm.sourceQuizTitle = qz.title || "Untitled Quiz";
+                return norm;
+            });
             qz.id = qz.id || 'quiz_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
             qz.folderId = resolveFolderForQuiz(qz);
             db.quizzes.push(qz);
@@ -1029,7 +1038,12 @@ function startFolderPracticeSession(folderId) {
     const folder = db.folders.find(f => f.id === folderId); if (!folder) return;
     const folderQuizzes = db.quizzes.filter(q => q.folderId === folderId);
     if (folderQuizzes.length === 0) return alert("No quizzes in this folder!");
-    let combined = []; folderQuizzes.forEach(q => combined.push(...q.questions));
+    let combined = []; 
+    folderQuizzes.forEach(q => {
+        q.questions.forEach(quest => {
+            combined.push({ ...quest, sourceQuizTitle: q.title });
+        });
+    });
     combined.sort(() => Math.random() - 0.5);
     initSession(`Folder Practice: ${folder.name} (${combined.length} Qs)`, combined);
 }
@@ -1153,6 +1167,7 @@ function saveEditedQuizDetails() {
         qz.title = document.getElementById('edit-quiz-title-input').value.trim() || qz.title;
         qz.category = document.getElementById('edit-quiz-category-input').value.trim() || 'General';
         qz.folderId = document.getElementById('edit-quiz-folder-select').value || null;
+        qz.questions.forEach(q => q.sourceQuizTitle = qz.title);
         QuizAppStore.saveDatabase(); toggleEditQuizModal(false); renderLibrary();
     }
 }
@@ -1325,7 +1340,14 @@ function startCompiledQuiz() {
     const checked = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
     if (checked.length === 0) return alert("Select at least one quiz!");
     let compiled = [];
-    checked.forEach(id => { const qz = db.quizzes.find(q => q.id === id); if (qz) compiled.push(...qz.questions); });
+    checked.forEach(id => {
+        const qz = db.quizzes.find(q => q.id === id);
+        if (qz) {
+            qz.questions.forEach(quest => {
+                compiled.push({ ...quest, sourceQuizTitle: qz.title });
+            });
+        }
+    });
     compiled.sort(() => Math.random() - 0.5);
     initSession(`Compiled Set (${checked.length} Topics)`, compiled);
 }
@@ -1375,21 +1397,26 @@ function renderWrongPile() {
         const item = db.wrongPile[key];
         const q = item.question;
         const streak = item.consecutiveCorrect || 0;
+        const sourceTitle = item.sourceQuizTitle || q.sourceQuizTitle || 'Practice Session';
         let ansText = '';
         if (Array.isArray(q.answer)) {
-            ansText = q.answer.map(idx => q.options[idx] || idx).join(', ');
+            ansText = q.answer.map(idx => q.options[idx] !== undefined ? q.options[idx] : idx).join(', ');
         } else {
-            ansText = q.options[q.answer] || String(q.answer);
+            ansText = q.options[q.answer] !== undefined ? q.options[q.answer] : String(q.answer);
         }
         return `
-            <div class="quiz-item">
-                <div>
-                    <b>${q.q}</b>
-                    <div style="font-size:0.8rem; color:var(--text-muted);">Answer: <b>${ansText}</b></div>
+            <div class="quiz-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; flex-wrap: wrap; gap: 6px;">
+                    <span class="badge badge-folder">📍 From: ${sourceTitle}</span>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <span class="badge badge-streak">Mastery Streak: ${streak} / 3 Correct</span>
+                        <button class="btn btn-danger btn-sm" onclick="removeFromWrongPile('${key}')">🗑️</button>
+                    </div>
                 </div>
-                <div style="display:flex; gap:8px; align-items:center;">
-                    <span class="badge badge-streak">Streak: ${streak}/3</span>
-                    <button class="btn btn-danger btn-sm" onclick="removeFromWrongPile('${key}')">🗑️</button>
+                <div>
+                    <b style="font-size: 0.98rem; color: var(--text-primary);">${q.q}</b>
+                    <div style="font-size:0.85rem; color:var(--text-muted); margin-top: 2px;">Correct Answer: <b style="color:var(--success);">${ansText}</b></div>
+                    ${q.explain ? `<div style="font-size:0.8rem; color:var(--text-muted); margin-top: 2px;">💡 ${q.explain}</div>` : ''}
                 </div>
             </div>
         `;
@@ -1402,7 +1429,13 @@ function clearWrongPile() { if (confirm("Clear all recorded missed questions?"))
 
 function startWrongPileQuiz() {
     const keys = Object.keys(db.wrongPile); if (keys.length === 0) return;
-    const questions = keys.map(k => db.wrongPile[k].question).sort(() => Math.random() - 0.5);
+    const questions = keys.map(k => {
+        const item = db.wrongPile[k];
+        const qCopy = JSON.parse(JSON.stringify(item.question));
+        qCopy._wrongPileKey = k;
+        qCopy.sourceQuizTitle = item.sourceQuizTitle || qCopy.sourceQuizTitle || 'Weak Spots Practice';
+        return qCopy;
+    }).sort(() => Math.random() - 0.5);
     initSession(`Weak Spots Practice (${questions.length} Qs)`, questions);
 }
 
@@ -1620,17 +1653,29 @@ function submitAnswer(val) {
     if (activeSession.userAnswers[activeSession.currentIndex] !== null) return;
     activeSession.userAnswers[activeSession.currentIndex] = val;
     const q = activeSession.questions[activeSession.currentIndex];
-    const res = evaluateAnswer(q, val); const qKey = getQuestionKey(q);
+    const res = evaluateAnswer(q, val); 
+    const qKey = getQuestionKey(q);
+    const sourceTitle = q.sourceQuizTitle || activeSession.title || 'General Quiz';
 
     if (res.isCorrect) {
         activeSession.score++; AudioEngine.playCorrect();
         if (db.wrongPile[qKey]) {
             db.wrongPile[qKey].consecutiveCorrect = (db.wrongPile[qKey].consecutiveCorrect || 0) + 1;
-            if (db.wrongPile[qKey].consecutiveCorrect >= 3) delete db.wrongPile[qKey];
+            if (!db.wrongPile[qKey].sourceQuizTitle) {
+                db.wrongPile[qKey].sourceQuizTitle = sourceTitle;
+            }
+            if (db.wrongPile[qKey].consecutiveCorrect >= 3) {
+                delete db.wrongPile[qKey];
+            }
         }
     } else {
         AudioEngine.playWrong();
-        db.wrongPile[qKey] = { question: JSON.parse(JSON.stringify(q)), consecutiveCorrect: 0, lastFailed: new Date().toLocaleString() };
+        db.wrongPile[qKey] = {
+            question: JSON.parse(JSON.stringify(q)),
+            consecutiveCorrect: 0,
+            lastFailed: new Date().toLocaleString(),
+            sourceQuizTitle: sourceTitle
+        };
     }
 
     QuizAppStore.saveDatabase(); renderWrongPile(); loadQuestion();
@@ -1639,8 +1684,16 @@ function submitAnswer(val) {
 function skipQuestion() {
     if (activeSession.userAnswers[activeSession.currentIndex] !== null) return;
     activeSession.userAnswers[activeSession.currentIndex] = -1;
-    const q = activeSession.questions[activeSession.currentIndex]; const qKey = getQuestionKey(q);
-    db.wrongPile[qKey] = { question: JSON.parse(JSON.stringify(q)), consecutiveCorrect: 0, lastFailed: new Date().toLocaleString() + " (Skipped)" };
+    const q = activeSession.questions[activeSession.currentIndex]; 
+    const qKey = getQuestionKey(q);
+    const sourceTitle = q.sourceQuizTitle || activeSession.title || 'General Quiz';
+
+    db.wrongPile[qKey] = {
+        question: JSON.parse(JSON.stringify(q)),
+        consecutiveCorrect: 0,
+        lastFailed: new Date().toLocaleString() + " (Skipped)",
+        sourceQuizTitle: sourceTitle
+    };
     QuizAppStore.saveDatabase(); renderWrongPile(); nextQuestion();
 }
 
@@ -1672,9 +1725,20 @@ function saveQuestionStickyNote(text) {
 }
 
 function toggleFlagCurrentQuestion() {
-    const q = activeSession.questions[activeSession.currentIndex]; const qKey = getQuestionKey(q);
-    if (db.wrongPile[qKey]) delete db.wrongPile[qKey];
-    else db.wrongPile[qKey] = { question: JSON.parse(JSON.stringify(q)), consecutiveCorrect: 0, lastFailed: new Date().toLocaleString() + " (Flagged)" };
+    const q = activeSession.questions[activeSession.currentIndex]; 
+    const qKey = getQuestionKey(q);
+    const sourceTitle = q.sourceQuizTitle || activeSession.title || 'General Quiz';
+
+    if (db.wrongPile[qKey]) {
+        delete db.wrongPile[qKey];
+    } else {
+        db.wrongPile[qKey] = {
+            question: JSON.parse(JSON.stringify(q)),
+            consecutiveCorrect: 0,
+            lastFailed: new Date().toLocaleString() + " (Flagged)",
+            sourceQuizTitle: sourceTitle
+        };
+    }
     QuizAppStore.saveDatabase(); renderWrongPile(); updateFlagButtonState();
 }
 
@@ -1737,7 +1801,11 @@ function discardSavedSession() {
 }
 
 function startSingleQuiz(id) {
-    const qz = db.quizzes.find(q => q.id === id); if (qz) initSession(qz.title, qz.questions);
+    const qz = db.quizzes.find(q => q.id === id); 
+    if (qz) {
+        const questions = qz.questions.map(q => ({ ...q, sourceQuizTitle: qz.title }));
+        initSession(qz.title, questions);
+    }
 }
 
 /* ==========================================================================
