@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light" style="--font-scale: 100%;">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Master Suite — Modern Study Engine & Math Runner</title>
     
     <!-- MathJax 3 Configuration -->
@@ -23,7 +23,7 @@
 
     <style>
         /* ==========================================================================
-           VERCEL / NOTION MINIMALIST DESIGN SYSTEM
+           VERCEL / NOTION MINIMALIST DESIGN SYSTEM & RESPONSIVE ENGINE
            ========================================================================== */
         :root[data-theme="light"] {
             --bg: #f8fafc;
@@ -88,7 +88,7 @@
             --shadow-lg: none;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         html { font-size: var(--font-scale, 100%); }
 
@@ -97,20 +97,20 @@
             background-color: var(--bg);
             color: var(--text-primary);
             margin: 0;
-            padding: 20px 15px;
-            line-height: 1.6;
+            padding: 16px 12px;
+            line-height: 1.5;
             transition: background-color 0.2s ease, color 0.2s ease;
             -webkit-font-smoothing: antialiased;
         }
 
-        .app-container { max-width: 1080px; margin: 0 auto; }
+        .app-container { max-width: 1120px; margin: 0 auto; }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
             border-bottom: 1px solid var(--border);
             flex-wrap: wrap;
             gap: 12px;
@@ -119,8 +119,8 @@
         .brand-logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1.25rem;
+            gap: 8px;
+            font-size: 1.2rem;
             font-weight: 700;
             letter-spacing: -0.5px;
         }
@@ -134,20 +134,23 @@
             font-weight: 600;
         }
 
+        /* NAVIGATION PILLS */
         .nav-pills {
             display: flex;
             gap: 6px;
             background: var(--card);
-            padding: 5px;
+            padding: 6px;
             border-radius: 12px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
             overflow-x: auto;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+            scrollbar-width: none; /* Firefox */
         }
+        .nav-pills::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
         .nav-pill {
-            padding: 8px 16px;
+            padding: 10px 16px;
             border: none;
             background: transparent;
             color: var(--text-muted);
@@ -157,6 +160,9 @@
             font-weight: 600;
             white-space: nowrap;
             transition: all 0.15s ease;
+            min-height: 42px;
+            display: inline-flex;
+            align-items: center;
         }
 
         .nav-pill:hover { color: var(--text-primary); background: var(--bg); }
@@ -192,7 +198,7 @@
         }
 
         .btn {
-            padding: 8px 16px;
+            padding: 10px 18px;
             background: var(--text-primary);
             color: var(--bg);
             border: 1px solid transparent;
@@ -206,15 +212,18 @@
             gap: 6px;
             transition: all 0.15s ease;
             text-decoration: none;
+            min-height: 42px;
+            user-select: none;
         }
 
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn:active { transform: scale(0.98); }
+        .btn:hover { opacity: 0.9; }
         .btn-secondary { background: var(--card); color: var(--text-primary); border-color: var(--border); }
         .btn-secondary:hover { border-color: var(--border-hover); background: var(--bg); }
         .btn-success { background: var(--success); color: #fff; }
         .btn-danger { background: var(--danger); color: #fff; }
         .btn-warning { background: var(--warning); color: #000; }
-        .btn-sm { padding: 5px 10px; font-size: 0.8rem; border-radius: 6px; }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; min-height: 34px; }
 
         .btn-icon {
             padding: 8px 12px;
@@ -225,6 +234,37 @@
             cursor: pointer;
             font-weight: 600;
             font-size: 0.85rem;
+            min-height: 40px;
+        }
+
+        /* SEGMENTED SWITCHER (FOR MOBILE LIBRARY & IDE) */
+        .library-segmented-switch {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+            background: var(--card);
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .segmented-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: center;
+        }
+
+        .segmented-btn.active {
+            background: var(--text-primary);
+            color: var(--bg);
         }
 
         /* FOLDERS & DRAG-AND-DROP STYLES */
@@ -263,13 +303,8 @@
             font-weight: 700;
         }
 
-        .folder-content {
-            padding: 12px;
-        }
-
-        .folder-content.collapsed {
-            display: none;
-        }
+        .folder-content { padding: 12px; }
+        .folder-content.collapsed { display: none; }
 
         .color-swatches {
             display: flex;
@@ -280,8 +315,8 @@
         }
 
         .color-swatch {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             cursor: pointer;
             border: 2px solid transparent;
@@ -289,14 +324,14 @@
         }
 
         .color-swatch:hover, .color-swatch.selected {
-            transform: scale(1.2);
+            transform: scale(1.15);
             border-color: var(--text-primary);
         }
 
         .quiz-item {
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 12px 16px;
+            padding: 14px 16px;
             margin-bottom: 10px;
             background: var(--card);
             display: flex;
@@ -304,6 +339,7 @@
             align-items: center;
             gap: 12px;
             transition: all 0.15s ease;
+            flex-wrap: wrap;
         }
 
         .quiz-item:last-child { margin-bottom: 0; }
@@ -311,10 +347,44 @@
         .quiz-item[draggable="true"]:active { cursor: grabbing; opacity: 0.6; }
         .quiz-item.highlight { background: var(--success-bg) !important; border-color: var(--success) !important; }
 
+        /* MASTERY METER STYLES */
+        .mastery-meter-box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 150px;
+            padding: 6px 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .mastery-meter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .mastery-bar-track {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .mastery-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.4s ease, background-color 0.4s ease;
+        }
+
         /* TACTILE OPTIONS */
         .options-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
         .option-card {
-            padding: 14px 18px;
+            padding: 16px 18px;
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 10px;
@@ -324,38 +394,41 @@
             text-align: left;
             transition: all 0.15s ease;
             width: 100%;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
         }
 
-        .option-card:hover:not([disabled]) { border-color: var(--accent); background: var(--accent-bg); transform: translateY(-1px); }
+        .option-card:hover:not([disabled]) { border-color: var(--accent); background: var(--accent-bg); }
         .option-card.correct { background: var(--success-bg) !important; border-color: var(--success) !important; color: var(--success) !important; font-weight: 700; }
         .option-card.wrong { background: var(--danger-bg) !important; border-color: var(--danger) !important; color: var(--danger) !important; }
 
         .fill-input {
-            width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 8px;
+            width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 8px;
             font-size: 1rem; background: var(--card); color: var(--text-primary); outline: none;
+            min-height: 48px;
         }
 
         /* 3D FLASHCARDS */
-        .flashcard-stage { perspective: 1000px; width: 100%; max-width: 620px; height: 360px; margin: 24px auto; }
+        .flashcard-stage { perspective: 1000px; width: 100%; max-width: 620px; height: 340px; margin: 20px auto; }
         .flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; border-radius: 16px; }
         .flashcard.flipped { transform: rotateY(180deg); }
 
         .card-face {
             position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 16px;
-            padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;
+            padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;
             background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow-lg);
         }
 
         .card-face-back { transform: rotateY(180deg); border-color: var(--accent); }
-        .rating-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 16px; }
-        .rating-pill { padding: 12px; border-radius: 10px; border: none; font-weight: 700; font-size: 0.85rem; cursor: pointer; color: #fff; }
+        .rating-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; }
+        .rating-pill { padding: 12px; border-radius: 10px; border: none; font-weight: 700; font-size: 0.85rem; cursor: pointer; color: #fff; min-height: 44px; }
         .rating-hard { background: var(--danger); }
         .rating-good { background: var(--warning); color: #000; }
         .rating-easy { background: var(--success); }
 
         /* TERMINAL & DUAL PANE EDITOR */
         .editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        @media (max-width: 820px) { .editor-grid { grid-template-columns: 1fr; } }
         .code-area { width: 100%; height: 260px; font-family: 'Consolas', 'Courier New', monospace; background: var(--editor-bg); color: var(--editor-text); padding: 12px; border-radius: 10px; border: 1px solid var(--border); font-size: 0.85rem; outline: none; resize: vertical; line-height: 1.4; }
         .preview-area { border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: var(--card); height: 260px; overflow-y: auto; font-size: 0.9rem; }
 
@@ -368,17 +441,18 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px);
             display: none; align-items: center; justify-content: center; z-index: 100;
+            padding: 12px;
         }
 
-        .modal-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; width: 90%; max-width: 480px; box-shadow: var(--shadow-lg); }
+        .modal-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; width: 100%; max-width: 480px; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
-        .metric-tile { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }
-        .metric-num { font-size: 1.8rem; font-weight: 800; color: var(--accent); margin: 4px 0; }
-        .metric-sub { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .metric-tile { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; }
+        .metric-num { font-size: 1.6rem; font-weight: 800; color: var(--accent); margin: 4px 0; }
+        .metric-sub { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
 
         /* STICKY NOTES STYLES */
         .sticky-note-box {
@@ -400,6 +474,52 @@
         .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
         .badge-streak { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning); }
         .badge-folder { background: var(--accent-bg); color: var(--accent); }
+
+        /* ==========================================================================
+           DEVICE-SPECIFIC RESPONSIVE BREAKPOINTS (MOBILE, TABLET, DESKTOP)
+           ========================================================================== */
+
+        /* 1. MOBILE OPTIMIZATIONS (< 899px) */
+        @media (max-width: 899px) {
+            body { padding: 12px 8px; }
+            header { gap: 8px; }
+            .brand-logo { font-size: 1.1rem; }
+            
+            .lib-layout-grid { display: block; }
+            .lib-col-left.subtab-hidden, .lib-col-right.subtab-hidden { display: none !important; }
+            .lib-col-left.subtab-active, .lib-col-right.subtab-active { display: block !important; }
+
+            .editor-grid { grid-template-columns: 1fr; }
+            .code-area, .preview-area { height: 200px; }
+
+            .quiz-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .mastery-meter-box {
+                width: 100%;
+            }
+
+            .quiz-item > div:last-child {
+                justify-content: flex-end;
+            }
+
+            .flashcard-stage { height: 290px; }
+            .card-face { padding: 18px; }
+
+            .btn { width: 100%; }
+            .btn-sm { width: auto; }
+        }
+
+        /* 2. LAPTOP / DESKTOP OPTIMIZATIONS (>= 900px) */
+        @media (min-width: 900px) {
+            .library-segmented-switch { display: none !important; }
+            .lib-layout-grid { display: grid; grid-template-columns: 1fr 420px; gap: 20px; }
+            .lib-col-left, .lib-col-right { display: block !important; }
+            .btn { width: auto; }
+        }
     </style>
 </head>
 <body class="tex2jax_process">
@@ -412,16 +532,16 @@
             <span class="brand-badge">PRO v3.5</span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <button class="btn btn-success btn-sm" onclick="syncToCloud()">☁️ Push to Cloud</button>
-            <button class="btn btn-warning btn-sm" onclick="syncFromCloud()">☁️ Pull from Cloud</button>
-            <button class="btn-icon" onclick="toggleQuickToolsModal(true)" title="Options & Tools">⚙️ Options & Tools</button>
+            <button class="btn btn-success btn-sm" onclick="syncToCloud()">☁️ Push</button>
+            <button class="btn btn-warning btn-sm" onclick="syncFromCloud()">☁️ Pull</button>
+            <button class="btn-icon" onclick="toggleQuickToolsModal(true)" title="Options & Tools">⚙️ Options</button>
         </div>
     </header>
 
     <!-- PILL NAVIGATION -->
     <div class="nav-pills">
         <button class="nav-pill active" onclick="switchTab('library-tab')">📚 Library</button>
-        <button class="nav-pill" onclick="switchTab('compile-tab')">🔀 Handpick & Combine</button>
+        <button class="nav-pill" onclick="switchTab('compile-tab')">🔀 Combine</button>
         <button class="nav-pill" onclick="switchTab('wrong-tab')">⚠️ Weak Spots (<span id="wrong-count-badge">0</span>)</button>
         <button class="nav-pill" onclick="switchTab('runner-tab')" id="runner-tab-btn" disabled>📝 Practice Mode</button>
         <button class="nav-pill" onclick="switchTab('flashcard-tab')">🎴 Flashcards</button>
@@ -439,14 +559,21 @@
 
     <!-- TAB 1: LIBRARY & DUAL PANE EDITOR -->
     <div id="library-tab" class="tab-content active">
-        <div style="display: grid; grid-template-columns: 1fr 420px; gap: 20px;">
-            <div>
+        <!-- MOBILE SEGMENTED CONTROL -->
+        <div class="library-segmented-switch">
+            <button class="segmented-btn active" id="seg-lib-btn" onclick="switchLibrarySubTab('quizzes')">📚 Quiz Library</button>
+            <button class="segmented-btn" id="seg-ide-btn" onclick="switchLibrarySubTab('terminal')">💻 Terminal IDE</button>
+        </div>
+
+        <div class="lib-layout-grid">
+            <!-- LEFT COLUMN: QUIZ LIBRARY -->
+            <div id="lib-col-left" class="lib-col-left subtab-active">
                 <div class="card" style="padding: 14px;">
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <input type="text" id="library-search-input" placeholder="🔍 Search quizzes by title or category..." oninput="renderLibrary()" style="flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text-primary); outline: none;">
+                        <input type="text" id="library-search-input" placeholder="🔍 Search quizzes by title or category..." oninput="renderLibrary()" style="flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text-primary); outline: none; min-height: 40px;">
                         <button class="btn btn-success btn-sm" onclick="toggleFolderModal(true)">📁 + Folder</button>
-                        <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(true)">Expand All</button>
-                        <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(false)">Collapse All</button>
+                        <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(true)">Expand</button>
+                        <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(false)">Collapse</button>
                     </div>
                 </div>
 
@@ -455,7 +582,8 @@
                 </div>
             </div>
 
-            <div>
+            <!-- RIGHT COLUMN: TERMINAL IDE & IMPORT -->
+            <div id="lib-col-right" class="lib-col-right subtab-hidden">
                 <div class="card">
                     <div class="card-header"><div class="card-title">💻 Terminal / Dual-Pane LaTeX IDE</div></div>
                     <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Paste JSON or JS objects directly. Supports LaTeX notation: <code>\( E = mc^2 \)</code> or <code>$$ ... $$</code>.</p>
@@ -596,7 +724,7 @@
                 <button class="rating-pill rating-easy" onclick="FlashcardEngine.rateCard('easy')">🟢 Easy [3]</button>
             </div>
 
-            <div style="margin-top: 15px; display: flex; gap: 8px;">
+            <div style="margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap;">
                 <button class="btn btn-secondary btn-sm" onclick="FlashcardEngine.toggleMasteredListView()">📋 Manage Scheduled Mastery Review Deck</button>
                 <button class="btn btn-secondary btn-sm" id="fc-undo-btn" onclick="FlashcardEngine.undo()" style="display: inline-flex; align-items: center;" disabled>↩ Undo Rating</button>
             </div>
@@ -636,20 +764,22 @@
                 <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear History</button>
             </div>
             <div class="metrics-grid">
-                <div class="metric-tile"><div class="metric-sub">Mastery</div><div id="analytic-accuracy" class="metric-num">0%</div></div>
+                <div class="metric-tile"><div class="metric-sub">Average Retention</div><div id="analytic-accuracy" class="metric-num">0%</div></div>
                 <div class="metric-tile"><div class="metric-sub">Sessions</div><div id="analytic-sessions" class="metric-num">0</div></div>
                 <div class="metric-tile"><div class="metric-sub">Weak Spots</div><div id="analytic-weakspots" class="metric-num">0</div></div>
                 <div class="metric-tile"><div class="metric-sub">Retention EF</div><div id="analytic-srs-score" class="metric-num">2.50</div></div>
             </div>
 
-            <table>
-                <thead>
-                    <tr><th>#</th><th>Quiz Name</th><th>Date Completed</th><th>Score</th><th>Pct</th><th>Status</th></tr>
-                </thead>
-                <tbody id="history-rows">
-                    <tr><td colspan="6" style="text-align: center;">No history recorded yet.</td></tr>
-                </tbody>
-            </table>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr><th>#</th><th>Quiz Name</th><th>Date Completed</th><th>Score</th><th>Pct</th><th>Status</th></tr>
+                    </thead>
+                    <tbody id="history-rows">
+                        <tr><td colspan="6" style="text-align: center;">No history recorded yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -665,12 +795,12 @@
         <div style="display: flex; flex-direction: column; gap: 12px;">
             <div>
                 <label style="font-weight: 600; font-size: 0.85rem;">Folder Name:</label>
-                <input type="text" id="folder-name-input" placeholder="e.g., Aviation Law, Physics" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);">
+                <input type="text" id="folder-name-input" placeholder="e.g., Aviation Law, Physics" style="width: 100%; padding: 10px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); min-height: 42px;">
             </div>
             <div>
                 <label style="font-weight: 600; font-size: 0.85rem;">Folder Accent Color:</label>
                 <div style="display: flex; gap: 8px; align-items: center; margin-top: 6px;">
-                    <input type="color" id="folder-custom-color" value="#0284c7" style="border: none; width: 32px; height: 32px; cursor: pointer; background: transparent;" onchange="selectSwatchColor(this.value)">
+                    <input type="color" id="folder-custom-color" value="#0284c7" style="border: none; width: 36px; height: 36px; cursor: pointer; background: transparent;" onchange="selectSwatchColor(this.value)">
                     <span id="folder-color-label" style="font-size: 0.85rem; font-weight: bold;">#0284c7</span>
                 </div>
                 <div class="color-swatches" id="preset-color-swatches"></div>
@@ -691,15 +821,15 @@
         <div style="display: flex; flex-direction: column; gap: 14px;">
             <div>
                 <label style="font-weight: 600; font-size: 0.85rem;">Quiz Title:</label>
-                <input type="text" id="edit-quiz-title-input" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);">
+                <input type="text" id="edit-quiz-title-input" style="width: 100%; padding: 10px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); min-height: 42px;">
             </div>
             <div>
                 <label style="font-weight: 600; font-size: 0.85rem;">Category:</label>
-                <input type="text" id="edit-quiz-category-input" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);">
+                <input type="text" id="edit-quiz-category-input" style="width: 100%; padding: 10px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); min-height: 42px;">
             </div>
             <div>
                 <label style="font-weight: 600; font-size: 0.85rem;">Folder:</label>
-                <select id="edit-quiz-folder-select" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);"></select>
+                <select id="edit-quiz-folder-select" style="width: 100%; padding: 10px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); min-height: 42px;"></select>
             </div>
             <button class="btn btn-success" onclick="saveEditedQuizDetails()">Save Changes</button>
         </div>
@@ -717,7 +847,7 @@
         <div style="display: flex; flex-direction: column; gap: 14px;">
             <div>
                 <label style="font-weight: 600; font-size: 0.85rem;">Theme Palette:</label>
-                <select id="theme-select" onchange="QuizAppStore.setTheme(this.value)" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);">
+                <select id="theme-select" onchange="QuizAppStore.setTheme(this.value)" style="width: 100%; padding: 10px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); min-height: 42px;">
                     <option value="light">☀️ Light Slate</option>
                     <option value="dark">🌙 Dark Slate</option>
                     <option value="oled">🖤 OLED Pitch Black</option>
@@ -726,7 +856,7 @@
 
             <div>
                 <label style="font-weight: 600; font-size: 0.85rem;">Font Scale (A11y):</label>
-                <select id="font-scale-select" onchange="setFontScale(this.value)" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);">
+                <select id="font-scale-select" onchange="setFontScale(this.value)" style="width: 100%; padding: 10px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); min-height: 42px;">
                     <option value="100%">Standard (100%)</option>
                     <option value="115%">Medium (115%)</option>
                     <option value="130%">Large (130%)</option>
@@ -735,7 +865,7 @@
 
             <div>
                 <label style="font-weight: 600; font-size: 0.85rem;">⏱️ Practice Timer Mode:</label>
-                <select id="setting-timer-mode" onchange="QuizAppStore.updateSetting('timerMode', this.value)" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary);">
+                <select id="setting-timer-mode" onchange="QuizAppStore.updateSetting('timerMode', this.value)" style="width: 100%; padding: 10px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); min-height: 42px;">
                     <option value="none">Untimed (Default)</option>
                     <option value="per_question_30">30 Sec per Question</option>
                     <option value="10m">10 Minutes Total</option>
@@ -804,6 +934,114 @@ const AudioEngine = (function() {
     };
 })();
 
+/* ==========================================================================
+   MOBILE SEGMENTED SUBTAB CONTROLLER
+   ========================================================================== */
+
+let activeLibrarySubTab = 'quizzes';
+function switchLibrarySubTab(mode) {
+    activeLibrarySubTab = mode;
+    const left = document.getElementById('lib-col-left');
+    const right = document.getElementById('lib-col-right');
+    const btnLib = document.getElementById('seg-lib-btn');
+    const btnIde = document.getElementById('seg-ide-btn');
+
+    if (mode === 'quizzes') {
+        if (left) { left.classList.add('subtab-active'); left.classList.remove('subtab-hidden'); }
+        if (right) { right.classList.add('subtab-hidden'); right.classList.remove('subtab-active'); }
+        if (btnLib) btnLib.classList.add('active');
+        if (btnIde) btnIde.classList.remove('active');
+    } else {
+        if (right) { right.classList.add('subtab-active'); right.classList.remove('subtab-hidden'); }
+        if (left) { left.classList.add('subtab-hidden'); left.classList.remove('subtab-active'); }
+        if (btnIde) btnIde.classList.add('active');
+        if (btnLib) btnLib.classList.remove('active');
+    }
+}
+
+/* ==========================================================================
+   MASTERY & TIME-BASED SPACED REPETITION DECAY ALGORITHM
+   ========================================================================== */
+
+function getQuizEffectiveMastery(qz) {
+    if (!qz) return 0;
+    if (!qz.lastPracticed || qz.mastery === undefined) return 0;
+    
+    // Calculate days elapsed since last session
+    const daysElapsed = (Date.now() - qz.lastPracticed) / (1000 * 60 * 60 * 24);
+    const stability = qz.stability || 3.0; // Default stability is 3 days
+    
+    // Ebbinghaus Forgetting Curve / Exponential Retention Decay: R = e^(-t / S)
+    const retention = Math.exp(-daysElapsed / stability);
+    const effective = Math.max(0, Math.round(qz.mastery * retention));
+    return effective;
+}
+
+function updateQuizMastery(qz, correct, total) {
+    if (!qz || total <= 0) return;
+    const perfRatio = correct / total; // 0.0 to 1.0
+    const oldEffective = getQuizEffectiveMastery(qz);
+    
+    let newMastery = 0;
+    if (!qz.lastPracticed || qz.mastery === undefined) {
+        newMastery = Math.round(perfRatio * 100);
+    } else {
+        // Blend weighted decay retention (30%) with new session performance (70%)
+        newMastery = Math.round(oldEffective * 0.3 + (perfRatio * 100) * 0.7);
+    }
+    newMastery = Math.min(100, Math.max(0, newMastery));
+
+    // Dynamic Stability adjustment based on recall accuracy
+    let currentStability = qz.stability || 3.0;
+    if (perfRatio >= 0.85) {
+        // High mastery: Expand retention half-life (Anki/SuperMemo principle)
+        currentStability = Math.min(60, currentStability * 1.5 + 1.5);
+    } else if (perfRatio >= 0.60) {
+        // Moderate recall: Slight stability gain
+        currentStability = Math.min(60, currentStability * 1.1);
+    } else {
+        // Poor recall: Reset/Drop stability factor
+        currentStability = Math.max(1, currentStability * 0.5);
+    }
+
+    qz.mastery = newMastery;
+    qz.stability = currentStability;
+    qz.lastPracticed = Date.now();
+}
+
+function getMasteryMeterHTML(qz) {
+    const effectiveMastery = getQuizEffectiveMastery(qz);
+    const lastPracticed = qz.lastPracticed;
+
+    let color = 'var(--text-muted)';
+    let status = 'Not Started';
+    if (lastPracticed) {
+        if (effectiveMastery >= 80) { color = 'var(--success)'; status = 'Mastered'; }
+        else if (effectiveMastery >= 50) { color = 'var(--warning)'; status = 'Fading'; }
+        else { color = 'var(--danger)'; status = 'Needs Review'; }
+    }
+
+    let timeText = 'Never';
+    if (lastPracticed) {
+        const days = Math.floor((Date.now() - lastPracticed) / (1000 * 60 * 60 * 24));
+        if (days === 0) timeText = 'Today';
+        else if (days === 1) timeText = 'Yesterday';
+        else timeText = `${days}d ago`;
+    }
+
+    return `
+        <div class="mastery-meter-box" title="Mastery decays over time if not practiced. Score high to extend memory stability!">
+            <div class="mastery-meter-header">
+                <span style="color: ${color};">${status} (${effectiveMastery}%)</span>
+                <span style="color: var(--text-muted); font-weight: 500;">${timeText}</span>
+            </div>
+            <div class="mastery-bar-track">
+                <div class="mastery-bar-fill" style="width: ${effectiveMastery}%; background-color: ${color};"></div>
+            </div>
+        </div>
+    `;
+}
+
 function normalizeQuestion(q) {
     if (!q) return null;
     let type = q.type || (Array.isArray(q.answer) ? "multi-select" : typeof q.answer === "string" ? "fill-blank" : "mcq");
@@ -814,17 +1052,15 @@ function normalizeQuestion(q) {
         options: Array.isArray(q.options) ? [...q.options] : [],
         answer: q.answer !== undefined ? q.answer : 0,
         explain: q.explain || q.explanation || "",
+        sourceQuizId: q.sourceQuizId || "",
         sourceQuizTitle: q.sourceQuizTitle || ""
     };
 }
 
 function getQuestionKey(q) {
     if (!q) return '';
-    // Priority 1: Check if an explicit Wrong Pile mapping key exists
     if (q._wrongPileKey) return q._wrongPileKey;
-    // Priority 2: Standard question ID
     if (q.id) return q.id;
-    // Priority 3: Fallback content hash (sort options so shuffling options doesn't mutate key)
     const text = (q.q || '').trim().toLowerCase();
     const opts = (q.options || []).slice().sort().join('|').trim().toLowerCase();
     return text + '___' + opts;
@@ -835,7 +1071,7 @@ let db = {
     quizzes: [],
     history: [],
     wrongPile: {},
-    flashcardSRS: {}, // Holds persistent scheduled review intervals
+    flashcardSRS: {},
     questionNotes: {},
     settings: { theme: 'light', fontScale: '100%', audioMuted: false, shuffleOptions: true, timerMode: 'none' }
 };
@@ -849,7 +1085,15 @@ const QuizAppStore = (function() {
             try {
                 const parsed = JSON.parse(saved);
                 db.folders = parsed.folders || [];
-                db.quizzes = (parsed.quizzes || []).map(q => { q.questions = (q.questions || []).map(normalizeQuestion); return q; });
+                db.quizzes = (parsed.quizzes || []).map(q => {
+                    q.questions = (q.questions || []).map(quest => {
+                        const norm = normalizeQuestion(quest);
+                        norm.sourceQuizId = q.id;
+                        norm.sourceQuizTitle = q.title;
+                        return norm;
+                    });
+                    return q;
+                });
                 db.history = parsed.history || [];
                 db.wrongPile = parsed.wrongPile || {};
                 db.flashcardSRS = parsed.flashcardSRS || {};
@@ -874,13 +1118,15 @@ const QuizAppStore = (function() {
         setTheme: (t) => { db.settings.theme = t; applyTheme(t); saveState(); },
         updateSetting: (k, v) => { db.settings[k] = v; saveState(); },
         addQuiz: (qz) => {
+            qz.id = qz.id || 'quiz_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
             qz.questions = (qz.questions || []).map(q => {
                 const norm = normalizeQuestion(q);
+                norm.sourceQuizId = qz.id;
                 norm.sourceQuizTitle = qz.title || "Untitled Quiz";
                 return norm;
             });
-            qz.id = qz.id || 'quiz_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
             qz.folderId = resolveFolderForQuiz(qz);
+            qz.mastery = qz.mastery || 0;
             db.quizzes.push(qz);
             saveState();
             return qz.id;
@@ -1041,7 +1287,7 @@ function startFolderPracticeSession(folderId) {
     let combined = []; 
     folderQuizzes.forEach(q => {
         q.questions.forEach(quest => {
-            combined.push({ ...quest, sourceQuizTitle: q.title });
+            combined.push({ ...quest, sourceQuizId: q.id, sourceQuizTitle: q.title });
         });
     });
     combined.sort(() => Math.random() - 0.5);
@@ -1057,7 +1303,7 @@ function renderLibrary() {
     const searchTerm = (document.getElementById('library-search-input')?.value || '').toLowerCase().trim();
 
     if (db.quizzes.length === 0) {
-        container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 40px 0;">No quizzes in library yet. Create or import one to begin!</p>`;
+        container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 40px 0;">No quizzes in library yet.</p>`;
         return;
     }
 
@@ -1070,6 +1316,13 @@ function renderLibrary() {
     db.folders.forEach(folder => {
         const qList = folderMap[folder.id] ? folderMap[folder.id].quizzes : [];
         if (searchTerm && qList.length === 0) return;
+        
+        let avgMastery = 0;
+        if (qList.length > 0) {
+            let sum = qList.reduce((acc, q) => acc + getQuizEffectiveMastery(q), 0);
+            avgMastery = Math.round(sum / qList.length);
+        }
+
         html += `
             <div class="folder-card" id="folder-card-${folder.id}" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event, '${folder.id}')" ondragleave="handleDragLeave(event, '${folder.id}')" ondrop="handleDrop(event, '${folder.id}')">
                 <div class="folder-header" style="border-left-color: ${folder.color || 'var(--accent)'};">
@@ -1077,10 +1330,11 @@ function renderLibrary() {
                         <span>${folder.collapsed ? '▶' : '▼'}</span>
                         <b>📂 ${folder.name}</b>
                         <span class="badge badge-folder">${qList.length} Quiz${qList.length === 1 ? '' : 'zes'}</span>
+                        ${qList.length > 0 ? `<span class="badge badge-streak" style="margin-left: 4px;">Avg Mastery: ${avgMastery}%</span>` : ''}
                     </div>
                     <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                        <button class="btn btn-success btn-sm" onclick="startFolderPracticeSession('${folder.id}')" ${qList.length === 0 ? 'disabled' : ''}>🚀 Practice Folder</button>
-                        <button class="btn btn-secondary btn-sm" onclick="openEditFolderForm('${folder.id}')">✏️ Edit</button>
+                        <button class="btn btn-success btn-sm" onclick="startFolderPracticeSession('${folder.id}')" ${qList.length === 0 ? 'disabled' : ''}>🚀 Practice</button>
+                        <button class="btn btn-secondary btn-sm" onclick="openEditFolderForm('${folder.id}')">✏️</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteFolder('${folder.id}')">🗑️</button>
                     </div>
                 </div>
@@ -1113,21 +1367,26 @@ function renderLibrary() {
 
 function renderQuizItemHTML(q) {
     const folderOptions = db.folders.map(f => `<option value="${f.id}" ${q.folderId === f.id ? 'selected' : ''}>📁 ${f.name}</option>`).join('');
+    const masteryMeterHTML = getMasteryMeterHTML(q);
+
     return `
         <div class="quiz-item" data-quiz-id="${q.id}" draggable="true" ondragstart="handleDragStart(event, '${q.id}')">
-            <div>
-                <b style="color: var(--text-primary);">${q.title}</b>
+            <div style="flex: 1; min-width: 160px;">
+                <b style="color: var(--text-primary); font-size: 0.98rem;">${q.title}</b>
                 <div style="font-size: 0.8rem; color: var(--text-muted);">${q.questions.length} Questions | ${q.category || 'General'}</div>
             </div>
+            
+            ${masteryMeterHTML}
+
             <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                 <select class="btn-sm" onchange="moveQuizToFolder('${q.id}', this.value)" style="padding: 4px 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); font-size: 0.8rem;">
-                    <option value="">Move to Folder...</option>
+                    <option value="">Move...</option>
                     <option value="">(Unorganized)</option>
                     ${folderOptions}
                 </select>
                 <button class="btn btn-sm" onclick="startSingleQuiz('${q.id}')">▶ Run</button>
-                <button class="btn btn-secondary btn-sm" onclick="openEditQuizModal('${q.id}')">✏️ Edit</button>
-                <button class="btn btn-secondary btn-sm" onclick="cloneQuiz('${q.id}')">📋 Clone</button>
+                <button class="btn btn-secondary btn-sm" onclick="openEditQuizModal('${q.id}')">✏️</button>
+                <button class="btn btn-secondary btn-sm" onclick="cloneQuiz('${q.id}')">📋</button>
                 <button class="btn btn-danger btn-sm" onclick="deleteQuiz('${q.id}')">🗑️</button>
             </div>
         </div>
@@ -1138,6 +1397,7 @@ function cloneQuiz(id) {
     const qz = db.quizzes.find(q => q.id === id); if (!qz) return;
     const cloned = JSON.parse(JSON.stringify(qz));
     cloned.id = 'quiz_' + Date.now(); cloned.title = `${qz.title} (Copy)`;
+    cloned.mastery = 0; cloned.lastPracticed = null;
     db.quizzes.push(cloned); QuizAppStore.saveDatabase(); renderLibrary();
 }
 
@@ -1321,14 +1581,26 @@ function renderCompileChecklist() {
         const list = folderMap[folder.id].quizzes; if (list.length === 0) return;
         html += `<div style="margin-bottom: 12px; border-left: 4px solid ${folder.color || 'var(--accent)'}; padding-left: 10px;">
             <b style="color: var(--text-primary);">📂 ${folder.name}</b>
-            ${list.map(q => `<div style="margin: 4px 0 4px 10px;"><label style="cursor:pointer;"><input type="checkbox" class="compile-checkbox" value="${q.id}"> <b>${q.title}</b> (${q.questions.length} Qs)</label></div>`).join('')}
+            ${list.map(q => {
+                const effective = getQuizEffectiveMastery(q);
+                return `<div style="margin: 6px 0; display:flex; justify-content:space-between; align-items:center;">
+                    <label style="cursor:pointer;"><input type="checkbox" class="compile-checkbox" value="${q.id}"> <b>${q.title}</b> (${q.questions.length} Qs)</label>
+                    <span class="badge badge-streak" style="font-size:0.7rem;">Mastery: ${effective}%</span>
+                </div>`;
+            }).join('')}
         </div>`;
     });
 
     if (unorganized.length > 0) {
         html += `<div style="margin-bottom: 12px; border-left: 4px solid var(--text-muted); padding-left: 10px;">
             <b style="color: var(--text-primary);">📁 Unorganized</b>
-            ${unorganized.map(q => `<div style="margin: 4px 0 4px 10px;"><label style="cursor:pointer;"><input type="checkbox" class="compile-checkbox" value="${q.id}"> <b>${q.title}</b> (${q.questions.length} Qs)</label></div>`).join('')}
+            ${unorganized.map(q => {
+                const effective = getQuizEffectiveMastery(q);
+                return `<div style="margin: 6px 0; display:flex; justify-content:space-between; align-items:center;">
+                    <label style="cursor:pointer;"><input type="checkbox" class="compile-checkbox" value="${q.id}"> <b>${q.title}</b> (${q.questions.length} Qs)</label>
+                    <span class="badge badge-streak" style="font-size:0.7rem;">Mastery: ${effective}%</span>
+                </div>`;
+            }).join('')}
         </div>`;
     }
     container.innerHTML = html; renderMath(container);
@@ -1344,7 +1616,7 @@ function startCompiledQuiz() {
         const qz = db.quizzes.find(q => q.id === id);
         if (qz) {
             qz.questions.forEach(quest => {
-                compiled.push({ ...quest, sourceQuizTitle: qz.title });
+                compiled.push({ ...quest, sourceQuizId: qz.id, sourceQuizTitle: qz.title });
             });
         }
     });
@@ -1433,7 +1705,8 @@ function startWrongPileQuiz() {
         const item = db.wrongPile[k];
         const qCopy = JSON.parse(JSON.stringify(item.question));
         qCopy._wrongPileKey = k;
-        qCopy.sourceQuizTitle = item.sourceQuizTitle || qCopy.sourceQuizTitle || 'Weak Spots Practice';
+        qCopy.sourceQuizId = item.sourceQuizId || item.question.sourceQuizId;
+        qCopy.sourceQuizTitle = item.sourceQuizTitle || item.question.sourceQuizTitle || 'Weak Spots Practice';
         return qCopy;
     }).sort(() => Math.random() - 0.5);
     initSession(`Weak Spots Practice (${questions.length} Qs)`, questions);
@@ -1552,7 +1825,7 @@ function loadQuestion() {
         q.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
             btn.className = 'option-card';
-            btn.innerHTML = `<b>${String.fromCharCode(65 + idx)}.</b> ${opt}`;
+            btn.innerHTML = `<b>${String.fromCharCode(65 + idx)}.</b> &nbsp;${opt}`;
             if (answered) {
                 btn.disabled = true;
                 if (idx === q.answer) btn.classList.add('correct');
@@ -1574,7 +1847,7 @@ function loadQuestion() {
         q.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
             btn.className = 'option-card';
-            btn.innerHTML = `<b>${String.fromCharCode(65 + idx)}.</b> ${opt}`;
+            btn.innerHTML = `<b>${String.fromCharCode(65 + idx)}.</b> &nbsp;${opt}`;
 
             if (answered) {
                 btn.disabled = true;
@@ -1626,6 +1899,7 @@ function loadQuestion() {
         if (!answered) {
             const btn = document.createElement('button');
             btn.className = 'btn btn-success'; btn.innerText = 'Submit Answer';
+            btn.style.marginTop = '10px';
             btn.onclick = (e) => {
                 e.stopPropagation();
                 submitAnswer(input.value.trim());
@@ -1674,6 +1948,7 @@ function submitAnswer(val) {
             question: JSON.parse(JSON.stringify(q)),
             consecutiveCorrect: 0,
             lastFailed: new Date().toLocaleString(),
+            sourceQuizId: q.sourceQuizId || '',
             sourceQuizTitle: sourceTitle
         };
     }
@@ -1692,6 +1967,7 @@ function skipQuestion() {
         question: JSON.parse(JSON.stringify(q)),
         consecutiveCorrect: 0,
         lastFailed: new Date().toLocaleString() + " (Skipped)",
+        sourceQuizId: q.sourceQuizId || '',
         sourceQuizTitle: sourceTitle
     };
     QuizAppStore.saveDatabase(); renderWrongPile(); nextQuestion();
@@ -1736,6 +2012,7 @@ function toggleFlagCurrentQuestion() {
             question: JSON.parse(JSON.stringify(q)),
             consecutiveCorrect: 0,
             lastFailed: new Date().toLocaleString() + " (Flagged)",
+            sourceQuizId: q.sourceQuizId || '',
             sourceQuizTitle: sourceTitle
         };
     }
@@ -1768,8 +2045,32 @@ function finishSession() {
     document.getElementById('final-score').innerText = `${score} / ${total} (${pct}%)`;
     document.getElementById('final-msg').innerText = pct >= 70 ? "Target score achieved! 🎉" : "Keep practicing to improve!";
 
+    // Group question performance per source quiz to update individual Mastery meters independently
+    let quizPerformanceMap = {};
+    activeSession.questions.forEach((q, idx) => {
+        const qId = q.sourceQuizId;
+        if (!qId) return;
+        if (!quizPerformanceMap[qId]) quizPerformanceMap[qId] = { correct: 0, total: 0 };
+        quizPerformanceMap[qId].total++;
+        
+        const uAns = activeSession.userAnswers[idx];
+        if (uAns !== null && uAns !== -1) {
+            const evalRes = evaluateAnswer(q, uAns);
+            if (evalRes.isCorrect) quizPerformanceMap[qId].correct++;
+        }
+    });
+
+    // Apply mastery updates and decay curves to each participating quiz
+    Object.keys(quizPerformanceMap).forEach(qId => {
+        const parentQuiz = db.quizzes.find(x => x.id === qId);
+        if (parentQuiz) {
+            const stats = quizPerformanceMap[qId];
+            updateQuizMastery(parentQuiz, stats.correct, stats.total);
+        }
+    });
+
     db.history.unshift({ id: 'hist_' + Date.now(), quizTitle: activeSession.title, date: new Date().toLocaleString(), score: `${score}/${total}`, percentage: `${pct}%`, status: pct >= 70 ? 'PASS' : 'FAIL' });
-    QuizAppStore.saveDatabase(); renderHistory();
+    QuizAppStore.saveDatabase(); renderLibrary(); renderHistory();
 }
 
 function saveSessionBackup() { localStorage.setItem('active_quiz_session_backup', JSON.stringify(activeSession)); }
@@ -1803,7 +2104,7 @@ function discardSavedSession() {
 function startSingleQuiz(id) {
     const qz = db.quizzes.find(q => q.id === id); 
     if (qz) {
-        const questions = qz.questions.map(q => ({ ...q, sourceQuizTitle: qz.title }));
+        const questions = qz.questions.map(q => ({ ...q, sourceQuizId: qz.id, sourceQuizTitle: qz.title }));
         initSession(qz.title, questions);
     }
 }
@@ -2040,18 +2341,25 @@ const FlashcardEngine = (function() {
 
 function renderHistory() {
     const tbody = document.getElementById('history-rows');
+    
+    // Compute Global Average Retention Mastery
+    let avgRetention = 0;
+    if (db.quizzes && db.quizzes.length > 0) {
+        let sum = db.quizzes.reduce((acc, q) => acc + getQuizEffectiveMastery(q), 0);
+        avgRetention = Math.round(sum / db.quizzes.length);
+    }
+    document.getElementById('analytic-accuracy').innerText = `${avgRetention}%`;
+    document.getElementById('analytic-weakspots').innerText = Object.keys(db.wrongPile || {}).length;
+
     if (!db.history || db.history.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No history recorded yet.</td></tr>`;
-        document.getElementById('analytic-accuracy').innerText = '0%';
         document.getElementById('analytic-sessions').innerText = '0';
-        document.getElementById('analytic-weakspots').innerText = Object.keys(db.wrongPile || {}).length;
         return;
     }
 
-    let totalScore = 0, totalPossible = 0;
+    document.getElementById('analytic-sessions').innerText = db.history.length;
+
     tbody.innerHTML = db.history.map((h, i) => {
-        const parts = (h.score || '0/0').split('/');
-        totalScore += parseInt(parts[0]) || 0; totalPossible += parseInt(parts[1]) || 0;
         return `
             <tr>
                 <td>${i + 1}</td>
@@ -2063,11 +2371,6 @@ function renderHistory() {
             </tr>
         `;
     }).join('');
-
-    const acc = totalPossible > 0 ? Math.round((totalScore / totalPossible) * 100) : 0;
-    document.getElementById('analytic-accuracy').innerText = `${acc}%`;
-    document.getElementById('analytic-sessions').innerText = db.history.length;
-    document.getElementById('analytic-weakspots').innerText = Object.keys(db.wrongPile || {}).length;
 }
 
 function clearHistory() { if (confirm("Clear all master progress history?")) { db.history = []; QuizAppStore.saveDatabase(); renderHistory(); } }
@@ -2150,6 +2453,7 @@ function switchTab(id) {
     const btn = Array.from(document.querySelectorAll('.nav-pill')).find(b => b.getAttribute('onclick').includes(id));
     if (btn) btn.classList.add('active');
     document.getElementById(id).classList.add('active');
+    if (id === 'library-tab') renderLibrary();
     if (id === 'compile-tab') renderCompileChecklist();
     if (id === 'wrong-tab') renderWrongPile();
     if (id === 'flashcard-tab') FlashcardEngine.init();
