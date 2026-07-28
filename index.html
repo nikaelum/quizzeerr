@@ -237,6 +237,24 @@
             min-height: 40px;
         }
 
+        .btn-icon-menu {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 1.1rem;
+            line-height: 1;
+            transition: all 0.15s ease;
+            min-height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-icon-menu:hover { background: var(--bg); border-color: var(--accent); color: var(--accent); }
+
         /* SEGMENTED SWITCHER (FOR MOBILE LIBRARY & IDE) */
         .library-segmented-switch {
             display: flex;
@@ -346,6 +364,43 @@
         .quiz-item[draggable="true"] { cursor: grab; user-select: none; }
         .quiz-item[draggable="true"]:active { cursor: grabbing; opacity: 0.6; }
         .quiz-item.highlight { background: var(--success-bg) !important; border-color: var(--success) !important; }
+
+        /* ACTION MENU LIST STYLES */
+        .action-menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .action-menu-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            transition: all 0.15s ease;
+        }
+
+        .action-menu-btn:hover {
+            background: var(--bg);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .action-menu-btn.danger:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: var(--danger-bg);
+        }
 
         /* MASTERY METER STYLES */
         .mastery-meter-box {
@@ -483,6 +538,10 @@
         .badge-folder { background: var(--accent-bg); color: var(--accent); }
         .badge-success { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
         .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
+
+        /* DISABLED QUESTION STYLING */
+        .question-item-disabled { opacity: 0.6; background: var(--bg) !important; border-style: dashed !important; }
+        .question-text-disabled { text-decoration: line-through; color: var(--text-muted); }
 
         /* ==========================================================================
            DEVICE BREAKPOINTS (MOBILE, TABLET, DESKTOP)
@@ -666,7 +725,10 @@
 
             <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                 <button id="prev-btn" class="btn btn-secondary" onclick="prevQuestion()" disabled>Previous</button>
-                <button id="flag-btn" class="btn btn-warning" onclick="toggleFlagCurrentQuestion()">🏳️ Flag Question</button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button id="flag-btn" class="btn btn-warning" onclick="toggleFlagCurrentQuestion()">🏳️ Flag Question</button>
+                    <button id="disable-session-q-btn" class="btn btn-secondary" onclick="disableCurrentQuestionInSession()" title="Exclude this question permanently from practice sessions">🚫 Disable Question</button>
+                </div>
                 <button id="next-btn" class="btn" onclick="nextQuestion()" disabled>Next Question</button>
             </div>
             <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; text-align: center;">💡 Tip: Press <b>Spacebar</b> or <b>Click anywhere in the card</b> to proceed to the next question.</div>
@@ -780,7 +842,51 @@
     </div>
 </div>
 
-<!-- QUIZ PERFORMANCE ANALYTICS INSPECTOR MODAL -->
+<!-- EXPANDABLE QUIZ OPTIONS SHEET MODAL -->
+<div id="quiz-options-modal" class="modal-overlay">
+    <div class="modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <div>
+                <b style="font-size: 1.1rem; display: block;" id="qopt-modal-title">Quiz Options</b>
+                <span style="font-size: 0.8rem; color: var(--text-muted);" id="qopt-modal-subtitle">Category • 0 Qs</span>
+            </div>
+            <button class="btn-sm btn-secondary" onclick="toggleQuizOptionsModal(false)">✕ Close</button>
+        </div>
+        <div class="action-menu-list">
+            <button class="action-menu-btn" onclick="execQuizOption('run')">▶ Start Practice Session</button>
+            <button class="action-menu-btn" onclick="execQuizOption('stats')">📊 Questions, Toggles & Analytics</button>
+            <button class="action-menu-btn" onclick="execQuizOption('edit')">✏️ Edit Quiz Title & Category</button>
+            <button class="action-menu-btn" onclick="execQuizOption('clone')">📋 Duplicate / Clone Quiz</button>
+            
+            <div style="padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); margin-top: 4px;">
+                <label style="font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px; color: var(--text-muted);">📁 Move to Folder:</label>
+                <select id="qopt-folder-select" onchange="execQuizOption('move', this.value)" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); font-size: 0.88rem; font-weight: 600; min-height: 40px; cursor: pointer;"></select>
+            </div>
+
+            <button class="action-menu-btn danger" onclick="execQuizOption('delete')" style="margin-top: 4px;">🗑️ Delete Quiz</button>
+        </div>
+    </div>
+</div>
+
+<!-- EXPANDABLE FOLDER OPTIONS SHEET MODAL -->
+<div id="folder-options-modal" class="modal-overlay">
+    <div class="modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <div>
+                <b style="font-size: 1.1rem; display: block;" id="fopt-modal-title">Folder Options</b>
+                <span style="font-size: 0.8rem; color: var(--text-muted);" id="fopt-modal-subtitle">Folder Options</span>
+            </div>
+            <button class="btn-sm btn-secondary" onclick="toggleFolderOptionsModal(false)">✕ Close</button>
+        </div>
+        <div class="action-menu-list">
+            <button class="action-menu-btn" id="fopt-practice-btn" onclick="execFolderOption('practice')">🚀 Practice All Quizzes in Folder</button>
+            <button class="action-menu-btn" onclick="execFolderOption('edit')">✏️ Edit Folder Name & Accent Color</button>
+            <button class="action-menu-btn danger" onclick="execFolderOption('delete')" style="margin-top: 4px;">🗑️ Delete Folder</button>
+        </div>
+    </div>
+</div>
+
+<!-- QUIZ PERFORMANCE ANALYTICS & QUESTION INSPECTOR MODAL -->
 <div id="quiz-analytics-modal" class="modal-overlay">
     <div class="modal-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
@@ -799,10 +905,11 @@
         </div>
 
         <div style="display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px;">
-            <button class="btn btn-sm btn-success" id="qa-filter-all" onclick="filterQuizAnalyticsQuestions('all')">All Questions</button>
+            <button class="btn btn-sm btn-success" id="qa-filter-all" onclick="filterQuizAnalyticsQuestions('all')">All Active</button>
             <button class="btn btn-sm btn-secondary" id="qa-filter-struggling" onclick="filterQuizAnalyticsQuestions('struggling')">🔴 Struggling</button>
             <button class="btn btn-sm btn-secondary" id="qa-filter-hesitant" onclick="filterQuizAnalyticsQuestions('hesitant')">🟡 Hesitant</button>
             <button class="btn btn-sm btn-secondary" id="qa-filter-mastered" onclick="filterQuizAnalyticsQuestions('mastered')">🟢 Mastered</button>
+            <button class="btn btn-sm btn-secondary" id="qa-filter-disabled" onclick="filterQuizAnalyticsQuestions('disabled')">🚫 Disabled (<span id="qa-disabled-count">0</span>)</button>
         </div>
 
         <div id="qa-questions-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow-y: auto; padding-right: 4px;">
@@ -811,7 +918,7 @@
 
         <div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
             <button class="btn btn-warning btn-sm" id="qa-practice-weak-btn" onclick="startTargetedQuizPractice('struggling')">🚀 Practice Targeted Weak Spots</button>
-            <button class="btn btn-success btn-sm" id="qa-run-full-btn" onclick="startTargetedQuizPractice('all')">▶ Run Full Quiz</button>
+            <button class="btn btn-success btn-sm" id="qa-run-full-btn" onclick="startTargetedQuizPractice('all')">▶ Run Active Quiz</button>
         </div>
     </div>
 </div>
@@ -1082,7 +1189,8 @@ function normalizeQuestion(q) {
         answer: q.answer !== undefined ? q.answer : 0,
         explain: q.explain || q.explanation || "",
         sourceQuizId: q.sourceQuizId || "",
-        sourceQuizTitle: q.sourceQuizTitle || ""
+        sourceQuizTitle: q.sourceQuizTitle || "",
+        disabled: !!q.disabled
     };
 }
 
@@ -1317,17 +1425,83 @@ function startFolderPracticeSession(folderId) {
     if (folderQuizzes.length === 0) return alert("No quizzes in this folder!");
     let combined = []; 
     folderQuizzes.forEach(q => {
-        q.questions.forEach(quest => {
+        q.questions.filter(quest => !quest.disabled).forEach(quest => {
             combined.push({ ...quest, sourceQuizId: q.id, sourceQuizTitle: q.title });
         });
     });
+    if (combined.length === 0) return alert("No enabled questions found in this folder!");
     combined.sort(() => Math.random() - 0.5);
     initSession(`Folder Practice: ${folder.name} (${combined.length} Qs)`, combined);
 }
 
 /* ==========================================================================
-   LIBRARY RENDER & EDIT MODAL
+   MINIMALIST ACTION MENUS & LIBRARY RENDER
    ========================================================================== */
+
+let activeMenuQuizId = null;
+let activeMenuFolderId = null;
+
+function openQuizOptionsMenu(quizId) {
+    activeMenuQuizId = quizId;
+    const qz = db.quizzes.find(q => q.id === quizId);
+    if (!qz) return;
+
+    const activeQs = qz.questions.filter(q => !q.disabled).length;
+    document.getElementById('qopt-modal-title').innerText = qz.title;
+    document.getElementById('qopt-modal-subtitle').innerText = `${qz.category || 'General'} • ${activeQs}/${qz.questions.length} Active Qs`;
+
+    const folderSelect = document.getElementById('qopt-folder-select');
+    folderSelect.innerHTML = '<option value="">(Unorganized)</option>' +
+        db.folders.map(f => `<option value="${f.id}" ${qz.folderId === f.id ? 'selected' : ''}>📁 ${f.name}</option>`).join('');
+
+    toggleQuizOptionsModal(true);
+}
+
+function toggleQuizOptionsModal(show) {
+    document.getElementById('quiz-options-modal').style.display = show ? 'flex' : 'none';
+}
+
+function execQuizOption(action, payload) {
+    const quizId = activeMenuQuizId;
+    toggleQuizOptionsModal(false);
+    if (!quizId) return;
+
+    if (action === 'run') startSingleQuiz(quizId);
+    else if (action === 'stats') openQuizAnalyticsModal(quizId);
+    else if (action === 'edit') openEditQuizModal(quizId);
+    else if (action === 'clone') cloneQuiz(quizId);
+    else if (action === 'move') moveQuizToFolder(quizId, payload);
+    else if (action === 'delete') deleteQuiz(quizId);
+}
+
+function openFolderOptionsMenu(folderId) {
+    activeMenuFolderId = folderId;
+    const folder = db.folders.find(f => f.id === folderId);
+    if (!folder) return;
+
+    const folderQuizzes = db.quizzes.filter(q => q.folderId === folderId);
+    document.getElementById('fopt-modal-title').innerText = `📂 ${folder.name}`;
+    document.getElementById('fopt-modal-subtitle').innerText = `${folderQuizzes.length} Quiz${folderQuizzes.length === 1 ? '' : 'zes'}`;
+
+    const practiceBtn = document.getElementById('fopt-practice-btn');
+    practiceBtn.disabled = folderQuizzes.length === 0;
+
+    toggleFolderOptionsModal(true);
+}
+
+function toggleFolderOptionsModal(show) {
+    document.getElementById('folder-options-modal').style.display = show ? 'flex' : 'none';
+}
+
+function execFolderOption(action) {
+    const folderId = activeMenuFolderId;
+    toggleFolderOptionsModal(false);
+    if (!folderId) return;
+
+    if (action === 'practice') startFolderPracticeSession(folderId);
+    else if (action === 'edit') openEditFolderForm(folderId);
+    else if (action === 'delete') deleteFolder(folderId);
+}
 
 function renderLibrary() {
     const container = document.getElementById('quiz-list-container');
@@ -1363,14 +1537,13 @@ function renderLibrary() {
                         <span class="badge badge-folder">${qList.length} Quiz${qList.length === 1 ? '' : 'zes'}</span>
                         ${qList.length > 0 ? `<span class="badge badge-streak" style="margin-left: 4px;">Avg Mastery: ${avgMastery}%</span>` : ''}
                     </div>
-                    <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 6px; align-items: center;">
                         <button class="btn btn-success btn-sm" onclick="startFolderPracticeSession('${folder.id}')" ${qList.length === 0 ? 'disabled' : ''}>🚀 Practice</button>
-                        <button class="btn btn-secondary btn-sm" onclick="openEditFolderForm('${folder.id}')">✏️</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteFolder('${folder.id}')">🗑️</button>
+                        <button class="btn-icon-menu" onclick="openFolderOptionsMenu('${folder.id}')" title="Folder Options">⋮</button>
                     </div>
                 </div>
                 <div class="folder-content ${folder.collapsed ? 'collapsed' : ''}">
-                    ${qList.length === 0 ? `<p style="font-size: 0.82rem; color: var(--text-muted); margin: 5px 0;">Drag quizzes here or use dropdown to organize!</p>` : ''}
+                    ${qList.length === 0 ? `<p style="font-size: 0.82rem; color: var(--text-muted); margin: 5px 0;">Drag quizzes here or use Options (⋮) to organize!</p>` : ''}
                     ${qList.map(q => renderQuizItemHTML(q)).join('')}
                 </div>
             </div>
@@ -1397,29 +1570,25 @@ function renderLibrary() {
 }
 
 function renderQuizItemHTML(q) {
-    const folderOptions = db.folders.map(f => `<option value="${f.id}" ${q.folderId === f.id ? 'selected' : ''}>📁 ${f.name}</option>`).join('');
     const masteryMeterHTML = getMasteryMeterHTML(q);
+    const activeCount = q.questions.filter(quest => !quest.disabled).length;
+    const totalCount = q.questions.length;
+    const disabledCount = totalCount - activeCount;
 
     return `
         <div class="quiz-item" data-quiz-id="${q.id}" draggable="true" ondragstart="handleDragStart(event, '${q.id}')">
             <div style="flex: 1; min-width: 160px;">
-                <b style="color: var(--text-primary); font-size: 0.98rem; cursor: pointer;" onclick="openQuizAnalyticsModal('${q.id}')" title="Click to view question analytics">${q.title}</b>
-                <div style="font-size: 0.8rem; color: var(--text-muted);">${q.questions.length} Questions | ${q.category || 'General'}</div>
+                <b style="color: var(--text-primary); font-size: 0.98rem; cursor: pointer;" onclick="openQuizAnalyticsModal('${q.id}')" title="Click to view question analytics & toggles">${q.title}</b>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">
+                    ${activeCount} Active Qs ${disabledCount > 0 ? `<span style="color:var(--danger);">(${disabledCount} Disabled)</span>` : ''} | ${q.category || 'General'}
+                </div>
             </div>
             
             ${masteryMeterHTML}
 
-            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                <select class="btn-sm" onchange="moveQuizToFolder('${q.id}', this.value)" style="padding: 4px 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); font-size: 0.8rem;">
-                    <option value="">Move...</option>
-                    <option value="">(Unorganized)</option>
-                    ${folderOptions}
-                </select>
-                <button class="btn btn-sm" onclick="startSingleQuiz('${q.id}')">▶ Run</button>
-                <button class="btn btn-secondary btn-sm" onclick="openQuizAnalyticsModal('${q.id}')" title="Inspect Speed & Concept Analytics">📊 Stats</button>
-                <button class="btn btn-secondary btn-sm" onclick="openEditQuizModal('${q.id}')">✏️</button>
-                <button class="btn btn-secondary btn-sm" onclick="cloneQuiz('${q.id}')">📋</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteQuiz('${q.id}')">🗑️</button>
+            <div style="display: flex; gap: 6px; align-items: center;">
+                <button class="btn btn-sm" onclick="startSingleQuiz('${q.id}')" ${activeCount === 0 ? 'disabled title="All questions are disabled"' : ''}>▶ Run</button>
+                <button class="btn-icon-menu" onclick="openQuizOptionsMenu('${q.id}')" title="Quiz Options">⋮</button>
             </div>
         </div>
     `;
@@ -1477,7 +1646,7 @@ function highlightQuizInLibrary(quizId) {
 }
 
 /* ==========================================================================
-   QUESTION-LEVEL SPEED & CONCEPT ANALYTICS ENGINE
+   QUESTION-LEVEL SPEED, CONCEPT ANALYTICS & QUESTION DISABLING ENGINE
    ========================================================================== */
 
 let activeInspectedQuizId = null;
@@ -1493,7 +1662,9 @@ function getQuestionAnalytics(q) {
     const avgTimeSec = attempts > 0 ? (stats.totalTimeMs / attempts / 1000).toFixed(1) : 0;
 
     let status = 'unattempted';
-    if (attempts > 0) {
+    if (q.disabled) {
+        status = 'disabled';
+    } else if (attempts > 0) {
         if (acc < 70 || isFlagged) {
             status = 'struggling';
         } else if (parseFloat(avgTimeSec) > 6.0) {
@@ -1505,7 +1676,7 @@ function getQuestionAnalytics(q) {
         status = 'struggling';
     }
 
-    return { attempts, correct, acc, avgTimeSec: parseFloat(avgTimeSec), status, isFlagged };
+    return { attempts, correct, acc, avgTimeSec: parseFloat(avgTimeSec), status, isFlagged, isDisabled: !!q.disabled };
 }
 
 function openQuizAnalyticsModal(quizId) {
@@ -1514,31 +1685,35 @@ function openQuizAnalyticsModal(quizId) {
     if (!qz) return;
 
     document.getElementById('qa-modal-quiz-title').innerText = qz.title;
-    document.getElementById('qa-modal-quiz-category').innerText = `${qz.category || 'General'} • ${qz.questions.length} Questions`;
-
+    
     // Aggregate statistics across questions
     let totalAttempts = 0, totalCorrect = 0, totalTimeMs = 0;
-    let instantCount = 0, strugglingCount = 0;
+    let instantCount = 0, strugglingCount = 0, disabledCount = 0;
 
     qz.questions.forEach(q => {
+        if (q.disabled) disabledCount++;
         const qa = getQuestionAnalytics(q);
-        if (qa.attempts > 0) {
+        if (qa.attempts > 0 && !q.disabled) {
             totalAttempts += qa.attempts;
             totalCorrect += qa.correct;
             totalTimeMs += (qa.avgTimeSec * qa.attempts * 1000);
             if (qa.status === 'mastered') instantCount++;
         }
-        if (qa.status === 'struggling') strugglingCount++;
+        if (qa.status === 'struggling' && !q.disabled) strugglingCount++;
     });
+
+    const activeQuestions = qz.questions.filter(q => !q.disabled);
+    document.getElementById('qa-modal-quiz-category').innerText = `${qz.category || 'General'} • ${activeQuestions.length}/${qz.questions.length} Active Questions`;
 
     const quizAcc = totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
     const quizAvgSpeed = totalAttempts > 0 ? (totalTimeMs / totalAttempts / 1000).toFixed(1) : '0.0';
-    const highConfidencePct = qz.questions.length > 0 ? Math.round((instantCount / qz.questions.length) * 100) : 0;
+    const highConfidencePct = activeQuestions.length > 0 ? Math.round((instantCount / activeQuestions.length) * 100) : 0;
 
     document.getElementById('qa-stat-acc').innerText = `${quizAcc}%`;
     document.getElementById('qa-stat-speed').innerText = `${quizAvgSpeed}s`;
     document.getElementById('qa-stat-instant').innerText = `${highConfidencePct}%`;
     document.getElementById('qa-stat-struggling').innerText = strugglingCount;
+    document.getElementById('qa-disabled-count').innerText = disabledCount;
 
     filterQuizAnalyticsQuestions('all');
     toggleQuizAnalyticsModal(true);
@@ -1548,12 +1723,24 @@ function toggleQuizAnalyticsModal(show) {
     document.getElementById('quiz-analytics-modal').style.display = show ? 'flex' : 'none';
 }
 
+function toggleQuestionDisabled(quizId, questionId) {
+    const qz = db.quizzes.find(q => q.id === quizId);
+    if (!qz) return;
+    const quest = qz.questions.find(q => q.id === questionId);
+    if (quest) {
+        quest.disabled = !quest.disabled;
+        QuizAppStore.saveDatabase();
+        openQuizAnalyticsModal(quizId);
+        renderLibrary();
+    }
+}
+
 function filterQuizAnalyticsQuestions(filterType) {
     activeAnalyticsFilter = filterType;
     const qz = db.quizzes.find(q => q.id === activeInspectedQuizId);
     if (!qz) return;
 
-    ['all', 'struggling', 'hesitant', 'mastered'].forEach(type => {
+    ['all', 'struggling', 'hesitant', 'mastered', 'disabled'].forEach(type => {
         const btn = document.getElementById(`qa-filter-${type}`);
         if (btn) {
             btn.className = (type === filterType) ? 'btn btn-sm btn-success' : 'btn btn-sm btn-secondary';
@@ -1565,8 +1752,9 @@ function filterQuizAnalyticsQuestions(filterType) {
 
     let list = qz.questions.filter(q => {
         const qa = getQuestionAnalytics(q);
-        if (filterType === 'all') return true;
-        return qa.status === filterType;
+        if (filterType === 'all') return !q.disabled;
+        if (filterType === 'disabled') return !!q.disabled;
+        return !q.disabled && qa.status === filterType;
     });
 
     if (list.length === 0) {
@@ -1577,20 +1765,38 @@ function filterQuizAnalyticsQuestions(filterType) {
     container.innerHTML = list.map((q, idx) => {
         const qa = getQuestionAnalytics(q);
         let badgeHTML = '';
-        if (qa.status === 'mastered') badgeHTML = `<span class="badge badge-success">🟢 Instant (${qa.avgTimeSec}s)</span>`;
-        else if (qa.status === 'hesitant') badgeHTML = `<span class="badge badge-streak">🟡 Hesitant (${qa.avgTimeSec}s)</span>`;
-        else if (qa.status === 'struggling') badgeHTML = `<span class="badge badge-danger">🔴 Struggling (${qa.acc}%)</span>`;
-        else badgeHTML = `<span class="badge badge-folder">⚪ Unattempted</span>`;
+        if (q.disabled) {
+            badgeHTML = `<span class="badge badge-danger">🚫 Disabled</span>`;
+        } else if (qa.status === 'mastered') {
+            badgeHTML = `<span class="badge badge-success">🟢 Instant (${qa.avgTimeSec}s)</span>`;
+        } else if (qa.status === 'hesitant') {
+            badgeHTML = `<span class="badge badge-streak">🟡 Hesitant (${qa.avgTimeSec}s)</span>`;
+        } else if (qa.status === 'struggling') {
+            badgeHTML = `<span class="badge badge-danger">🔴 Struggling (${qa.acc}%)</span>`;
+        } else {
+            badgeHTML = `<span class="badge badge-folder">⚪ Unattempted</span>`;
+        }
 
-        if (qa.isFlagged) badgeHTML += ` <span class="badge badge-streak">🚩 Flagged</span>`;
+        if (qa.isFlagged && !q.disabled) badgeHTML += ` <span class="badge badge-streak">🚩 Flagged</span>`;
+
+        const toggleBtnHTML = `
+            <button class="btn btn-sm ${q.disabled ? 'btn-success' : 'btn-secondary'}" 
+                    onclick="event.stopPropagation(); toggleQuestionDisabled('${activeInspectedQuizId}', '${q.id}')"
+                    title="${q.disabled ? 'Re-enable this question for sessions' : 'Exclude this question from all practice sessions'}">
+                ${q.disabled ? '👁️ Enable' : '🚫 Disable'}
+            </button>
+        `;
 
         return `
-            <div style="border: 1px solid var(--border); padding: 10px 12px; border-radius: 8px; background: var(--bg);">
+            <div class="quiz-item ${q.disabled ? 'question-item-disabled' : ''}" style="margin-bottom:0; padding:10px 12px; display:flex; flex-direction:column; align-items:stretch;">
                 <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
                     <span style="font-weight:700; font-size:0.82rem; color:var(--text-muted);">Q${idx+1}</span>
-                    <div>${badgeHTML}</div>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                        ${badgeHTML}
+                        ${toggleBtnHTML}
+                    </div>
                 </div>
-                <div style="font-size:0.9rem; font-weight:600;">${q.q}</div>
+                <div style="font-size:0.9rem; font-weight:600;" class="${q.disabled ? 'question-text-disabled' : ''}">${q.q}</div>
                 <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">Attempts: ${qa.correct}/${qa.attempts} | Avg Response: ${qa.avgTimeSec}s</div>
             </div>
         `;
@@ -1604,13 +1810,14 @@ function startTargetedQuizPractice(filterType) {
     if (!qz) return;
 
     let targetQuestions = qz.questions.filter(q => {
+        if (q.disabled) return false; // System-wide Exclusion Rule
         const qa = getQuestionAnalytics(q);
         if (filterType === 'all') return true;
         if (filterType === 'struggling') return qa.status === 'struggling' || qa.status === 'hesitant';
         return qa.status === filterType;
     });
 
-    if (targetQuestions.length === 0) return alert("No questions matching this target criteria!");
+    if (targetQuestions.length === 0) return alert("No active enabled questions matching this criteria!");
 
     toggleQuizAnalyticsModal(false);
     const questionsCopy = targetQuestions.map(q => ({ ...q, sourceQuizId: qz.id, sourceQuizTitle: qz.title }));
@@ -1756,8 +1963,9 @@ function renderCompileChecklist() {
             <b style="color: var(--text-primary);">📂 ${folder.name}</b>
             ${list.map(q => {
                 const effective = getQuizEffectiveMastery(q);
+                const activeQs = q.questions.filter(quest => !quest.disabled).length;
                 return `<div style="margin: 6px 0; display:flex; justify-content:space-between; align-items:center;">
-                    <label style="cursor:pointer;"><input type="checkbox" class="compile-checkbox" value="${q.id}"> <b>${q.title}</b> (${q.questions.length} Qs)</label>
+                    <label style="cursor:pointer;"><input type="checkbox" class="compile-checkbox" value="${q.id}"> <b>${q.title}</b> (${activeQs}/${q.questions.length} Active Qs)</label>
                     <span class="badge badge-streak" style="font-size:0.7rem;">Mastery: ${effective}%</span>
                 </div>`;
             }).join('')}
@@ -1769,8 +1977,9 @@ function renderCompileChecklist() {
             <b style="color: var(--text-primary);">📁 Unorganized</b>
             ${unorganized.map(q => {
                 const effective = getQuizEffectiveMastery(q);
+                const activeQs = q.questions.filter(quest => !quest.disabled).length;
                 return `<div style="margin: 6px 0; display:flex; justify-content:space-between; align-items:center;">
-                    <label style="cursor:pointer;"><input type="checkbox" class="compile-checkbox" value="${q.id}"> <b>${q.title}</b> (${q.questions.length} Qs)</label>
+                    <label style="cursor:pointer;"><input type="checkbox" class="compile-checkbox" value="${q.id}"> <b>${q.title}</b> (${activeQs}/${q.questions.length} Active Qs)</label>
                     <span class="badge badge-streak" style="font-size:0.7rem;">Mastery: ${effective}%</span>
                 </div>`;
             }).join('')}
@@ -1788,11 +1997,12 @@ function startCompiledQuiz() {
     checked.forEach(id => {
         const qz = db.quizzes.find(q => q.id === id);
         if (qz) {
-            qz.questions.forEach(quest => {
+            qz.questions.filter(quest => !quest.disabled).forEach(quest => {
                 compiled.push({ ...quest, sourceQuizId: qz.id, sourceQuizTitle: qz.title });
             });
         }
     });
+    if (compiled.length === 0) return alert("No active enabled questions found in selected quizzes!");
     compiled.sort(() => Math.random() - 0.5);
     initSession(`Compiled Set (${checked.length} Topics)`, compiled);
 }
@@ -1801,7 +2011,15 @@ function combineAndSaveToLibrary() {
     const checked = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
     if (checked.length === 0) return alert("Select at least one quiz!");
     let compiled = [], titles = [];
-    checked.forEach(id => { const qz = db.quizzes.find(q => q.id === id); if (qz) { compiled.push(...JSON.parse(JSON.stringify(qz.questions))); titles.push(qz.title); } });
+    checked.forEach(id => { 
+        const qz = db.quizzes.find(q => q.id === id); 
+        if (qz) { 
+            const activeQs = qz.questions.filter(q => !q.disabled);
+            compiled.push(...JSON.parse(JSON.stringify(activeQs))); 
+            titles.push(qz.title); 
+        } 
+    });
+    if (compiled.length === 0) return alert("No active enabled questions to combine!");
     const name = prompt("Enter title for compiled quiz:", "Combined - " + titles.slice(0, 2).join(", "));
     if (!name) return;
     const newId = QuizAppStore.addQuiz({ title: name.trim(), category: "Combined", questions: compiled });
@@ -1812,7 +2030,10 @@ function exportMergedQuizJSON() {
     const checked = Array.from(document.querySelectorAll('.compile-checkbox:checked')).map(cb => cb.value);
     if (checked.length === 0) return alert("Select quizzes to export!");
     let questions = [];
-    checked.forEach(id => { const qz = db.quizzes.find(q => q.id === id); if (qz) questions.push(...qz.questions); });
+    checked.forEach(id => { 
+        const qz = db.quizzes.find(q => q.id === id); 
+        if (qz) questions.push(...qz.questions.filter(q => !q.disabled)); 
+    });
     downloadJSONFile({ title: "Merged Quiz Export", questions }, "merged_quiz.json");
 }
 
@@ -1881,7 +2102,9 @@ function startWrongPileQuiz() {
         qCopy.sourceQuizId = item.sourceQuizId || item.question.sourceQuizId;
         qCopy.sourceQuizTitle = item.sourceQuizTitle || item.question.sourceQuizTitle || 'Weak Spots Practice';
         return qCopy;
-    }).sort(() => Math.random() - 0.5);
+    }).filter(q => !q.disabled).sort(() => Math.random() - 0.5);
+
+    if (questions.length === 0) return alert("No active enabled questions in Weak Spots!");
     initSession(`Weak Spots Practice (${questions.length} Qs)`, questions);
 }
 
@@ -1898,7 +2121,12 @@ let currentQuestionStartTime = 0;
 function initSession(title, rawQuestions) {
     const shuffleEnabled = document.getElementById('setting-shuffle-options').checked;
     const timerSetting = document.getElementById('setting-timer-mode').value;
-    let questions = JSON.parse(JSON.stringify(rawQuestions));
+    // Exclude disabled questions system-wide
+    let questions = JSON.parse(JSON.stringify(rawQuestions)).filter(q => !q.disabled);
+
+    if (questions.length === 0) {
+        return alert("All questions for this session are currently disabled! Re-enable them in the Library Question Breakdown.");
+    }
 
     if (shuffleEnabled) {
         questions.forEach(q => {
@@ -2158,6 +2386,56 @@ function skipQuestion() {
     QuizAppStore.saveDatabase(); renderWrongPile(); nextQuestion();
 }
 
+/* ON-THE-FLY QUESTION DISABLING DURING SESSIONS */
+function disableCurrentQuestionInSession() {
+    if (!activeSession || !activeSession.questions || activeSession.questions.length === 0) return;
+    const currentQ = activeSession.questions[activeSession.currentIndex];
+    if (!currentQ) return;
+
+    if (confirm("🚫 Disable this question?\n\nIt will be permanently excluded from all future practice sessions. You can re-enable it anytime in the Library Question Breakdown.")) {
+        // Update database record for this question
+        let found = false;
+        if (currentQ.sourceQuizId) {
+            const parentQuiz = db.quizzes.find(qz => qz.id === currentQ.sourceQuizId);
+            if (parentQuiz) {
+                const targetQ = parentQuiz.questions.find(q => (q.id && q.id === currentQ.id) || getQuestionKey(q) === getQuestionKey(currentQ));
+                if (targetQ) {
+                    targetQ.disabled = true;
+                    found = true;
+                }
+            }
+        }
+        if (!found) {
+            db.quizzes.forEach(qz => {
+                const targetQ = qz.questions.find(q => (q.id && q.id === currentQ.id) || getQuestionKey(q) === getQuestionKey(currentQ));
+                if (targetQ) {
+                    targetQ.disabled = true;
+                    found = true;
+                }
+            });
+        }
+
+        currentQ.disabled = true;
+        QuizAppStore.saveDatabase();
+
+        // Remove from active practice queue and advance
+        activeSession.questions.splice(activeSession.currentIndex, 1);
+        activeSession.userAnswers.splice(activeSession.currentIndex, 1);
+
+        renderLibrary();
+
+        if (activeSession.questions.length === 0) {
+            alert("All remaining questions in this session have been completed or disabled!");
+            finishSession();
+        } else {
+            if (activeSession.currentIndex >= activeSession.questions.length) {
+                activeSession.currentIndex = activeSession.questions.length - 1;
+            }
+            loadQuestion();
+        }
+    }
+}
+
 function showExplanation(isCorrect) {
     const q = activeSession.questions[activeSession.currentIndex];
     const expBox = document.getElementById('explanation-box'); expBox.style.display = 'block';
@@ -2226,7 +2504,7 @@ function finishSession() {
     localStorage.removeItem('active_quiz_session_backup');
 
     const total = activeSession.questions.length, score = activeSession.score;
-    const pct = Math.round((score / total) * 100);
+    const pct = total > 0 ? Math.round((score / total) * 100) : 0;
     document.getElementById('final-score').innerText = `${score} / ${total} (${pct}%)`;
     document.getElementById('final-msg').innerText = pct >= 70 ? "Target score achieved! 🎉" : "Keep practicing to improve!";
 
@@ -2289,7 +2567,9 @@ function discardSavedSession() {
 function startSingleQuiz(id) {
     const qz = db.quizzes.find(q => q.id === id); 
     if (qz) {
-        const questions = qz.questions.map(q => ({ ...q, sourceQuizId: qz.id, sourceQuizTitle: qz.title }));
+        const activeQs = qz.questions.filter(q => !q.disabled);
+        if (activeQs.length === 0) return alert("All questions in this quiz are disabled!");
+        const questions = activeQs.map(q => ({ ...q, sourceQuizId: qz.id, sourceQuizTitle: qz.title }));
         initSession(qz.title, questions);
     }
 }
@@ -2341,7 +2621,8 @@ const FlashcardEngine = (function() {
             flashcardHistoryStack = [];
             document.getElementById('fc-undo-btn').disabled = true;
 
-            qz.questions.forEach(q => {
+            // Filter out disabled questions system-wide
+            qz.questions.filter(q => !q.disabled).forEach(q => {
                 const qKey = getQuestionKey(q);
                 const srs = db.flashcardSRS[qKey];
                 if (!srs || srs.nextReview <= Date.now()) {
@@ -2367,7 +2648,7 @@ const FlashcardEngine = (function() {
             cardEl.classList.remove('flipped'); isFlipped = false;
             document.getElementById('fc-deck-counts').innerText = `Remaining Review Queue: ${activeDeck.length} | Scheduled Mastered: ${masteredCount}`;
             if (!activeDeck || activeDeck.length === 0) {
-                document.getElementById('fc-front-text').innerHTML = "🎉 <b>Review Queue Cleared!</b><br><small style='color:var(--text-muted);'>No cards currently expired or due. Mastered reviews will return dynamically.</small>";
+                document.getElementById('fc-front-text').innerHTML = "🎉 <b>Review Queue Cleared!</b><br><small style='color:var(--text-muted);'>No active cards currently due or enabled.</small>";
                 document.getElementById('fc-back-text').innerHTML = "All active cards have been processed.";
                 return;
             }
@@ -2471,7 +2752,7 @@ const FlashcardEngine = (function() {
                 return;
             }
 
-            const mastered = qz.questions.filter(q => db.flashcardSRS[getQuestionKey(q)]);
+            const mastered = qz.questions.filter(q => !q.disabled && db.flashcardSRS[getQuestionKey(q)]);
 
             if (mastered.length === 0) {
                 rowsContainer.innerHTML = '<tr><td colspan="5" style="text-align: center;">No scheduled mastery review timers logged in this deck yet.</td></tr>';
