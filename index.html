@@ -543,6 +543,31 @@
         .question-item-disabled { opacity: 0.6; background: var(--bg) !important; border-style: dashed !important; }
         .question-text-disabled { text-decoration: line-through; color: var(--text-muted); }
 
+        /* FILTER CONTROLS BAR FOR WEAK SPOTS */
+        .filter-controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+            background: var(--bg);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .filter-select-input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            outline: none;
+            min-height: 38px;
+        }
+
         /* ==========================================================================
            DEVICE BREAKPOINTS (MOBILE, TABLET, DESKTOP)
            ========================================================================== */
@@ -688,17 +713,53 @@
         </div>
     </div>
 
-    <!-- TAB 3: WEAK SPOTS -->
+    <!-- TAB 3: WEAK SPOTS (ORIGIN SORTING & CUSTOM DRILL GENERATOR) -->
     <div id="wrong-tab" class="tab-content">
         <div class="card">
             <div class="card-header">
                 <div class="card-title">⚠️ Missed Questions Pile (Spaced Repetition)</div>
                 <button class="btn btn-danger btn-sm" onclick="clearWrongPile()">Clear All Missed</button>
             </div>
-            <p style="font-size: 0.88rem; color: var(--text-muted);">Questions you answer incorrectly, skip, or manually flag are saved here. Answer a question correctly <b>3 consecutive times</b> to master and remove it!</p>
-            <div style="margin-bottom: 15px;">
-                <button class="btn btn-success" id="start-wrong-quiz-btn" onclick="startWrongPileQuiz()">🚀 Practice Weak Spots Now</button>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0;">Questions you answer incorrectly, skip, or manually flag are saved here. Answer a question correctly <b>3 consecutive times</b> to master and remove it!</p>
+
+            <!-- ORIGIN SORTING & FILTERING CONTROL PANEL -->
+            <div class="filter-controls-grid">
+                <div>
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">📂 Filter by Folder:</label>
+                    <select id="wrong-folder-filter" class="filter-select-input" onchange="renderWrongPile()">
+                        <option value="">All Folders</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">📚 Filter by Quiz Origin:</label>
+                    <select id="wrong-quiz-filter" class="filter-select-input" onchange="renderWrongPile()">
+                        <option value="">All Quizzes</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 Sort Questions By:</label>
+                    <select id="wrong-sort-by" class="filter-select-input" onchange="renderWrongPile()">
+                        <option value="streak">Lowest Streak First (Struggles)</option>
+                        <option value="folder">Folder Name (A-Z)</option>
+                        <option value="quiz">Quiz Title (A-Z)</option>
+                        <option value="newest">Recently Added / Failed</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">🔍 Keyword Search:</label>
+                    <input type="text" id="wrong-search-input" class="filter-select-input" placeholder="Search prompts..." oninput="renderWrongPile()">
+                </div>
             </div>
+
+            <!-- ACTION RUNNER & BATCH CONTROLS -->
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllWrongPile(true)">Select All</button>
+                    <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllWrongPile(false)">Deselect All</button>
+                </div>
+                <button class="btn btn-success" id="start-wrong-quiz-btn" onclick="startWrongPileQuiz()">🚀 Practice Selected / Filtered Weak Spots (0 Qs)</button>
+            </div>
+
             <div id="wrong-questions-list"></div>
         </div>
     </div>
@@ -1810,7 +1871,7 @@ function startTargetedQuizPractice(filterType) {
     if (!qz) return;
 
     let targetQuestions = qz.questions.filter(q => {
-        if (q.disabled) return false; // System-wide Exclusion Rule
+        if (q.disabled) return false;
         const qa = getQuestionAnalytics(q);
         if (filterType === 'all') return true;
         if (filterType === 'struggling') return qa.status === 'struggling' || qa.status === 'hesitant';
@@ -2045,37 +2106,133 @@ function exportSelectedQuizArrayJSON() {
 }
 
 /* ==========================================================================
-   WEAK SPOTS & SPACED REPETITION
+   WEAK SPOTS & DOMAIN ORIGIN SORTING/FILTERING ENGINE
    ========================================================================== */
+
+function getWrongItemOriginInfo(item) {
+    const quizId = item.sourceQuizId || (item.question ? item.question.sourceQuizId : '');
+    const quizTitle = item.sourceQuizTitle || (item.question ? item.question.sourceQuizTitle : 'General Quiz');
+    let folderName = 'Unorganized';
+    let folderId = '';
+
+    if (quizId) {
+        const parentQuiz = db.quizzes.find(q => q.id === quizId);
+        if (parentQuiz && parentQuiz.folderId) {
+            const parentFolder = db.folders.find(f => f.id === parentQuiz.folderId);
+            if (parentFolder) {
+                folderName = parentFolder.name;
+                folderId = parentFolder.id;
+            }
+        }
+    }
+    return { quizId, quizTitle, folderId, folderName };
+}
+
+function updateWrongPileFilterDropdowns() {
+    const folderSel = document.getElementById('wrong-folder-filter');
+    const quizSel = document.getElementById('wrong-quiz-filter');
+    if (!folderSel || !quizSel) return;
+
+    const currentFolder = folderSel.value;
+    const currentQuiz = quizSel.value;
+
+    let foldersMap = {}, quizMap = {};
+
+    Object.keys(db.wrongPile || {}).forEach(k => {
+        const item = db.wrongPile[k];
+        const origin = getWrongItemOriginInfo(item);
+        if (origin.folderName) foldersMap[origin.folderId || origin.folderName] = origin.folderName;
+        if (origin.quizTitle) quizMap[origin.quizId || origin.quizTitle] = origin.quizTitle;
+    });
+
+    folderSel.innerHTML = '<option value="">All Folders</option>' + 
+        Object.keys(foldersMap).map(key => `<option value="${key}" ${key === currentFolder ? 'selected' : ''}>📁 ${foldersMap[key]}</option>`).join('');
+
+    quizSel.innerHTML = '<option value="">All Quizzes</option>' + 
+        Object.keys(quizMap).map(key => `<option value="${key}" ${key === currentQuiz ? 'selected' : ''}>📍 ${quizMap[key]}</option>`).join('');
+}
 
 function renderWrongPile() {
     const container = document.getElementById('wrong-questions-list');
-    const keys = Object.keys(db.wrongPile || {});
-    document.getElementById('wrong-count-badge').innerText = keys.length;
-    document.getElementById('start-wrong-quiz-btn').disabled = keys.length === 0;
+    const allKeys = Object.keys(db.wrongPile || {});
+    document.getElementById('wrong-count-badge').innerText = allKeys.length;
 
-    if (keys.length === 0) {
-        container.innerHTML = `<p style="color: var(--text-muted); text-align: center;">No missed questions recorded yet!</p>`;
+    updateWrongPileFilterDropdowns();
+
+    if (allKeys.length === 0) {
+        container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 20px 0;">No missed questions recorded yet!</p>`;
+        document.getElementById('start-wrong-quiz-btn').disabled = true;
+        document.getElementById('start-wrong-quiz-btn').innerText = "🚀 Practice Selected / Filtered Weak Spots (0 Qs)";
         return;
     }
 
-    container.innerHTML = keys.map(key => {
+    const folderFilter = (document.getElementById('wrong-folder-filter')?.value || '').toLowerCase();
+    const quizFilter = (document.getElementById('wrong-quiz-filter')?.value || '').toLowerCase();
+    const sortBy = document.getElementById('wrong-sort-by')?.value || 'streak';
+    const searchQuery = (document.getElementById('wrong-search-input')?.value || '').toLowerCase().trim();
+
+    // Filter weak spots by selected domain/folder/quiz/search
+    let filteredKeys = allKeys.filter(key => {
+        const item = db.wrongPile[key];
+        const origin = getWrongItemOriginInfo(item);
+        const qText = (item.question.q || '').toLowerCase();
+
+        if (folderFilter && (origin.folderId.toLowerCase() !== folderFilter && origin.folderName.toLowerCase() !== folderFilter)) return false;
+        if (quizFilter && (origin.quizId.toLowerCase() !== quizFilter && origin.quizTitle.toLowerCase() !== quizFilter)) return false;
+        if (searchQuery && !qText.includes(searchQuery)) return false;
+
+        return true;
+    });
+
+    // Apply Sorting
+    filteredKeys.sort((a, b) => {
+        const itemA = db.wrongPile[a], itemB = db.wrongPile[b];
+        const originA = getWrongItemOriginInfo(itemA), originB = getWrongItemOriginInfo(itemB);
+
+        if (sortBy === 'streak') {
+            return (itemA.consecutiveCorrect || 0) - (itemB.consecutiveCorrect || 0);
+        } else if (sortBy === 'folder') {
+            return originA.folderName.localeCompare(originB.folderName);
+        } else if (sortBy === 'quiz') {
+            return originA.quizTitle.localeCompare(originB.quizTitle);
+        } else if (sortBy === 'newest') {
+            return new Date(itemB.lastFailed || 0) - new Date(itemA.lastFailed || 0);
+        }
+        return 0;
+    });
+
+    const startBtn = document.getElementById('start-wrong-quiz-btn');
+    startBtn.disabled = filteredKeys.length === 0;
+    startBtn.innerText = `🚀 Practice Filtered / Selected Weak Spots (${filteredKeys.length} Qs)`;
+
+    if (filteredKeys.length === 0) {
+        container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 30px 0;">No weak spot questions match the current filter selection.</p>`;
+        return;
+    }
+
+    container.innerHTML = filteredKeys.map(key => {
         const item = db.wrongPile[key];
         const q = item.question;
         const streak = item.consecutiveCorrect || 0;
-        const sourceTitle = item.sourceQuizTitle || q.sourceQuizTitle || 'Practice Session';
+        const origin = getWrongItemOriginInfo(item);
+        
         let ansText = '';
         if (Array.isArray(q.answer)) {
             ansText = q.answer.map(idx => q.options[idx] !== undefined ? q.options[idx] : idx).join(', ');
         } else {
             ansText = q.options[q.answer] !== undefined ? q.options[q.answer] : String(q.answer);
         }
+
         return `
             <div class="quiz-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
                 <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; flex-wrap: wrap; gap: 6px;">
-                    <span class="badge badge-folder">📍 From: ${sourceTitle}</span>
+                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                        <input type="checkbox" class="wrong-select-checkbox" value="${key}" checked style="width:18px; height:18px; cursor:pointer;" onchange="updateWrongPilePracticeBtnCount()">
+                        <span class="badge badge-folder">📁 ${origin.folderName}</span>
+                        <span class="badge badge-folder" style="background:var(--bg); border:1px solid var(--border); color:var(--text-primary);">📍 ${origin.quizTitle}</span>
+                    </div>
                     <div style="display:flex; gap:8px; align-items:center;">
-                        <span class="badge badge-streak">Mastery Streak: ${streak} / 3 Correct</span>
+                        <span class="badge badge-streak">Streak: ${streak} / 3 Correct</span>
                         <button class="btn btn-danger btn-sm" onclick="removeFromWrongPile('${key}')">🗑️</button>
                     </div>
                 </div>
@@ -2087,15 +2244,31 @@ function renderWrongPile() {
             </div>
         `;
     }).join('');
+
     renderMath(container);
+    updateWrongPilePracticeBtnCount();
+}
+
+function updateWrongPilePracticeBtnCount() {
+    const checked = Array.from(document.querySelectorAll('.wrong-select-checkbox:checked')).map(cb => cb.value);
+    const startBtn = document.getElementById('start-wrong-quiz-btn');
+    startBtn.disabled = checked.length === 0;
+    startBtn.innerText = `🚀 Practice Filtered / Selected Weak Spots (${checked.length} Qs)`;
+}
+
+function toggleSelectAllWrongPile(select) {
+    document.querySelectorAll('.wrong-select-checkbox').forEach(cb => cb.checked = select);
+    updateWrongPilePracticeBtnCount();
 }
 
 function removeFromWrongPile(key) { delete db.wrongPile[key]; QuizAppStore.saveDatabase(); renderWrongPile(); }
 function clearWrongPile() { if (confirm("Clear all recorded missed questions?")) { db.wrongPile = {}; QuizAppStore.saveDatabase(); renderWrongPile(); } }
 
 function startWrongPileQuiz() {
-    const keys = Object.keys(db.wrongPile); if (keys.length === 0) return;
-    const questions = keys.map(k => {
+    const checkedKeys = Array.from(document.querySelectorAll('.wrong-select-checkbox:checked')).map(cb => cb.value);
+    if (checkedKeys.length === 0) return alert("Select at least one weak spot question to practice!");
+
+    const questions = checkedKeys.map(k => {
         const item = db.wrongPile[k];
         const qCopy = JSON.parse(JSON.stringify(item.question));
         qCopy._wrongPileKey = k;
@@ -2104,8 +2277,8 @@ function startWrongPileQuiz() {
         return qCopy;
     }).filter(q => !q.disabled).sort(() => Math.random() - 0.5);
 
-    if (questions.length === 0) return alert("No active enabled questions in Weak Spots!");
-    initSession(`Weak Spots Practice (${questions.length} Qs)`, questions);
+    if (questions.length === 0) return alert("No active enabled questions in selected weak spots!");
+    initSession(`Targeted Weak Spots Practice (${questions.length} Qs)`, questions);
 }
 
 /* ==========================================================================
@@ -2121,7 +2294,6 @@ let currentQuestionStartTime = 0;
 function initSession(title, rawQuestions) {
     const shuffleEnabled = document.getElementById('setting-shuffle-options').checked;
     const timerSetting = document.getElementById('setting-timer-mode').value;
-    // Exclude disabled questions system-wide
     let questions = JSON.parse(JSON.stringify(rawQuestions)).filter(q => !q.disabled);
 
     if (questions.length === 0) {
@@ -2393,7 +2565,6 @@ function disableCurrentQuestionInSession() {
     if (!currentQ) return;
 
     if (confirm("🚫 Disable this question?\n\nIt will be permanently excluded from all future practice sessions. You can re-enable it anytime in the Library Question Breakdown.")) {
-        // Update database record for this question
         let found = false;
         if (currentQ.sourceQuizId) {
             const parentQuiz = db.quizzes.find(qz => qz.id === currentQ.sourceQuizId);
@@ -2418,7 +2589,6 @@ function disableCurrentQuestionInSession() {
         currentQ.disabled = true;
         QuizAppStore.saveDatabase();
 
-        // Remove from active practice queue and advance
         activeSession.questions.splice(activeSession.currentIndex, 1);
         activeSession.userAnswers.splice(activeSession.currentIndex, 1);
 
@@ -2508,7 +2678,6 @@ function finishSession() {
     document.getElementById('final-score').innerText = `${score} / ${total} (${pct}%)`;
     document.getElementById('final-msg').innerText = pct >= 70 ? "Target score achieved! 🎉" : "Keep practicing to improve!";
 
-    // Group question performance per source quiz to update individual Mastery meters independently
     let quizPerformanceMap = {};
     activeSession.questions.forEach((q, idx) => {
         const qId = q.sourceQuizId;
@@ -2523,7 +2692,6 @@ function finishSession() {
         }
     });
 
-    // Apply mastery updates and decay curves to each participating quiz
     Object.keys(quizPerformanceMap).forEach(qId => {
         const parentQuiz = db.quizzes.find(x => x.id === qId);
         if (parentQuiz) {
@@ -2621,7 +2789,6 @@ const FlashcardEngine = (function() {
             flashcardHistoryStack = [];
             document.getElementById('fc-undo-btn').disabled = true;
 
-            // Filter out disabled questions system-wide
             qz.questions.filter(q => !q.disabled).forEach(q => {
                 const qKey = getQuestionKey(q);
                 const srs = db.flashcardSRS[qKey];
