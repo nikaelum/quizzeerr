@@ -365,7 +365,20 @@
         .quiz-item[draggable="true"]:active { cursor: grabbing; opacity: 0.6; }
         .quiz-item.highlight { background: var(--success-bg) !important; border-color: var(--success) !important; }
 
-        /* ACTION MENU LIST STYLES */
+        /* UNFINISHED SESSIONS CARD STYLES */
+        .unfinished-item-card {
+            border: 1px solid var(--accent);
+            background: var(--accent-bg);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
         .action-menu-list {
             display: flex;
             flex-direction: column;
@@ -623,17 +636,17 @@
         <button class="nav-pill active" onclick="switchTab('library-tab')">📚 Library</button>
         <button class="nav-pill" onclick="switchTab('compile-tab')">🔀 Combine</button>
         <button class="nav-pill" onclick="switchTab('wrong-tab')">⚠️ Weak Spots (<span id="wrong-count-badge">0</span>)</button>
-        <button class="nav-pill" onclick="switchTab('runner-tab')" id="runner-tab-btn" disabled>📝 Practice Mode</button>
+        <button class="nav-pill" onclick="switchTab('runner-tab')" id="runner-tab-btn">📝 Practice Mode (<span id="unfinished-count-badge">0</span>)</button>
         <button class="nav-pill" onclick="switchTab('flashcard-tab')">🎴 Flashcards</button>
         <button class="nav-pill" onclick="switchTab('history-tab')">📊 Analytics</button>
     </div>
 
-    <!-- RESUME SESSION BANNER -->
+    <!-- TOP RESUME SESSION BANNER -->
     <div id="resume-session-banner" style="display: none; background: var(--accent-bg); border: 1px solid var(--accent); padding: 12px 18px; border-radius: 12px; margin-bottom: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-        <span style="font-weight: 600; font-size: 0.9rem;">📍 Unfinished Quiz Session Found! Resume where you left off?</span>
-        <div style="display: flex; gap: 8px;">
-            <button class="btn btn-sm btn-success" onclick="resumeSavedSession()">Resume Session</button>
-            <button class="btn btn-sm btn-secondary" onclick="discardSavedSession()">Discard</button>
+        <span style="font-weight: 600; font-size: 0.9rem;" id="resume-banner-text">📍 Unfinished Session Found! Resume where you left off?</span>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-sm btn-success" id="resume-banner-action-btn" onclick="resumeLatestUnfinishedSession()">Resume Latest</button>
+            <button class="btn btn-sm btn-secondary" onclick="discardSavedSession()">Discard All</button>
         </div>
     </div>
 
@@ -648,6 +661,9 @@
         <div class="lib-layout-grid">
             <!-- LEFT COLUMN: QUIZ LIBRARY -->
             <div id="lib-col-left" class="lib-col-left subtab-active">
+                <!-- UNFINISHED SESSIONS MANAGER IN LIBRARY -->
+                <div id="unfinished-sessions-container"></div>
+
                 <div class="card" style="padding: 14px;">
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <input type="text" id="library-search-input" placeholder="🔍 Search quizzes by title or category..." oninput="renderLibrary()" style="flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text-primary); outline: none; min-height: 40px;">
@@ -766,6 +782,9 @@
 
     <!-- TAB 4: PRACTICE MODE -->
     <div id="runner-tab" class="tab-content">
+        <!-- UNFINISHED SESSIONS PANEL INSIDE PRACTICE TAB -->
+        <div id="runner-unfinished-panel"></div>
+
         <div class="card" style="padding: 14px 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <b id="active-quiz-title" style="font-size: 1.05rem;">Quiz Title</b>
             <span id="quiz-timer" class="timer-badge" style="display: none;">⏱️ 00:00</span>
@@ -1167,7 +1186,6 @@ function getQuizEffectiveMastery(qz) {
     if (!qz) return 0;
     if (!qz.lastPracticed || qz.mastery === undefined) return 0;
     
-    // Calculate days elapsed since last session
     const daysElapsed = (Date.now() - qz.lastPracticed) / (1000 * 60 * 60 * 24);
     const stability = qz.stability || 3.0; // Default stability is 3 days
     
@@ -1271,6 +1289,7 @@ let db = {
     wrongPile: {},
     flashcardSRS: {},
     questionStats: {}, // Question-level response times & recall metrics
+    unfinishedSessions: {}, // Persistent state of uncompleted quizzes
     questionNotes: {},
     settings: { theme: 'light', fontScale: '100%', audioMuted: false, shuffleOptions: true, timerMode: 'none' }
 };
@@ -1297,6 +1316,7 @@ const QuizAppStore = (function() {
                 db.wrongPile = parsed.wrongPile || {};
                 db.flashcardSRS = parsed.flashcardSRS || {};
                 db.questionStats = parsed.questionStats || {};
+                db.unfinishedSessions = parsed.unfinishedSessions || {};
                 db.questionNotes = parsed.questionNotes || {};
                 db.settings = { ...db.settings, ...(parsed.settings || {}) };
             } catch (e) {}
@@ -1337,6 +1357,124 @@ const QuizAppStore = (function() {
 function setFontScale(scale) {
     document.documentElement.style.setProperty('--font-scale', scale);
     QuizAppStore.updateSetting('fontScale', scale);
+}
+
+/* ==========================================================================
+   UNFINISHED QUIZ SESSIONS MANAGER & RESUME ENGINE
+   ========================================================================== */
+
+function renderUnfinishedSessions() {
+    const sessionKeys = Object.keys(db.unfinishedSessions || {});
+    const countBadge = document.getElementById('unfinished-count-badge');
+    if (countBadge) countBadge.innerText = sessionKeys.length;
+
+    // Update Top Resume Banner
+    const banner = document.getElementById('resume-session-banner');
+    const bannerText = document.getElementById('resume-banner-text');
+
+    if (sessionKeys.length > 0) {
+        if (banner) banner.style.display = 'flex';
+        if (bannerText) {
+            if (sessionKeys.length === 1) {
+                const s = db.unfinishedSessions[sessionKeys[0]];
+                const answeredCount = s.userAnswers.filter(a => a !== null).length;
+                bannerText.innerText = `📍 Unfinished Session: "${s.title}" (${answeredCount}/${s.questions.length} answered). Resume where you left off?`;
+            } else {
+                bannerText.innerText = `📍 ${sessionKeys.length} Unfinished Quiz Sessions Saved! Resume your latest or choose from the list below.`;
+            }
+        }
+    } else {
+        if (banner) banner.style.display = 'none';
+    }
+
+    // Render Unfinished Sessions Manager Cards in Library & Practice Tab
+    const libContainer = document.getElementById('unfinished-sessions-container');
+    const runnerContainer = document.getElementById('runner-unfinished-panel');
+
+    if (sessionKeys.length === 0) {
+        if (libContainer) libContainer.innerHTML = '';
+        if (runnerContainer) runnerContainer.innerHTML = '';
+        return;
+    }
+
+    const cardsHTML = `
+        <div class="card" style="border-color: var(--accent); background: var(--accent-bg); margin-bottom: 20px;">
+            <div class="card-header" style="border-bottom-color: rgba(2,132,199,0.2);">
+                <div class="card-title" style="color: var(--accent);">📍 Saved Unfinished Sessions (${sessionKeys.length})</div>
+                <button class="btn btn-danger btn-sm" onclick="clearAllUnfinishedSessions()">🧹 Clear All Unfinished</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${sessionKeys.map(key => {
+                    const s = db.unfinishedSessions[key];
+                    const answeredCount = s.userAnswers.filter(a => a !== null).length;
+                    const totalQs = s.questions.length;
+                    const pct = totalQs > 0 ? Math.round((answeredCount / totalQs) * 100) : 0;
+                    const savedDate = s.savedAt ? new Date(s.savedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently';
+
+                    return `
+                        <div class="unfinished-item-card">
+                            <div style="flex:1; min-width: 180px;">
+                                <b style="font-size: 0.95rem; color: var(--text-primary); display:block;">${s.title}</b>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">
+                                    Progress: <b>Question ${s.currentIndex + 1} of ${totalQs}</b> (${pct}% done) • Saved ${savedDate}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 6px; align-items: center;">
+                                <button class="btn btn-success btn-sm" onclick="resumeUnfinishedSession('${key}')">▶ Resume</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteUnfinishedSession('${key}')">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
+
+    if (libContainer) libContainer.innerHTML = cardsHTML;
+    if (runnerContainer) runnerContainer.innerHTML = cardsHTML;
+}
+
+function resumeLatestUnfinishedSession() {
+    const sessionKeys = Object.keys(db.unfinishedSessions || {});
+    if (sessionKeys.length === 0) return alert("No saved unfinished sessions found!");
+    // Sort newest saved session
+    sessionKeys.sort((a, b) => (db.unfinishedSessions[b].savedAt || 0) - (db.unfinishedSessions[a].savedAt || 0));
+    resumeUnfinishedSession(sessionKeys[0]);
+}
+
+function resumeUnfinishedSession(sessionId) {
+    const saved = (db.unfinishedSessions || {})[sessionId];
+    if (!saved) return alert("Session state not found!");
+
+    activeSession = JSON.parse(JSON.stringify(saved));
+    sessionTimeRemaining = saved.timeRemaining || 0;
+
+    document.getElementById('runner-tab-btn').disabled = false;
+    document.getElementById('active-quiz-title').innerText = activeSession.title;
+    
+    switchTab('runner-tab');
+    setupSessionTimer();
+    loadQuestion();
+}
+
+function deleteUnfinishedSession(sessionId) {
+    if (confirm("Delete this saved unfinished session?")) {
+        delete db.unfinishedSessions[sessionId];
+        QuizAppStore.saveDatabase();
+        renderUnfinishedSessions();
+    }
+}
+
+function clearAllUnfinishedSessions() {
+    if (confirm("Clear all saved unfinished sessions?")) {
+        db.unfinishedSessions = {};
+        QuizAppStore.saveDatabase();
+        renderUnfinishedSessions();
+    }
+}
+
+function discardSavedSession() {
+    clearAllUnfinishedSessions();
 }
 
 /* ==========================================================================
@@ -1628,6 +1766,7 @@ function renderLibrary() {
 
     container.innerHTML = html;
     renderMath(container);
+    renderUnfinishedSessions();
 }
 
 function renderQuizItemHTML(q) {
@@ -1747,7 +1886,6 @@ function openQuizAnalyticsModal(quizId) {
 
     document.getElementById('qa-modal-quiz-title').innerText = qz.title;
     
-    // Aggregate statistics across questions
     let totalAttempts = 0, totalCorrect = 0, totalTimeMs = 0;
     let instantCount = 0, strugglingCount = 0, disabledCount = 0;
 
@@ -2171,7 +2309,6 @@ function renderWrongPile() {
     const sortBy = document.getElementById('wrong-sort-by')?.value || 'streak';
     const searchQuery = (document.getElementById('wrong-search-input')?.value || '').toLowerCase().trim();
 
-    // Filter weak spots by selected domain/folder/quiz/search
     let filteredKeys = allKeys.filter(key => {
         const item = db.wrongPile[key];
         const origin = getWrongItemOriginInfo(item);
@@ -2184,7 +2321,6 @@ function renderWrongPile() {
         return true;
     });
 
-    // Apply Sorting
     filteredKeys.sort((a, b) => {
         const itemA = db.wrongPile[a], itemB = db.wrongPile[b];
         const originA = getWrongItemOriginInfo(itemA), originB = getWrongItemOriginInfo(itemB);
@@ -2285,7 +2421,7 @@ function startWrongPileQuiz() {
    PRACTICE RUNNER & SESSION RESUME
    ========================================================================== */
 
-let activeSession = { title: "", questions: [], currentIndex: 0, userAnswers: [], score: 0, timerMode: 'none' };
+let activeSession = { id: "", title: "", questions: [], currentIndex: 0, userAnswers: [], score: 0, timerMode: 'none', questionTimeLogs: [] };
 let timerInterval = null, sessionTimeRemaining = 0;
 let lastLoadedIndex = -1;
 let currentMultiSelects = [];
@@ -2310,7 +2446,19 @@ function initSession(title, rawQuestions) {
         });
     }
 
-    activeSession = { title, questions, currentIndex: 0, userAnswers: new Array(questions.length).fill(null), score: 0, timerMode: timerSetting };
+    const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+
+    activeSession = { 
+        id: sessionId,
+        title, 
+        questions, 
+        currentIndex: 0, 
+        userAnswers: new Array(questions.length).fill(null), 
+        questionTimeLogs: new Array(questions.length).fill(0),
+        score: 0, 
+        timerMode: timerSetting 
+    };
+
     document.getElementById('runner-tab-btn').disabled = false;
     document.getElementById('active-quiz-title').innerText = title;
     document.getElementById('quiz-body').style.display = 'block';
@@ -2320,6 +2468,7 @@ function initSession(title, rawQuestions) {
     currentMultiSelects = [];
 
     switchTab('runner-tab'); setupSessionTimer(); loadQuestion();
+    saveSessionBackup();
 }
 
 function setupSessionTimer() {
@@ -2502,19 +2651,12 @@ function submitAnswer(val) {
     const timeTakenMs = Math.max(500, Date.now() - currentQuestionStartTime);
     
     activeSession.userAnswers[activeSession.currentIndex] = val;
+    activeSession.questionTimeLogs[activeSession.currentIndex] = timeTakenMs;
+
     const q = activeSession.questions[activeSession.currentIndex];
     const res = evaluateAnswer(q, val); 
     const qKey = getQuestionKey(q);
     const sourceTitle = q.sourceQuizTitle || activeSession.title || 'General Quiz';
-
-    // Record Question Response Speed Analytics
-    if (!db.questionStats) db.questionStats = {};
-    if (!db.questionStats[qKey]) db.questionStats[qKey] = { attempts: 0, correct: 0, totalTimeMs: 0 };
-    const qStats = db.questionStats[qKey];
-    qStats.attempts++;
-    if (res.isCorrect) qStats.correct++;
-    qStats.totalTimeMs += timeTakenMs;
-    qStats.lastTimeMs = timeTakenMs;
 
     if (res.isCorrect) {
         activeSession.score++; AudioEngine.playCorrect();
@@ -2538,12 +2680,16 @@ function submitAnswer(val) {
         };
     }
 
-    QuizAppStore.saveDatabase(); renderWrongPile(); loadQuestion();
+    QuizAppStore.saveDatabase(); 
+    renderWrongPile(); 
+    loadQuestion();
 }
 
 function skipQuestion() {
     if (activeSession.userAnswers[activeSession.currentIndex] !== null) return;
     activeSession.userAnswers[activeSession.currentIndex] = -1;
+    activeSession.questionTimeLogs[activeSession.currentIndex] = 0;
+
     const q = activeSession.questions[activeSession.currentIndex]; 
     const qKey = getQuestionKey(q);
     const sourceTitle = q.sourceQuizTitle || activeSession.title || 'General Quiz';
@@ -2591,6 +2737,7 @@ function disableCurrentQuestionInSession() {
 
         activeSession.questions.splice(activeSession.currentIndex, 1);
         activeSession.userAnswers.splice(activeSession.currentIndex, 1);
+        activeSession.questionTimeLogs.splice(activeSession.currentIndex, 1);
 
         renderLibrary();
 
@@ -2671,13 +2818,36 @@ function finishSession() {
     clearInterval(timerInterval);
     document.getElementById('quiz-body').style.display = 'none';
     document.getElementById('quiz-results').style.display = 'block';
-    localStorage.removeItem('active_quiz_session_backup');
+
+    // Remove from unfinished sessions list upon completion
+    if (activeSession.id && db.unfinishedSessions) {
+        delete db.unfinishedSessions[activeSession.id];
+    }
 
     const total = activeSession.questions.length, score = activeSession.score;
     const pct = total > 0 ? Math.round((score / total) * 100) : 0;
     document.getElementById('final-score').innerText = `${score} / ${total} (${pct}%)`;
     document.getElementById('final-msg').innerText = pct >= 70 ? "Target score achieved! 🎉" : "Keep practicing to improve!";
 
+    // Commit Question Speed Statistics & Accuracy ONLY UPON EXPLICIT SESSION COMPLETION
+    if (!db.questionStats) db.questionStats = {};
+    activeSession.questions.forEach((q, idx) => {
+        const uAns = activeSession.userAnswers[idx];
+        if (uAns !== null && uAns !== -1) {
+            const timeTakenMs = activeSession.questionTimeLogs[idx] || 1000;
+            const res = evaluateAnswer(q, uAns);
+            const qKey = getQuestionKey(q);
+
+            if (!db.questionStats[qKey]) db.questionStats[qKey] = { attempts: 0, correct: 0, totalTimeMs: 0 };
+            const qStats = db.questionStats[qKey];
+            qStats.attempts++;
+            if (res.isCorrect) qStats.correct++;
+            qStats.totalTimeMs += timeTakenMs;
+            qStats.lastTimeMs = timeTakenMs;
+        }
+    });
+
+    // Group question performance per source quiz to update individual Mastery meters independently
     let quizPerformanceMap = {};
     activeSession.questions.forEach((q, idx) => {
         const qId = q.sourceQuizId;
@@ -2692,6 +2862,7 @@ function finishSession() {
         }
     });
 
+    // Apply mastery updates and decay curves to each participating quiz
     Object.keys(quizPerformanceMap).forEach(qId => {
         const parentQuiz = db.quizzes.find(x => x.id === qId);
         if (parentQuiz) {
@@ -2701,35 +2872,31 @@ function finishSession() {
     });
 
     db.history.unshift({ id: 'hist_' + Date.now(), quizTitle: activeSession.title, date: new Date().toLocaleString(), score: `${score}/${total}`, percentage: `${pct}%`, status: pct >= 70 ? 'PASS' : 'FAIL' });
-    QuizAppStore.saveDatabase(); renderLibrary(); renderHistory();
+    QuizAppStore.saveDatabase(); renderLibrary(); renderHistory(); renderUnfinishedSessions();
 }
 
-function saveSessionBackup() { localStorage.setItem('active_quiz_session_backup', JSON.stringify(activeSession)); }
+function saveSessionBackup() {
+    if (!activeSession || !activeSession.id || !activeSession.questions) return;
+    if (!db.unfinishedSessions) db.unfinishedSessions = {};
+
+    const answeredCount = activeSession.userAnswers.filter(a => a !== null).length;
+    
+    if (answeredCount === activeSession.questions.length && activeSession.questions.length > 0) {
+        delete db.unfinishedSessions[activeSession.id];
+    } else {
+        db.unfinishedSessions[activeSession.id] = {
+            ...JSON.parse(JSON.stringify(activeSession)),
+            timeRemaining: sessionTimeRemaining,
+            savedAt: Date.now()
+        };
+    }
+
+    QuizAppStore.saveDatabase();
+    renderUnfinishedSessions();
+}
 
 function checkSavedSession() {
-    const saved = localStorage.getItem('active_quiz_session_backup');
-    if (saved) {
-        try {
-            const parsed = JSON.parse(saved);
-            if (parsed && parsed.questions && parsed.questions.length > 0) document.getElementById('resume-session-banner').style.display = 'flex';
-        } catch(e) {}
-    }
-}
-
-function resumeSavedSession() {
-    const saved = localStorage.getItem('active_quiz_session_backup');
-    if (saved) {
-        activeSession = JSON.parse(saved);
-        document.getElementById('runner-tab-btn').disabled = false;
-        document.getElementById('active-quiz-title').innerText = activeSession.title;
-        document.getElementById('resume-session-banner').style.display = 'none';
-        switchTab('runner-tab'); loadQuestion();
-    }
-}
-
-function discardSavedSession() {
-    localStorage.removeItem('active_quiz_session_backup');
-    document.getElementById('resume-session-banner').style.display = 'none';
+    renderUnfinishedSessions();
 }
 
 function startSingleQuiz(id) {
@@ -3025,12 +3192,13 @@ function importAppData(event) {
                     db.wrongPile = { ...db.wrongPile, ...(parsed.wrongPile || {}) };
                     db.flashcardSRS = { ...db.flashcardSRS, ...(parsed.flashcardSRS || {}) };
                     db.questionStats = { ...db.questionStats, ...(parsed.questionStats || {}) };
+                    db.unfinishedSessions = { ...db.unfinishedSessions, ...(parsed.unfinishedSessions || {}) };
                 }
             } else {
                 const list = Array.isArray(parsed) ? parsed : [parsed];
                 list.forEach(qz => QuizAppStore.addQuiz(qz));
             }
-            QuizAppStore.saveDatabase(); renderLibrary(); renderHistory(); renderWrongPile(); alert("Import successful!");
+            QuizAppStore.saveDatabase(); renderLibrary(); renderHistory(); renderWrongPile(); renderUnfinishedSessions(); alert("Import successful!");
         } catch(err) { alert("Import failed: " + err.message); }
     };
     reader.readAsText(file); event.target.value = '';
@@ -3080,6 +3248,7 @@ function switchTab(id) {
     if (id === 'library-tab') renderLibrary();
     if (id === 'compile-tab') renderCompileChecklist();
     if (id === 'wrong-tab') renderWrongPile();
+    if (id === 'runner-tab') renderUnfinishedSessions();
     if (id === 'flashcard-tab') FlashcardEngine.init();
     if (id === 'history-tab') renderHistory();
 }
@@ -3163,7 +3332,7 @@ async function syncFromCloud() {
         if (docSnap.exists() && docSnap.data().payload) {
             db = JSON.parse(docSnap.data().payload);
             localStorage.setItem('sync_user_key', syncKey.trim());
-            QuizAppStore.saveDatabase(); renderLibrary(); renderHistory(); renderWrongPile();
+            QuizAppStore.saveDatabase(); renderLibrary(); renderHistory(); renderWrongPile(); renderUnfinishedSessions();
             alert(`✅ Data pulled successfully from cloud key: "${syncKey.trim()}"`);
         } else { alert("⚠️ No record found for that key."); }
     } catch (err) { alert("❌ Cloud pull failed: " + err.message); }
