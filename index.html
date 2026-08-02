@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Master Suite — Modern Study Engine & Math Runner</title>
+    <title>Master Suite PRO — Modern Study Engine & Math Runner</title>
     
     <!-- MathJax 3 Configuration -->
     <script>
@@ -109,7 +109,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             padding-bottom: 14px;
             border-bottom: 1px solid var(--border);
             flex-wrap: wrap;
@@ -120,8 +120,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 1.2rem;
-            font-weight: 700;
+            font-size: 1.25rem;
+            font-weight: 800;
             letter-spacing: -0.5px;
         }
 
@@ -131,7 +131,43 @@
             border-radius: 20px;
             background: var(--accent-bg);
             color: var(--accent);
-            font-weight: 600;
+            font-weight: 700;
+        }
+
+        /* PRIMARY MASTER MODE SWITCHER (TWO MAIN MASTER TABS) */
+        .master-mode-switcher {
+            display: flex;
+            gap: 8px;
+            background: var(--card);
+            padding: 6px;
+            border-radius: 14px;
+            border: 2px solid var(--border);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .master-mode-btn {
+            flex: 1;
+            padding: 12px 18px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 1.02rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .master-mode-btn:hover { color: var(--text-primary); background: var(--bg); }
+        .master-mode-btn.active {
+            background: var(--text-primary);
+            color: var(--bg);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         /* NAVIGATION PILLS */
@@ -485,19 +521,19 @@
         }
 
         /* 3D FLASHCARDS */
-        .flashcard-stage { perspective: 1000px; width: 100%; max-width: 620px; height: 340px; margin: 20px auto; }
-        .flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; border-radius: 16px; }
+        .flashcard-stage { perspective: 1000px; width: 100%; max-width: 650px; height: 360px; margin: 20px auto; }
+        .flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; border-radius: 16px; }
         .flashcard.flipped { transform: rotateY(180deg); }
 
         .card-face {
             position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 16px;
-            padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;
-            background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+            padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;
+            background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow-lg); overflow-y: auto;
         }
 
         .card-face-back { transform: rotateY(180deg); border-color: var(--accent); }
         .rating-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; }
-        .rating-pill { padding: 12px; border-radius: 10px; border: none; font-weight: 700; font-size: 0.85rem; cursor: pointer; color: #fff; min-height: 44px; }
+        .rating-pill { padding: 12px; border-radius: 10px; border: none; font-weight: 700; font-size: 0.88rem; cursor: pointer; color: #fff; min-height: 46px; }
         .rating-hard { background: var(--danger); }
         .rating-good { background: var(--warning); color: #000; }
         .rating-easy { background: var(--success); }
@@ -581,10 +617,7 @@
             min-height: 38px;
         }
 
-        /* ==========================================================================
-           DEVICE BREAKPOINTS (MOBILE, TABLET, DESKTOP)
-           ========================================================================== */
-
+        /* DEVICE BREAKPOINTS */
         @media (max-width: 899px) {
             body { padding: 12px 8px; }
             header { gap: 8px; }
@@ -600,7 +633,7 @@
             .quiz-item { flex-direction: column; align-items: stretch; gap: 10px; }
             .mastery-meter-box { width: 100%; }
 
-            .flashcard-stage { height: 290px; }
+            .flashcard-stage { height: 310px; }
             .card-face { padding: 18px; }
 
             .btn { width: 100%; }
@@ -622,7 +655,7 @@
     <header>
         <div class="brand-logo">
             <span>✦ Master Suite</span>
-            <span class="brand-badge">PRO v3.5</span>
+            <span class="brand-badge">PRO v4.0</span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
             <button class="btn btn-success btn-sm" onclick="syncToCloud()">☁️ Push</button>
@@ -631,290 +664,340 @@
         </div>
     </header>
 
-    <!-- PILL NAVIGATION -->
-    <div class="nav-pills">
-        <button class="nav-pill active" onclick="switchTab('library-tab')">📚 Library</button>
-        <button class="nav-pill" onclick="switchTab('compile-tab')">🔀 Combine</button>
-        <button class="nav-pill" onclick="switchTab('wrong-tab')">⚠️ Weak Spots (<span id="wrong-count-badge">0</span>)</button>
-        <button class="nav-pill" onclick="switchTab('runner-tab')" id="runner-tab-btn">📝 Practice Mode (<span id="unfinished-count-badge">0</span>)</button>
-        <button class="nav-pill" onclick="switchTab('flashcard-tab')">🎴 Flashcards</button>
-        <button class="nav-pill" onclick="switchTab('history-tab')">📊 Analytics</button>
+    <!-- TWO PRIMARY MASTER TABS (MODE SWITCHER) -->
+    <div class="master-mode-switcher">
+        <button class="master-mode-btn active" id="btn-master-quiz" onclick="switchMasterSuiteMode('quiz')">
+            <span>📝 Quiz Suite Master</span>
+        </button>
+        <button class="master-mode-btn" id="btn-master-flashcard" onclick="switchMasterSuiteMode('flashcard')">
+            <span>🎴 Flashcard Suite Master</span>
+        </button>
     </div>
 
-    <!-- TOP RESUME SESSION BANNER -->
-    <div id="resume-session-banner" style="display: none; background: var(--accent-bg); border: 1px solid var(--accent); padding: 12px 18px; border-radius: 12px; margin-bottom: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-        <span style="font-weight: 600; font-size: 0.9rem;" id="resume-banner-text">📍 Unfinished Session Found! Resume where you left off?</span>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-sm btn-success" id="resume-banner-action-btn" onclick="resumeLatestUnfinishedSession()">Resume Latest</button>
-            <button class="btn btn-sm btn-secondary" onclick="discardSavedSession()">Discard All</button>
-        </div>
-    </div>
-
-    <!-- TAB 1: LIBRARY & DUAL PANE EDITOR -->
-    <div id="library-tab" class="tab-content active">
-        <!-- MOBILE SEGMENTED CONTROL -->
-        <div class="library-segmented-switch">
-            <button class="segmented-btn active" id="seg-lib-btn" onclick="switchLibrarySubTab('quizzes')">📚 Quiz Library</button>
-            <button class="segmented-btn" id="seg-ide-btn" onclick="switchLibrarySubTab('terminal')">💻 Terminal IDE</button>
+    <!-- ==========================================================================
+         MASTER SUITE 1: QUIZ ENGINE & RUNNER
+         ========================================================================== -->
+    <div id="master-suite-quiz">
+        <!-- QUIZ SUB NAVIGATION PILLS -->
+        <div class="nav-pills">
+            <button class="nav-pill active" onclick="switchQuizTab('library-tab')">📚 Library</button>
+            <button class="nav-pill" onclick="switchQuizTab('compile-tab')">🔀 Combine</button>
+            <button class="nav-pill" onclick="switchQuizTab('wrong-tab')">⚠️ Weak Spots (<span id="wrong-count-badge">0</span>)</button>
+            <button class="nav-pill" onclick="switchQuizTab('runner-tab')" id="runner-tab-btn">📝 Practice Mode (<span id="unfinished-count-badge">0</span>)</button>
+            <button class="nav-pill" onclick="switchQuizTab('history-tab')">📊 Analytics</button>
         </div>
 
-        <div class="lib-layout-grid">
-            <!-- LEFT COLUMN: QUIZ LIBRARY -->
-            <div id="lib-col-left" class="lib-col-left subtab-active">
-                <!-- UNFINISHED SESSIONS MANAGER IN LIBRARY -->
-                <div id="unfinished-sessions-container"></div>
-
-                <div class="card" style="padding: 14px;">
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <input type="text" id="library-search-input" placeholder="🔍 Search quizzes by title or category..." oninput="renderLibrary()" style="flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text-primary); outline: none; min-height: 40px;">
-                        <button class="btn btn-success btn-sm" onclick="toggleFolderModal(true)">📁 + Folder</button>
-                        <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(true)">Expand</button>
-                        <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(false)">Collapse</button>
-                    </div>
-                </div>
-
-                <div id="quiz-list-container">
-                    <p style="color: var(--text-muted); text-align: center; padding: 40px 0;">No quizzes in library yet.</p>
-                </div>
-            </div>
-
-            <!-- RIGHT COLUMN: TERMINAL IDE & IMPORT -->
-            <div id="lib-col-right" class="lib-col-right subtab-hidden">
-                <div class="card">
-                    <div class="card-header"><div class="card-title">💻 Terminal / Dual-Pane LaTeX IDE</div></div>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Paste JSON or JS objects directly. Supports LaTeX notation: <code>\( E = mc^2 \)</code> or <code>$$ ... $$</code>.</p>
-                    <div class="editor-grid">
-                        <textarea id="json-editor-textarea" class="code-area" spellcheck="false" placeholder='{\n  "title": "Quantum Physics",\n  "category": "Physics",\n  "folder": "Science & Math",\n  "questions": [\n    {\n      "q": "What is Plancks energy equation?",\n      "type": "mcq",\n      "options": ["\\( E = h\\nu \\)", "\\( F = ma \\)"],\n      "answer": 0,\n      "explain": "E = h * nu"\n    }\n  ]\n}'></textarea>
-                        <div id="live-latex-preview" class="preview-area">
-                            <p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Type equations to preview live!</p>
-                        </div>
-                    </div>
-                    <div id="editor-status-msg" class="editor-status-bar">Status: Ready (Paste JSON code)</div>
-                    <div style="display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;">
-                        <button class="btn btn-success btn-sm" style="flex: 1;" onclick="createQuizFromEditor()">🚀 Create Quiz</button>
-                        <button class="btn btn-warning btn-sm" onclick="runTerminalTest()">⚡ Self-Test</button>
-                        <button class="btn btn-secondary btn-sm" onclick="loadTemplateToEditor()">📋 Template</button>
-                        <button class="btn btn-danger btn-sm" onclick="clearEditor()">🧹 Clear</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header"><div class="card-title">📥 Import File</div></div>
-                    <p style="font-size: 0.8rem; color: var(--text-muted);">Select a <code>.json</code> or <code>.html</code> quiz file from your computer.</p>
-                    <input type="file" id="file-input" accept=".json,.html" style="display: none;" onchange="importAppData(event)">
-                    <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="document.getElementById('file-input').click()">Choose File...</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TAB 2: COMPILE -->
-    <div id="compile-tab" class="tab-content">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">🔀 Handpick & Combine Quizzes</div>
-                <div style="display: flex; gap: 6px;">
-                    <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllCompile(true)">Select All</button>
-                    <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllCompile(false)">Deselect All</button>
-                </div>
-            </div>
-            <p style="font-size: 0.88rem; color: var(--text-muted);">Select specific quizzes across folders to combine into a custom set, run a practice session, or export JSON:</p>
-            <div id="compile-checklist" style="margin: 15px 0;"></div>
+        <!-- TOP RESUME SESSION BANNER -->
+        <div id="resume-session-banner" style="display: none; background: var(--accent-bg); border: 1px solid var(--accent); padding: 12px 18px; border-radius: 12px; margin-bottom: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <span style="font-weight: 600; font-size: 0.9rem;" id="resume-banner-text">📍 Unfinished Session Found! Resume where you left off?</span>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button class="btn btn-success" onclick="startCompiledQuiz()">🚀 Start Practice Session</button>
-                <button class="btn btn-warning" onclick="combineAndSaveToLibrary()">🧩 Create Combined Quiz in Library</button>
-                <button class="btn btn-secondary" onclick="exportMergedQuizJSON()">📥 Export Merged JSON</button>
-                <button class="btn btn-secondary" onclick="exportSelectedQuizArrayJSON()">📦 Export Quiz Array JSON</button>
+                <button class="btn btn-sm btn-success" id="resume-banner-action-btn" onclick="resumeLatestUnfinishedSession()">Resume Latest</button>
+                <button class="btn btn-sm btn-secondary" onclick="discardSavedSession()">Discard All</button>
             </div>
         </div>
-    </div>
 
-    <!-- TAB 3: WEAK SPOTS (ORIGIN SORTING & CUSTOM DRILL GENERATOR) -->
-    <div id="wrong-tab" class="tab-content">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">⚠️ Missed Questions Pile (Spaced Repetition)</div>
-                <button class="btn btn-danger btn-sm" onclick="clearWrongPile()">Clear All Missed</button>
-            </div>
-            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0;">Questions you answer incorrectly, skip, or manually flag are saved here. Answer a question correctly <b>3 consecutive times</b> to master and remove it!</p>
-
-            <!-- ORIGIN SORTING & FILTERING CONTROL PANEL -->
-            <div class="filter-controls-grid">
-                <div>
-                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">📂 Filter by Folder:</label>
-                    <select id="wrong-folder-filter" class="filter-select-input" onchange="renderWrongPile()">
-                        <option value="">All Folders</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">📚 Filter by Quiz Origin:</label>
-                    <select id="wrong-quiz-filter" class="filter-select-input" onchange="renderWrongPile()">
-                        <option value="">All Quizzes</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 Sort Questions By:</label>
-                    <select id="wrong-sort-by" class="filter-select-input" onchange="renderWrongPile()">
-                        <option value="streak">Lowest Streak First (Struggles)</option>
-                        <option value="folder">Folder Name (A-Z)</option>
-                        <option value="quiz">Quiz Title (A-Z)</option>
-                        <option value="newest">Recently Added / Failed</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">🔍 Keyword Search:</label>
-                    <input type="text" id="wrong-search-input" class="filter-select-input" placeholder="Search prompts..." oninput="renderWrongPile()">
-                </div>
+        <!-- TAB 1: LIBRARY & DUAL PANE EDITOR -->
+        <div id="library-tab" class="tab-content active">
+            <!-- MOBILE SEGMENTED CONTROL -->
+            <div class="library-segmented-switch">
+                <button class="segmented-btn active" id="seg-lib-btn" onclick="switchLibrarySubTab('quizzes')">📚 Quiz Library</button>
+                <button class="segmented-btn" id="seg-ide-btn" onclick="switchLibrarySubTab('terminal')">💻 Terminal IDE</button>
             </div>
 
-            <!-- ACTION RUNNER & BATCH CONTROLS -->
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
-                <div style="display: flex; gap: 6px;">
-                    <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllWrongPile(true)">Select All</button>
-                    <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllWrongPile(false)">Deselect All</button>
+            <div class="lib-layout-grid">
+                <!-- LEFT COLUMN: QUIZ LIBRARY -->
+                <div id="lib-col-left" class="lib-col-left subtab-active">
+                    <div id="unfinished-sessions-container"></div>
+
+                    <div class="card" style="padding: 14px;">
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <input type="text" id="library-search-input" placeholder="🔍 Search quizzes by title or category..." oninput="renderLibrary()" style="flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text-primary); outline: none; min-height: 40px;">
+                            <button class="btn btn-success btn-sm" onclick="toggleFolderModal(true)">📁 + Folder</button>
+                            <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(true)">Expand</button>
+                            <button class="btn btn-secondary btn-sm" onclick="toggleAllFolders(false)">Collapse</button>
+                        </div>
+                    </div>
+
+                    <div id="quiz-list-container">
+                        <p style="color: var(--text-muted); text-align: center; padding: 40px 0;">No quizzes in library yet.</p>
+                    </div>
                 </div>
-                <button class="btn btn-success" id="start-wrong-quiz-btn" onclick="startWrongPileQuiz()">🚀 Practice Selected / Filtered Weak Spots (0 Qs)</button>
+
+                <!-- RIGHT COLUMN: TERMINAL IDE & IMPORT -->
+                <div id="lib-col-right" class="lib-col-right subtab-hidden">
+                    <div class="card">
+                        <div class="card-header"><div class="card-title">💻 Terminal / Dual-Pane LaTeX IDE</div></div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Paste JSON or JS objects directly. Supports LaTeX notation: <code>\( E = mc^2 \)</code> or <code>$$ ... $$</code>.</p>
+                        <div class="editor-grid">
+                            <textarea id="json-editor-textarea" class="code-area" spellcheck="false" placeholder='{\n  "title": "Quantum Physics",\n  "category": "Physics",\n  "folder": "Science & Math",\n  "questions": [\n    {\n      "q": "What is Plancks energy equation?",\n      "type": "mcq",\n      "options": ["\\( E = h\\nu \\)", "\\( F = ma \\)"],\n      "answer": 0,\n      "explain": "E = h * nu"\n    }\n  ]\n}'></textarea>
+                            <div id="live-latex-preview" class="preview-area">
+                                <p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Type equations to preview live!</p>
+                            </div>
+                        </div>
+                        <div id="editor-status-msg" class="editor-status-bar">Status: Ready (Paste JSON code)</div>
+                        <div style="display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;">
+                            <button class="btn btn-success btn-sm" style="flex: 1;" onclick="createQuizFromEditor()">🚀 Create Quiz</button>
+                            <button class="btn btn-warning btn-sm" onclick="runTerminalTest()">⚡ Self-Test</button>
+                            <button class="btn btn-secondary btn-sm" onclick="loadTemplateToEditor()">📋 Template</button>
+                            <button class="btn btn-danger btn-sm" onclick="clearEditor()">🧹 Clear</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><div class="card-title">📥 Import File</div></div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Select a <code>.json</code> or <code>.html</code> quiz file from your computer.</p>
+                        <input type="file" id="file-input" accept=".json,.html" style="display: none;" onchange="importAppData(event)">
+                        <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="document.getElementById('file-input').click()">Choose File...</button>
+                    </div>
+                </div>
             </div>
-
-            <div id="wrong-questions-list"></div>
-        </div>
-    </div>
-
-    <!-- TAB 4: PRACTICE MODE -->
-    <div id="runner-tab" class="tab-content">
-        <!-- UNFINISHED SESSIONS PANEL INSIDE PRACTICE TAB -->
-        <div id="runner-unfinished-panel"></div>
-
-        <div class="card" style="padding: 14px 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <b id="active-quiz-title" style="font-size: 1.05rem;">Quiz Title</b>
-            <span id="quiz-timer" class="timer-badge" style="display: none;">⏱️ 00:00</span>
-            <span id="quiz-progress" style="color: var(--text-muted); font-size: 0.9rem;">Question 1 of 10</span>
-            <span id="quiz-score" style="font-weight: 700; color: var(--accent);">Score: 0</span>
         </div>
 
-        <div id="quiz-body" class="card" style="cursor: pointer;" title="Once answered, clicking open card areas will proceed to the next question automatically.">
-            <div id="question-text" style="font-size: 1.1rem; line-height: 1.6; font-weight: 600;">Question goes here...</div>
-            <div id="options-container" class="options-grid"></div>
-            <div id="explanation-box" style="margin-top: 16px; padding: 14px; border-radius: 10px; display: none; font-size: 0.9rem;"></div>
-
-            <!-- PERSONAL STICKY NOTES -->
-            <div class="sticky-note-box">
-                <b style="color: var(--warning);">📝 Question Study Note:</b>
-                <input type="text" id="question-note-input" class="sticky-note-input" placeholder="Add personal note for this question..." onchange="saveQuestionStickyNote(this.value)">
-            </div>
-
-            <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                <button id="prev-btn" class="btn btn-secondary" onclick="prevQuestion()" disabled>Previous</button>
+        <!-- TAB 2: COMPILE -->
+        <div id="compile-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🔀 Handpick & Combine Quizzes</div>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllCompile(true)">Select All</button>
+                        <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllCompile(false)">Deselect All</button>
+                    </div>
+                </div>
+                <p style="font-size: 0.88rem; color: var(--text-muted);">Select specific quizzes across folders to combine into a custom set, run a practice session, or export JSON:</p>
+                <div id="compile-checklist" style="margin: 15px 0;"></div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button id="flag-btn" class="btn btn-warning" onclick="toggleFlagCurrentQuestion()">🏳️ Flag Question</button>
-                    <button id="disable-session-q-btn" class="btn btn-secondary" onclick="disableCurrentQuestionInSession()" title="Exclude this question permanently from practice sessions">🚫 Disable Question</button>
+                    <button class="btn btn-success" onclick="startCompiledQuiz()">🚀 Start Practice Session</button>
+                    <button class="btn btn-warning" onclick="combineAndSaveToLibrary()">🧩 Create Combined Quiz in Library</button>
+                    <button class="btn btn-secondary" onclick="exportMergedQuizJSON()">📥 Export Merged JSON</button>
+                    <button class="btn btn-secondary" onclick="exportSelectedQuizArrayJSON()">📦 Export Quiz Array JSON</button>
                 </div>
-                <button id="next-btn" class="btn" onclick="nextQuestion()" disabled>Next Question</button>
             </div>
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; text-align: center;">💡 Tip: Press <b>Spacebar</b> or <b>Click anywhere in the card</b> to proceed to the next question.</div>
         </div>
 
-        <div id="quiz-results" class="card" style="display: none; text-align: center; padding: 40px;">
-            <h2>🎉 Practice Completed!</h2>
-            <div id="final-score" style="font-size: 2.2rem; font-weight: 800; color: var(--accent); margin: 15px 0;">0 / 0 (0%)</div>
-            <p id="final-msg" style="color: var(--text-muted);"></p>
-            <button class="btn" onclick="switchTab('library-tab')">Return to Library</button>
+        <!-- TAB 3: WEAK SPOTS -->
+        <div id="wrong-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">⚠️ Missed Questions Pile (Spaced Repetition)</div>
+                    <button class="btn btn-danger btn-sm" onclick="clearWrongPile()">Clear All Missed</button>
+                </div>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0;">Questions you answer incorrectly, skip, or manually flag are saved here. Answer a question correctly <b>3 consecutive times</b> to master and remove it!</p>
+
+                <!-- ORIGIN SORTING & FILTERING CONTROL PANEL -->
+                <div class="filter-controls-grid">
+                    <div>
+                        <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">📂 Filter by Folder:</label>
+                        <select id="wrong-folder-filter" class="filter-select-input" onchange="renderWrongPile()">
+                            <option value="">All Folders</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">📚 Filter by Quiz Origin:</label>
+                        <select id="wrong-quiz-filter" class="filter-select-input" onchange="renderWrongPile()">
+                            <option value="">All Quizzes</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 Sort Questions By:</label>
+                        <select id="wrong-sort-by" class="filter-select-input" onchange="renderWrongPile()">
+                            <option value="streak">Lowest Streak First (Struggles)</option>
+                            <option value="folder">Folder Name (A-Z)</option>
+                            <option value="quiz">Quiz Title (A-Z)</option>
+                            <option value="newest">Recently Added / Failed</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">🔍 Keyword Search:</label>
+                        <input type="text" id="wrong-search-input" class="filter-select-input" placeholder="Search prompts..." oninput="renderWrongPile()">
+                    </div>
+                </div>
+
+                <!-- ACTION RUNNER & BATCH CONTROLS -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllWrongPile(true)">Select All</button>
+                        <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllWrongPile(false)">Deselect All</button>
+                    </div>
+                    <button class="btn btn-success" id="start-wrong-quiz-btn" onclick="startWrongPileQuiz()">🚀 Practice Selected / Filtered Weak Spots (0 Qs)</button>
+                </div>
+
+                <div id="wrong-questions-list"></div>
+            </div>
+        </div>
+
+        <!-- TAB 4: PRACTICE MODE -->
+        <div id="runner-tab" class="tab-content">
+            <div id="runner-unfinished-panel"></div>
+
+            <div class="card" style="padding: 14px 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <b id="active-quiz-title" style="font-size: 1.05rem;">Quiz Title</b>
+                <span id="quiz-timer" class="timer-badge" style="display: none;">⏱️ 00:00</span>
+                <span id="quiz-progress" style="color: var(--text-muted); font-size: 0.9rem;">Question 1 of 10</span>
+                <span id="quiz-score" style="font-weight: 700; color: var(--accent);">Score: 0</span>
+            </div>
+
+            <div id="quiz-body" class="card" style="cursor: pointer;" title="Once answered, clicking open card areas will proceed to the next question automatically.">
+                <div id="question-text" style="font-size: 1.1rem; line-height: 1.6; font-weight: 600;">Question goes here...</div>
+                <div id="options-container" class="options-grid"></div>
+                <div id="explanation-box" style="margin-top: 16px; padding: 14px; border-radius: 10px; display: none; font-size: 0.9rem;"></div>
+
+                <div class="sticky-note-box">
+                    <b style="color: var(--warning);">📝 Question Study Note:</b>
+                    <input type="text" id="question-note-input" class="sticky-note-input" placeholder="Add personal note for this question..." onchange="saveQuestionStickyNote(this.value)">
+                </div>
+
+                <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <button id="prev-btn" class="btn btn-secondary" onclick="prevQuestion()" disabled>Previous</button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button id="flag-btn" class="btn btn-warning" onclick="toggleFlagCurrentQuestion()">🏳️ Flag Question</button>
+                        <button id="disable-session-q-btn" class="btn btn-secondary" onclick="disableCurrentQuestionInSession()" title="Exclude this question permanently from practice sessions">🚫 Disable Question</button>
+                    </div>
+                    <button id="next-btn" class="btn" onclick="nextQuestion()" disabled>Next Question</button>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; text-align: center;">💡 Tip: Press <b>Spacebar</b> or <b>Click anywhere in the card</b> to proceed to the next question.</div>
+            </div>
+
+            <div id="quiz-results" class="card" style="display: none; text-align: center; padding: 40px;">
+                <h2>🎉 Practice Completed!</h2>
+                <div id="final-score" style="font-size: 2.2rem; font-weight: 800; color: var(--accent); margin: 15px 0;">0 / 0 (0%)</div>
+                <p id="final-msg" style="color: var(--text-muted);"></p>
+                <button class="btn" onclick="switchQuizTab('library-tab')">Return to Library</button>
+            </div>
+        </div>
+
+        <!-- TAB 5: ANALYTICS -->
+        <div id="history-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📊 Analytics & Performance</div>
+                    <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear History</button>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-tile"><div class="metric-sub">Average Retention</div><div id="analytic-accuracy" class="metric-num">0%</div></div>
+                    <div class="metric-tile"><div class="metric-sub">Sessions</div><div id="analytic-sessions" class="metric-num">0</div></div>
+                    <div class="metric-tile"><div class="metric-sub">Weak Spots</div><div id="analytic-weakspots" class="metric-num">0</div></div>
+                    <div class="metric-tile"><div class="metric-sub">Retention EF</div><div id="analytic-srs-score" class="metric-num">2.50</div></div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr><th>#</th><th>Quiz Name</th><th>Date Completed</th><th>Score</th><th>Pct</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="history-rows">
+                            <tr><td colspan="6" style="text-align: center;">No history recorded yet.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- TAB 5: FLASHCARD MODE -->
-    <div id="flashcard-tab" class="tab-content">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">🎴 Flashcard Deck Review</div>
-                <select id="flashcard-deck-select" onchange="FlashcardEngine.loadSelectedDeck()" style="padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); font-weight: 600;">
-                    <option value="">Select a Deck...</option>
-                </select>
-            </div>
+    <!-- ==========================================================================
+         MASTER SUITE 2: DEDICATED FLASHCARD SRS ENGINE
+         ========================================================================== -->
+    <div id="master-suite-flashcard" style="display: none;">
+        <!-- FLASHCARD SUB NAVIGATION PILLS -->
+        <div class="nav-pills">
+            <button class="nav-pill active" onclick="switchFcTab('fc-study-tab')">🎴 Study Stage</button>
+            <button class="nav-pill" onclick="switchFcTab('fc-library-tab')">📚 Deck Library</button>
+            <button class="nav-pill" onclick="switchFcTab('fc-ide-tab')">💻 Dual-Pane Flashcard IDE</button>
+            <button class="nav-pill" onclick="switchFcTab('fc-srs-tab')">📋 Scheduled SRS Queue</button>
+        </div>
 
-            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
-                <span id="fc-deck-title">Deck: None</span>
-                <span id="fc-deck-counts">Remaining Review Queue: 0 | Scheduled Mastered: 0</span>
-            </div>
+        <!-- FLASHCARD TAB 1: STUDY STAGE -->
+        <div id="fc-study-tab" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🎴 Active Flashcard Deck Review</div>
+                    <select id="fc-deck-select" onchange="loadSelectedFlashcardDeck()" style="padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); font-weight: 600;">
+                        <option value="">Select a Deck...</option>
+                    </select>
+                </div>
 
-            <div class="flashcard-stage">
-                <div id="active-flashcard" class="flashcard" onclick="FlashcardEngine.flipCard()">
-                    <div class="card-face">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); font-weight: bold;">
-                            <span>QUESTION</span><span id="fc-card-num">Card #1</span>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
+                    <span id="fc-deck-title">Deck: None</span>
+                    <span id="fc-deck-counts">Remaining Review Queue: 0 | Scheduled Mastered: 0</span>
+                </div>
+
+                <div class="flashcard-stage">
+                    <div id="active-flashcard" class="flashcard" onclick="flipFlashcard()">
+                        <div class="card-face">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); font-weight: bold;">
+                                <span>FRONT / PROMPT</span><span id="fc-card-num">Card #1</span>
+                            </div>
+                            <div id="fc-front-text" style="font-size: 1.25rem; text-align: center; margin: auto;">Select a deck from the dropdown above!</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">💡 Click or Press Spacebar to Flip</div>
                         </div>
-                        <div id="fc-front-text" style="font-size: 1.2rem; text-align: center; margin: auto;">Select a deck to start!</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">💡 Click or Spacebar to Flip</div>
-                    </div>
-                    <div class="card-face card-face-back">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); font-weight: bold;">
-                            <span>ANSWER</span><span>REVEALED</span>
+                        <div class="card-face card-face-back">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); font-weight: bold;">
+                                <span>BACK / REVEAL</span><span>REVEALED</span>
+                            </div>
+                            <div id="fc-back-text" style="font-size: 1.15rem; text-align: center; margin: auto;">Answer details...</div>
+                            <div id="fc-notes-text" style="font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-bottom: 8px;"></div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">Rate recall difficulty:</div>
                         </div>
-                        <div id="fc-back-text" style="font-size: 1.1rem; text-align: center; margin: auto;">Answer details...</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">Rate recall difficulty:</div>
                     </div>
                 </div>
-            </div>
 
-            <div class="rating-bar">
-                <button class="rating-pill rating-hard" onclick="FlashcardEngine.rateCard('hard')">🔴 Hard [1]</button>
-                <button class="rating-pill rating-good" onclick="FlashcardEngine.rateCard('good')">🟡 Good [2]</button>
-                <button class="rating-pill rating-easy" onclick="FlashcardEngine.rateCard('easy')">🟢 Easy [3]</button>
-            </div>
+                <div class="rating-bar">
+                    <button class="rating-pill rating-hard" onclick="rateFlashcard('hard')">🔴 Hard [1]</button>
+                    <button class="rating-pill rating-good" onclick="rateFlashcard('good')">🟡 Good [2]</button>
+                    <button class="rating-pill rating-easy" onclick="rateFlashcard('easy')">🟢 Easy [3]</button>
+                </div>
 
-            <div style="margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap;">
-                <button class="btn btn-secondary btn-sm" onclick="FlashcardEngine.toggleMasteredListView()">📋 Manage Scheduled Mastery Review Deck</button>
-                <button class="btn btn-secondary btn-sm" id="fc-undo-btn" onclick="FlashcardEngine.undo()" style="display: inline-flex; align-items: center;" disabled>↩ Undo Rating</button>
+                <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+                    <button class="btn btn-secondary btn-sm" id="fc-undo-btn" onclick="undoFlashcardRating()" disabled>↩ Undo Rating</button>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Shortcuts: <b>Space</b> = Flip | <b>1</b>=Hard, <b>2</b>=Good, <b>3</b>=Easy</span>
+                </div>
             </div>
         </div>
 
-        <!-- SRS MASTERY MANAGEMENT SUBPANEL -->
-        <div id="mastered-cards-view" class="card" style="display: none; margin-top: 15px;">
-            <div class="card-header">
-                <div class="card-title">📋 Scheduled Review Deck & Mastery Status</div>
-                <button class="btn btn-secondary btn-sm" onclick="FlashcardEngine.toggleMasteredListView()">✕ Close</button>
+        <!-- FLASHCARD TAB 2: DECK LIBRARY -->
+        <div id="fc-library-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📚 Flashcard Deck Library</div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-success btn-sm" onclick="loadLanguageFlashcardSample()">+ Japanese/Spanish Sample Deck</button>
+                        <button class="btn btn-warning btn-sm" onclick="loadSTEMFlashcardSample()">+ STEM Calculus/Physics Deck</button>
+                    </div>
+                </div>
+                <div id="fc-deck-list-container"></div>
             </div>
-            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0;">These cards have active spaced repetition intervals. Once their interval expires, they automatically re-enter the study deck list.</p>
-            <div style="overflow-x: auto; max-height: 400px;">
+        </div>
+
+        <!-- FLASHCARD TAB 3: DUAL-PANE IDE -->
+        <div id="fc-ide-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header"><div class="card-title">💻 Flashcard Deck IDE (JSON / LaTeX)</div></div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0;">Create native flashcard decks with MathJax formula support: <code>\( E = mc^2 \)</code> or <code>$$ \int x^2 \, dx $$</code>.</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                    <textarea id="fc-json-editor" class="code-area" spellcheck="false" placeholder='{\n  "title": "Japanese N5 Vocabulary",\n  "category": "Language",\n  "cards": [\n    {\n      "front": "水 (みず)",\n      "back": "Water",\n      "notes": "Essential Noun"\n    }\n  ]\n}' oninput="validateFcEditorLive()"></textarea>
+                    <div id="fc-live-preview" class="preview-area">
+                        <p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Type equations or JSON to preview live!</p>
+                    </div>
+                </div>
+                <button class="btn btn-success btn-sm" style="width: 100%; margin-top: 14px;" onclick="createFlashcardDeckFromIDE()">🚀 Save Deck to Library</button>
+            </div>
+        </div>
+
+        <!-- FLASHCARD TAB 4: SRS SCHEDULED QUEUE -->
+        <div id="fc-srs-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header"><div class="card-title">📋 Scheduled Review Deck Status</div></div>
                 <table>
                     <thead>
                         <tr>
-                            <th>Card / Prompt</th>
+                            <th>Card Front / Prompt</th>
                             <th>Ease Factor</th>
-                            <th>Study Interval (Days)</th>
-                            <th>Status / Expiration</th>
+                            <th>Interval</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="mastered-cards-rows">
-                        <tr><td colspan="5" style="text-align: center;">No scheduled mastery records stored.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- TAB 6: ANALYTICS -->
-    <div id="history-tab" class="tab-content">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">📊 Analytics & Performance</div>
-                <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear History</button>
-            </div>
-            <div class="metrics-grid">
-                <div class="metric-tile"><div class="metric-sub">Average Retention</div><div id="analytic-accuracy" class="metric-num">0%</div></div>
-                <div class="metric-tile"><div class="metric-sub">Sessions</div><div id="analytic-sessions" class="metric-num">0</div></div>
-                <div class="metric-tile"><div class="metric-sub">Weak Spots</div><div id="analytic-weakspots" class="metric-num">0</div></div>
-                <div class="metric-tile"><div class="metric-sub">Retention EF</div><div id="analytic-srs-score" class="metric-num">2.50</div></div>
-            </div>
-
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr><th>#</th><th>Quiz Name</th><th>Date Completed</th><th>Score</th><th>Pct</th><th>Status</th></tr>
-                    </thead>
-                    <tbody id="history-rows">
-                        <tr><td colspan="6" style="text-align: center;">No history recorded yet.</td></tr>
+                    <tbody id="fc-srs-table-rows">
+                        <tr><td colspan="5" style="text-align: center;">No scheduled SRS records logged yet.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -922,7 +1005,7 @@
     </div>
 </div>
 
-<!-- EXPANDABLE QUIZ OPTIONS SHEET MODAL -->
+<!-- QUIZ OPTIONS MODAL SHEET -->
 <div id="quiz-options-modal" class="modal-overlay">
     <div class="modal-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
@@ -948,7 +1031,7 @@
     </div>
 </div>
 
-<!-- EXPANDABLE FOLDER OPTIONS SHEET MODAL -->
+<!-- FOLDER OPTIONS MODAL SHEET -->
 <div id="folder-options-modal" class="modal-overlay">
     <div class="modal-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
@@ -966,7 +1049,7 @@
     </div>
 </div>
 
-<!-- QUIZ PERFORMANCE ANALYTICS & QUESTION INSPECTOR MODAL -->
+<!-- QUIZ ANALYTICS MODAL SHEET -->
 <div id="quiz-analytics-modal" class="modal-overlay">
     <div class="modal-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
@@ -992,9 +1075,7 @@
             <button class="btn btn-sm btn-secondary" id="qa-filter-disabled" onclick="filterQuizAnalyticsQuestions('disabled')">🚫 Disabled (<span id="qa-disabled-count">0</span>)</button>
         </div>
 
-        <div id="qa-questions-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow-y: auto; padding-right: 4px;">
-            <!-- Rendered dynamically -->
-        </div>
+        <div id="qa-questions-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow-y: auto; padding-right: 4px;"></div>
 
         <div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
             <button class="btn btn-warning btn-sm" id="qa-practice-weak-btn" onclick="startTargetedQuizPractice('struggling')">🚀 Practice Targeted Weak Spots</button>
@@ -1121,11 +1202,12 @@
 
 <script>
 /* ==========================================================================
-   COMPLETE MASTER ENGINE LOGIC
+   MASTER ENGINE LOGIC & AUDIO SYNTHESIZER
    ========================================================================== */
 
 const COLOR_PRESETS = ['#0284c7', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b', '#14b8a6', '#6366f1', '#64748b'];
 let selectedFormColor = '#0284c7';
+let currentMasterMode = 'quiz';
 
 const AudioEngine = (function() {
     let ctx = null, muted = false;
@@ -1153,10 +1235,23 @@ const AudioEngine = (function() {
     };
 })();
 
-/* ==========================================================================
-   MOBILE SEGMENTED SUBTAB CONTROLLER
-   ========================================================================== */
+function switchMasterSuiteMode(mode) {
+    currentMasterMode = mode;
+    document.getElementById('master-suite-quiz').style.display = (mode === 'quiz') ? 'block' : 'none';
+    document.getElementById('master-suite-flashcard').style.display = (mode === 'flashcard') ? 'block' : 'none';
 
+    document.getElementById('btn-master-quiz').classList.toggle('active', mode === 'quiz');
+    document.getElementById('btn-master-flashcard').classList.toggle('active', mode === 'flashcard');
+
+    if (mode === 'quiz') {
+        renderLibrary();
+    } else {
+        updateFlashcardDeckDropdown();
+        renderFlashcardDeckLibrary();
+    }
+}
+
+/* MOBILE SUBTAB CONTROLLER */
 let activeLibrarySubTab = 'quizzes';
 function switchLibrarySubTab(mode) {
     activeLibrarySubTab = mode;
@@ -1187,37 +1282,28 @@ function getQuizEffectiveMastery(qz) {
     if (!qz.lastPracticed || qz.mastery === undefined) return 0;
     
     const daysElapsed = (Date.now() - qz.lastPracticed) / (1000 * 60 * 60 * 24);
-    const stability = qz.stability || 3.0; // Default stability is 3 days
-    
-    // Ebbinghaus Forgetting Curve / Exponential Retention Decay: R = e^(-t / S)
+    const stability = qz.stability || 3.0;
     const retention = Math.exp(-daysElapsed / stability);
-    const effective = Math.max(0, Math.round(qz.mastery * retention));
-    return effective;
+    return Math.max(0, Math.round(qz.mastery * retention));
 }
 
 function updateQuizMastery(qz, correct, total) {
     if (!qz || total <= 0) return;
-    const perfRatio = correct / total; // 0.0 to 1.0
+    const perfRatio = correct / total;
     const oldEffective = getQuizEffectiveMastery(qz);
     
     let newMastery = 0;
     if (!qz.lastPracticed || qz.mastery === undefined) {
         newMastery = Math.round(perfRatio * 100);
     } else {
-        // Blend weighted decay retention (30%) with new session performance (70%)
         newMastery = Math.round(oldEffective * 0.3 + (perfRatio * 100) * 0.7);
     }
     newMastery = Math.min(100, Math.max(0, newMastery));
 
-    // Dynamic Stability adjustment based on recall accuracy
     let currentStability = qz.stability || 3.0;
-    if (perfRatio >= 0.85) {
-        currentStability = Math.min(60, currentStability * 1.5 + 1.5);
-    } else if (perfRatio >= 0.60) {
-        currentStability = Math.min(60, currentStability * 1.1);
-    } else {
-        currentStability = Math.max(1, currentStability * 0.5);
-    }
+    if (perfRatio >= 0.85) currentStability = Math.min(60, currentStability * 1.5 + 1.5);
+    else if (perfRatio >= 0.60) currentStability = Math.min(60, currentStability * 1.1);
+    else currentStability = Math.max(1, currentStability * 0.5);
 
     qz.mastery = newMastery;
     qz.stability = currentStability;
@@ -1285,11 +1371,12 @@ function getQuestionKey(q) {
 let db = {
     folders: [],
     quizzes: [],
+    flashcardDecks: [],
+    flashcardSRS: {},
     history: [],
     wrongPile: {},
-    flashcardSRS: {},
-    questionStats: {}, // Question-level response times & recall metrics
-    unfinishedSessions: {}, // Persistent state of uncompleted quizzes
+    questionStats: {},
+    unfinishedSessions: {},
     questionNotes: {},
     settings: { theme: 'light', fontScale: '100%', audioMuted: false, shuffleOptions: true, timerMode: 'none' }
 };
@@ -1312,14 +1399,19 @@ const QuizAppStore = (function() {
                     });
                     return q;
                 });
+                db.flashcardDecks = parsed.flashcardDecks || [];
+                db.flashcardSRS = parsed.flashcardSRS || {};
                 db.history = parsed.history || [];
                 db.wrongPile = parsed.wrongPile || {};
-                db.flashcardSRS = parsed.flashcardSRS || {};
                 db.questionStats = parsed.questionStats || {};
                 db.unfinishedSessions = parsed.unfinishedSessions || {};
                 db.questionNotes = parsed.questionNotes || {};
                 db.settings = { ...db.settings, ...(parsed.settings || {}) };
             } catch (e) {}
+        }
+        if (!db.flashcardDecks || db.flashcardDecks.length === 0) {
+            loadLanguageFlashcardSample(false);
+            loadSTEMFlashcardSample(false);
         }
         applyTheme(db.settings.theme);
         setFontScale(db.settings.fontScale || '100%');
@@ -1368,7 +1460,6 @@ function renderUnfinishedSessions() {
     const countBadge = document.getElementById('unfinished-count-badge');
     if (countBadge) countBadge.innerText = sessionKeys.length;
 
-    // Update Top Resume Banner
     const banner = document.getElementById('resume-session-banner');
     const bannerText = document.getElementById('resume-banner-text');
 
@@ -1387,7 +1478,6 @@ function renderUnfinishedSessions() {
         if (banner) banner.style.display = 'none';
     }
 
-    // Render Unfinished Sessions Manager Cards in Library & Practice Tab
     const libContainer = document.getElementById('unfinished-sessions-container');
     const runnerContainer = document.getElementById('runner-unfinished-panel');
 
@@ -1437,7 +1527,6 @@ function renderUnfinishedSessions() {
 function resumeLatestUnfinishedSession() {
     const sessionKeys = Object.keys(db.unfinishedSessions || {});
     if (sessionKeys.length === 0) return alert("No saved unfinished sessions found!");
-    // Sort newest saved session
     sessionKeys.sort((a, b) => (db.unfinishedSessions[b].savedAt || 0) - (db.unfinishedSessions[a].savedAt || 0));
     resumeUnfinishedSession(sessionKeys[0]);
 }
@@ -1452,7 +1541,7 @@ function resumeUnfinishedSession(sessionId) {
     document.getElementById('runner-tab-btn').disabled = false;
     document.getElementById('active-quiz-title').innerText = activeSession.title;
     
-    switchTab('runner-tab');
+    switchQuizTab('runner-tab');
     setupSessionTimer();
     loadQuestion();
 }
@@ -1473,9 +1562,7 @@ function clearAllUnfinishedSessions() {
     }
 }
 
-function discardSavedSession() {
-    clearAllUnfinishedSessions();
-}
+function discardSavedSession() { clearAllUnfinishedSessions(); }
 
 /* ==========================================================================
    FLEXIBLE JSON PARSER
@@ -1488,20 +1575,12 @@ function flexibleJSONParse(rawText) {
     clean = clean.replace(/\/\/.*/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
     clean = clean.replace(/,\s*([}\]])/g, '$1');
 
-    try {
-        return JSON.parse(clean);
-    } catch (e1) {
+    try { return JSON.parse(clean); } catch (e1) {
         let fixed = clean.replace(/([{,]\s*)([a-zA-Z0-9_$]+)\s*:/g, '$1"$2":');
         fixed = fixed.replace(/'([^'\\]*(\\.[^'\\]*)*)'/g, '"$1"');
         fixed = fixed.replace(/,\s*([}\]])/g, '$1');
-        try {
-            return JSON.parse(fixed);
-        } catch (e2) {
-            try {
-                return (new Function("return (" + clean + ")"))();
-            } catch (e3) {
-                throw new Error("Syntax error: " + e1.message);
-            }
+        try { return JSON.parse(fixed); } catch (e2) {
+            try { return (new Function("return (" + clean + ")"))(); } catch (e3) { throw new Error("Syntax error: " + e1.message); }
         }
     }
 }
@@ -1656,9 +1735,7 @@ function openQuizOptionsMenu(quizId) {
     toggleQuizOptionsModal(true);
 }
 
-function toggleQuizOptionsModal(show) {
-    document.getElementById('quiz-options-modal').style.display = show ? 'flex' : 'none';
-}
+function toggleQuizOptionsModal(show) { document.getElementById('quiz-options-modal').style.display = show ? 'flex' : 'none'; }
 
 function execQuizOption(action, payload) {
     const quizId = activeMenuQuizId;
@@ -1688,9 +1765,7 @@ function openFolderOptionsMenu(folderId) {
     toggleFolderOptionsModal(true);
 }
 
-function toggleFolderOptionsModal(show) {
-    document.getElementById('folder-options-modal').style.display = show ? 'flex' : 'none';
-}
+function toggleFolderOptionsModal(show) { document.getElementById('folder-options-modal').style.display = show ? 'flex' : 'none'; }
 
 function execFolderOption(action) {
     const folderId = activeMenuFolderId;
@@ -2222,7 +2297,7 @@ function combineAndSaveToLibrary() {
     const name = prompt("Enter title for compiled quiz:", "Combined - " + titles.slice(0, 2).join(", "));
     if (!name) return;
     const newId = QuizAppStore.addQuiz({ title: name.trim(), category: "Combined", questions: compiled });
-    switchTab('library-tab'); renderLibrary(); highlightQuizInLibrary(newId);
+    switchQuizTab('library-tab'); renderLibrary(); highlightQuizInLibrary(newId);
 }
 
 function exportMergedQuizJSON() {
@@ -2433,7 +2508,7 @@ function initSession(title, rawQuestions) {
     let questions = JSON.parse(JSON.stringify(rawQuestions)).filter(q => !q.disabled);
 
     if (questions.length === 0) {
-        return alert("All questions for this session are currently disabled! Re-enable them in the Library Question Breakdown.");
+        return alert("All questions for this session are currently disabled!");
     }
 
     if (shuffleEnabled) {
@@ -2467,7 +2542,7 @@ function initSession(title, rawQuestions) {
     lastLoadedIndex = -1;
     currentMultiSelects = [];
 
-    switchTab('runner-tab'); setupSessionTimer(); loadQuestion();
+    switchQuizTab('runner-tab'); setupSessionTimer(); loadQuestion();
     saveSessionBackup();
 }
 
@@ -2704,7 +2779,6 @@ function skipQuestion() {
     QuizAppStore.saveDatabase(); renderWrongPile(); nextQuestion();
 }
 
-/* ON-THE-FLY QUESTION DISABLING DURING SESSIONS */
 function disableCurrentQuestionInSession() {
     if (!activeSession || !activeSession.questions || activeSession.questions.length === 0) return;
     const currentQ = activeSession.questions[activeSession.currentIndex];
@@ -2819,7 +2893,6 @@ function finishSession() {
     document.getElementById('quiz-body').style.display = 'none';
     document.getElementById('quiz-results').style.display = 'block';
 
-    // Remove from unfinished sessions list upon completion
     if (activeSession.id && db.unfinishedSessions) {
         delete db.unfinishedSessions[activeSession.id];
     }
@@ -2829,7 +2902,6 @@ function finishSession() {
     document.getElementById('final-score').innerText = `${score} / ${total} (${pct}%)`;
     document.getElementById('final-msg').innerText = pct >= 70 ? "Target score achieved! 🎉" : "Keep practicing to improve!";
 
-    // Commit Question Speed Statistics & Accuracy ONLY UPON EXPLICIT SESSION COMPLETION
     if (!db.questionStats) db.questionStats = {};
     activeSession.questions.forEach((q, idx) => {
         const uAns = activeSession.userAnswers[idx];
@@ -2847,7 +2919,6 @@ function finishSession() {
         }
     });
 
-    // Group question performance per source quiz to update individual Mastery meters independently
     let quizPerformanceMap = {};
     activeSession.questions.forEach((q, idx) => {
         const qId = q.sourceQuizId;
@@ -2862,7 +2933,6 @@ function finishSession() {
         }
     });
 
-    // Apply mastery updates and decay curves to each participating quiz
     Object.keys(quizPerformanceMap).forEach(qId => {
         const parentQuiz = db.quizzes.find(x => x.id === qId);
         if (parentQuiz) {
@@ -2895,10 +2965,6 @@ function saveSessionBackup() {
     renderUnfinishedSessions();
 }
 
-function checkSavedSession() {
-    renderUnfinishedSessions();
-}
-
 function startSingleQuiz(id) {
     const qz = db.quizzes.find(q => q.id === id); 
     if (qz) {
@@ -2909,221 +2975,287 @@ function startSingleQuiz(id) {
     }
 }
 
+function switchQuizTab(id) {
+    const parent = document.getElementById('master-suite-quiz');
+    parent.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('active'));
+    parent.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+    const btn = Array.from(parent.querySelectorAll('.nav-pill')).find(b => b.getAttribute('onclick').includes(id));
+    if (btn) btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+
+    if (id === 'library-tab') renderLibrary();
+    if (id === 'compile-tab') renderCompileChecklist();
+    if (id === 'wrong-tab') renderWrongPile();
+    if (id === 'runner-tab') renderUnfinishedSessions();
+    if (id === 'history-tab') renderHistory();
+}
+
 /* ==========================================================================
-   FLASHCARD ENGINE WITH SPACED REPETITION (SM2 / ANKI METHOD)
+   2. FLASHCARD SUITE CONTROLLER & SRS ENGINE
    ========================================================================== */
 
-const FlashcardEngine = (function() {
-    let activeDeck = [], masteredCount = 0, currentIndex = 0, isFlipped = false;
-    let flashcardHistoryStack = [];
+function switchFcTab(tabId) {
+    const parent = document.getElementById('master-suite-flashcard');
+    parent.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('active'));
+    parent.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-    function getRemainingTimeString(ms) {
-        const diff = ms - Date.now();
-        if (diff <= 0) return "Expired (Due now)";
-        const mins = Math.ceil(diff / (1000 * 60));
-        if (mins < 60) return `Due in ${mins} min${mins === 1 ? '' : 's'}`;
-        const hours = Math.ceil(diff / (1000 * 60 * 60));
-        if (hours < 24) return `Due in ${hours} hour${hours === 1 ? '' : 's'}`;
-        const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-        return `Due in ${days} day${days === 1 ? '' : 's'}`;
+    const btn = Array.from(parent.querySelectorAll('.nav-pill')).find(b => b.getAttribute('onclick').includes(tabId));
+    if (btn) btn.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+
+    if (tabId === 'fc-study-tab') updateFlashcardDeckDropdown();
+    if (tabId === 'fc-library-tab') renderFlashcardDeckLibrary();
+    if (tabId === 'fc-srs-tab') renderFcSRSTable();
+}
+
+let activeFcDeckCards = [];
+let currentFcIndex = 0;
+let isFcFlipped = false;
+let fcHistoryStack = [];
+
+function getFcCardKey(card) { return (card.id || card.front || '').trim().toLowerCase(); }
+
+function updateFlashcardDeckDropdown() {
+    const sel = document.getElementById('fc-deck-select');
+    sel.innerHTML = '<option value="">Select a Deck...</option>' + 
+        (db.flashcardDecks || []).map(d => `<option value="${d.id}">${d.title} (${d.cards.length} cards)</option>`).join('');
+}
+
+function loadSelectedFlashcardDeck() {
+    const deckId = document.getElementById('fc-deck-select').value;
+    const deck = (db.flashcardDecks || []).find(d => d.id === deckId);
+    if (!deck) return;
+
+    activeFcDeckCards = [];
+    let scheduledMasteredCount = 0;
+
+    deck.cards.forEach(c => {
+        const key = getFcCardKey(c);
+        const srs = (db.flashcardSRS || {})[key];
+        if (!srs || srs.nextReview <= Date.now()) {
+            activeFcDeckCards.push(c);
+        } else {
+            scheduledMasteredCount++;
+        }
+    });
+
+    activeFcDeckCards.sort(() => Math.random() - 0.5);
+    currentFcIndex = 0;
+    fcHistoryStack = [];
+    document.getElementById('fc-undo-btn').disabled = true;
+
+    document.getElementById('fc-deck-title').innerText = `Deck: ${deck.title}`;
+    document.getElementById('fc-deck-counts').innerText = `Remaining Queue: ${activeFcDeckCards.length} | Scheduled Mastered: ${scheduledMasteredCount}`;
+
+    renderFlashcard();
+}
+
+function renderFlashcard() {
+    const cardEl = document.getElementById('active-flashcard');
+    cardEl.classList.remove('flipped');
+    isFcFlipped = false;
+
+    if (!activeFcDeckCards || activeFcDeckCards.length === 0) {
+        document.getElementById('fc-front-text').innerHTML = "🎉 <b>Queue Cleared!</b><br><small style='color:var(--text-muted);'>No cards currently due for review in this deck.</small>";
+        document.getElementById('fc-back-text').innerHTML = "All active cards mastered.";
+        document.getElementById('fc-notes-text').innerText = "";
+        return;
     }
 
-    function saveUndoState() {
-        flashcardHistoryStack.push({
-            activeDeck: JSON.parse(JSON.stringify(activeDeck)),
-            masteredCount: masteredCount,
-            currentIndex: currentIndex,
-            srsSnapshot: JSON.parse(JSON.stringify(db.flashcardSRS))
-        });
-        if (flashcardHistoryStack.length > 25) {
-            flashcardHistoryStack.shift();
-        }
-        document.getElementById('fc-undo-btn').disabled = false;
+    const card = activeFcDeckCards[currentFcIndex];
+    document.getElementById('fc-card-num').innerText = `Card #${currentFcIndex + 1}`;
+    document.getElementById('fc-front-text').innerHTML = card.front;
+    document.getElementById('fc-back-text').innerHTML = card.back;
+    document.getElementById('fc-notes-text').innerHTML = card.notes ? `💡 <i>${card.notes}</i>` : '';
+
+    renderMath(cardEl);
+}
+
+function flipFlashcard() {
+    const cardEl = document.getElementById('active-flashcard');
+    isFcFlipped = !isFcFlipped;
+    cardEl.classList.toggle('flipped', isFcFlipped);
+    AudioEngine.playFlip();
+    renderMath(cardEl);
+}
+
+function rateFlashcard(rating) {
+    if (!activeFcDeckCards || activeFcDeckCards.length === 0) return;
+
+    fcHistoryStack.push({
+        cards: JSON.parse(JSON.stringify(activeFcDeckCards)),
+        index: currentFcIndex,
+        srs: JSON.parse(JSON.stringify(db.flashcardSRS || {}))
+    });
+    document.getElementById('fc-undo-btn').disabled = false;
+
+    const card = activeFcDeckCards[currentFcIndex];
+    const key = getFcCardKey(card);
+    if (!db.flashcardSRS) db.flashcardSRS = {};
+    let srs = db.flashcardSRS[key] || { ease: 2.50, interval: 0, repetition: 0, nextReview: 0 };
+
+    if (rating === 'hard') {
+        srs.repetition = 0;
+        srs.interval = 0;
+        srs.ease = Math.max(1.3, srs.ease - 0.2);
+        srs.nextReview = Date.now();
+        activeFcDeckCards.splice(currentFcIndex, 1);
+        activeFcDeckCards.push(card);
+        AudioEngine.playWrong();
+    } else if (rating === 'good') {
+        if (srs.repetition === 0) srs.interval = 1;
+        else if (srs.repetition === 1) srs.interval = 3;
+        else srs.interval = Math.ceil(srs.interval * srs.ease);
+
+        srs.repetition += 1;
+        srs.nextReview = Date.now() + srs.interval * 24 * 60 * 60 * 1000;
+        activeFcDeckCards.splice(currentFcIndex, 1);
+        AudioEngine.playCorrect();
+    } else if (rating === 'easy') {
+        if (srs.repetition === 0) srs.interval = 3;
+        else if (srs.repetition === 1) srs.interval = 6;
+        else srs.interval = Math.ceil(srs.interval * srs.ease * 1.5);
+
+        srs.ease = Math.min(5.00, srs.ease + 0.15);
+        srs.repetition += 1;
+        srs.nextReview = Date.now() + srs.interval * 24 * 60 * 60 * 1000;
+        activeFcDeckCards.splice(currentFcIndex, 1);
+        AudioEngine.playCorrect();
     }
 
-    return {
-        init: () => {
-            const sel = document.getElementById('flashcard-deck-select'); if (!sel) return;
-            sel.innerHTML = '<option value="">Select a Deck...</option>' + db.quizzes.map(q => `<option value="${q.id}">${q.title}</option>`).join('');
-            if (!db.flashcardSRS) db.flashcardSRS = {};
-        },
-        loadSelectedDeck: () => {
-            const id = document.getElementById('flashcard-deck-select').value;
-            const qz = db.quizzes.find(x => x.id === id); if (!qz) return;
-            
-            activeDeck = [];
-            masteredCount = 0;
-            flashcardHistoryStack = [];
-            document.getElementById('fc-undo-btn').disabled = true;
+    db.flashcardSRS[key] = srs;
+    QuizAppStore.saveDatabase();
 
-            qz.questions.filter(q => !q.disabled).forEach(q => {
-                const qKey = getQuestionKey(q);
-                const srs = db.flashcardSRS[qKey];
-                if (!srs || srs.nextReview <= Date.now()) {
-                    activeDeck.push(q);
-                } else {
-                    masteredCount++;
-                }
-            });
+    if (currentFcIndex >= activeFcDeckCards.length) currentFcIndex = 0;
+    renderFlashcard();
+}
 
-            activeDeck.sort(() => Math.random() - 0.5);
-            currentIndex = 0;
-            document.getElementById('fc-deck-title').innerText = `Deck: ${qz.title}`;
-            FlashcardEngine.render();
-            FlashcardEngine.renderMasteredList();
-        },
-        flipCard: () => {
-            const cardEl = document.getElementById('active-flashcard');
-            isFlipped = !isFlipped; cardEl.classList.toggle('flipped', isFlipped);
-            AudioEngine.playFlip(); renderMath(cardEl);
-        },
-        render: () => {
-            const cardEl = document.getElementById('active-flashcard');
-            cardEl.classList.remove('flipped'); isFlipped = false;
-            document.getElementById('fc-deck-counts').innerText = `Remaining Review Queue: ${activeDeck.length} | Scheduled Mastered: ${masteredCount}`;
-            if (!activeDeck || activeDeck.length === 0) {
-                document.getElementById('fc-front-text').innerHTML = "🎉 <b>Review Queue Cleared!</b><br><small style='color:var(--text-muted);'>No active cards currently due or enabled.</small>";
-                document.getElementById('fc-back-text').innerHTML = "All active cards have been processed.";
-                return;
-            }
-            const q = activeDeck[currentIndex];
-            document.getElementById('fc-card-num').innerText = `Card #${currentIndex + 1}`;
-            document.getElementById('fc-front-text').innerHTML = `<b>${q.q}</b>`;
-            const evalRes = evaluateAnswer(q, q.answer);
-            document.getElementById('fc-back-text').innerHTML = `<b>Answer:</b> ${evalRes.correctText}<br><small style="color:var(--text-muted);">${q.explain || ''}</small>`;
-            renderMath(cardEl);
-        },
-        rateCard: (rating) => {
-            if (!activeDeck || activeDeck.length === 0) return;
-            
-            saveUndoState();
+function undoFlashcardRating() {
+    if (fcHistoryStack.length === 0) return;
+    const state = fcHistoryStack.pop();
+    activeFcDeckCards = state.cards;
+    currentFcIndex = state.index;
+    db.flashcardSRS = state.srs;
 
-            const card = activeDeck[currentIndex];
-            const qKey = getQuestionKey(card);
-            
-            let srs = db.flashcardSRS[qKey] || { ease: 2.50, interval: 0, repetition: 0, nextReview: 0 };
+    QuizAppStore.saveDatabase();
+    if (fcHistoryStack.length === 0) document.getElementById('fc-undo-btn').disabled = true;
+    renderFlashcard();
+}
 
-            if (rating === 'hard') {
-                srs.repetition = 0;
-                srs.interval = 0;
-                srs.ease = Math.max(1.3, srs.ease - 0.2);
-                srs.nextReview = Date.now();
+function renderFlashcardDeckLibrary() {
+    const container = document.getElementById('fc-deck-list-container');
+    if (!db.flashcardDecks || db.flashcardDecks.length === 0) {
+        container.innerHTML = `<p style="text-align: center; color: var(--text-muted);">No flashcard decks in library.</p>`;
+        return;
+    }
 
-                activeDeck.splice(currentIndex, 1);
-                activeDeck.push(card);
-                AudioEngine.playWrong();
-            } else if (rating === 'good') {
-                if (srs.repetition === 0) srs.interval = 1;
-                else if (srs.repetition === 1) srs.interval = 3;
-                else srs.interval = Math.ceil(srs.interval * srs.ease);
+    container.innerHTML = db.flashcardDecks.map(deck => `
+        <div class="card" style="margin-bottom: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <div>
+                <b style="font-size: 1rem; color: var(--text-primary);">${deck.title}</b>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">${deck.cards.length} Cards • Category: ${deck.category || 'General'}</div>
+            </div>
+            <button class="btn btn-sm btn-success" onclick="studyFlashcardDeckDirectly('${deck.id}')">▶ Study Deck</button>
+        </div>
+    `).join('');
 
-                srs.repetition += 1;
-                srs.nextReview = Date.now() + srs.interval * 24 * 60 * 60 * 1000;
+    renderMath(container);
+}
 
-                activeDeck.splice(currentIndex, 1);
-                masteredCount++;
-                AudioEngine.playCorrect();
-            } else if (rating === 'easy') {
-                if (srs.repetition === 0) srs.interval = 3;
-                else if (srs.repetition === 1) srs.interval = 6;
-                else srs.interval = Math.ceil(srs.interval * srs.ease * 1.5);
+function studyFlashcardDeckDirectly(deckId) {
+    switchFcTab('fc-study-tab');
+    document.getElementById('fc-deck-select').value = deckId;
+    loadSelectedFlashcardDeck();
+}
 
-                srs.ease = Math.min(5.00, srs.ease + 0.15);
-                srs.repetition += 1;
-                srs.nextReview = Date.now() + srs.interval * 24 * 60 * 60 * 1000;
-
-                activeDeck.splice(currentIndex, 1);
-                masteredCount++;
-                AudioEngine.playCorrect();
-            }
-
-            db.flashcardSRS[qKey] = srs;
-            QuizAppStore.saveDatabase();
-
-            if (activeDeck.length === 0) {
-                currentIndex = 0;
-            } else {
-                if (currentIndex >= activeDeck.length) {
-                    currentIndex = 0;
-                }
-            }
-
-            FlashcardEngine.render();
-            FlashcardEngine.renderMasteredList();
-        },
-        undo: () => {
-            if (flashcardHistoryStack.length === 0) return;
-            const state = flashcardHistoryStack.pop();
-            
-            activeDeck = state.activeDeck;
-            masteredCount = state.masteredCount;
-            currentIndex = state.currentIndex;
-            db.flashcardSRS = state.srsSnapshot;
-
-            QuizAppStore.saveDatabase();
-            AudioEngine.playFlip();
-
-            if (flashcardHistoryStack.length === 0) {
-                document.getElementById('fc-undo-btn').disabled = true;
-            }
-
-            FlashcardEngine.render();
-            FlashcardEngine.renderMasteredList();
-        },
-        toggleMasteredListView: () => {
-            const view = document.getElementById('mastered-cards-view');
-            const show = view.style.display === 'none';
-            view.style.display = show ? 'block' : 'none';
-            if (show) FlashcardEngine.renderMasteredList();
-        },
-        renderMasteredList: () => {
-            const rowsContainer = document.getElementById('mastered-cards-rows');
-            const activeId = document.getElementById('flashcard-deck-select').value;
-            const qz = db.quizzes.find(x => x.id === activeId);
-
-            if (!qz || !db.flashcardSRS) {
-                rowsContainer.innerHTML = '<tr><td colspan="5" style="text-align: center;">Select an active study deck to inspect mastery review timelines.</td></tr>';
-                return;
-            }
-
-            const mastered = qz.questions.filter(q => !q.disabled && db.flashcardSRS[getQuestionKey(q)]);
-
-            if (mastered.length === 0) {
-                rowsContainer.innerHTML = '<tr><td colspan="5" style="text-align: center;">No scheduled mastery review timers logged in this deck yet.</td></tr>';
-                return;
-            }
-
-            rowsContainer.innerHTML = mastered.map(q => {
-                const qKey = getQuestionKey(q);
-                const srs = db.flashcardSRS[qKey];
-                const status = getRemainingTimeString(srs.nextReview);
-                const intervalDays = srs.interval || 0;
-                return `
-                    <tr>
-                        <td><b>${q.q}</b></td>
-                        <td>${srs.ease.toFixed(2)}</td>
-                        <td>${intervalDays} Day${intervalDays === 1 ? '' : 's'}</td>
-                        <td><span class="badge ${srs.nextReview > Date.now() ? 'badge-folder' : 'badge-streak'}">${status}</span></td>
-                        <td>
-                            <button class="btn btn-secondary btn-sm" onclick="FlashcardEngine.forceExpiration('${qKey}')" title="Forces review interval to expire immediately for study testing">⚡ Expire Review</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-            renderMath(rowsContainer);
-        },
-        forceExpiration: (qKey) => {
-            if (db.flashcardSRS[qKey]) {
-                db.flashcardSRS[qKey].nextReview = Date.now() - 1000;
-                QuizAppStore.saveDatabase();
-                FlashcardEngine.renderMasteredList();
-                
-                const activeId = document.getElementById('flashcard-deck-select').value;
-                if (activeId) FlashcardEngine.loadSelectedDeck();
-            }
-        }
+function loadLanguageFlashcardSample(save = true) {
+    if (!db.flashcardDecks) db.flashcardDecks = [];
+    const deck = {
+        id: 'deck_lang_' + Date.now(),
+        title: 'Japanese & Spanish Vocabulary',
+        category: 'Language Learning',
+        cards: [
+            { id: 'c1', front: '水 (みず)', back: 'Water (Japanese)', notes: 'Pronounced: Mizu' },
+            { id: 'c2', front: '猫 (ねこ)', back: 'Cat (Japanese)', notes: 'Pronounced: Neko' },
+            { id: 'c3', front: 'El libro', back: 'The book (Spanish)', notes: 'Masculine noun' }
+        ]
     };
-})();
+    db.flashcardDecks.push(deck);
+    if (save) { QuizAppStore.saveDatabase(); renderFlashcardDeckLibrary(); alert("Language flashcard deck added!"); }
+}
+
+function loadSTEMFlashcardSample(save = true) {
+    if (!db.flashcardDecks) db.flashcardDecks = [];
+    const deck = {
+        id: 'deck_stem_' + Date.now(),
+        title: 'STEM Physics & Calculus Formulas',
+        category: 'Mathematics & Science',
+        cards: [
+            { id: 's1', front: 'Euler\'s Identity: \\( e^{i\\pi} + 1 = 0 \\)', back: 'Relates five fundamental constants: \\( e, i, \\pi, 1, 0 \\).', notes: 'Derived from Euler\'s formula' },
+            { id: 's2', front: 'Gaussian Integral: $$ \\int_{-\\infty}^{\\infty} e^{-x^2} dx $$', back: '$$ \\sqrt{\\pi} $$', notes: 'Fundamental integral in probability.' }
+        ]
+    };
+    db.flashcardDecks.push(deck);
+    if (save) { QuizAppStore.saveDatabase(); renderFlashcardDeckLibrary(); alert("STEM flashcard deck added!"); }
+}
+
+function renderFcSRSTable() {
+    const tbody = document.getElementById('fc-srs-table-rows');
+    const keys = Object.keys(db.flashcardSRS || {});
+
+    if (keys.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No scheduled SRS records logged yet.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = keys.map(key => {
+        const item = db.flashcardSRS[key];
+        const diffMs = item.nextReview - Date.now();
+        const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        const status = diffMs <= 0 ? 'Due Now' : `Due in ${days} day(s)`;
+
+        return `
+            <tr>
+                <td><b>${key}</b></td>
+                <td>${item.ease ? item.ease.toFixed(2) : '2.50'}</td>
+                <td>${item.interval || 0} Day(s)</td>
+                <td><span class="badge ${diffMs <= 0 ? 'badge-streak' : 'badge-folder'}">${status}</span></td>
+                <td><button class="btn btn-secondary btn-sm" onclick="forceExpireFcSRS('${key}')">⚡ Expire Timer</button></td>
+            </tr>
+        `;
+    }).join('');
+
+    renderMath(tbody);
+}
+
+function forceExpireFcSRS(key) {
+    if (db.flashcardSRS && db.flashcardSRS[key]) {
+        db.flashcardSRS[key].nextReview = Date.now() - 1000;
+        QuizAppStore.saveDatabase();
+        renderFcSRSTable();
+    }
+}
+
+function validateFcEditorLive() {
+    const text = document.getElementById('fc-json-editor').value;
+    try {
+        const parsed = JSON.parse(text);
+        document.getElementById('fc-live-preview').innerHTML = `<b>Preview: ${parsed.title}</b> (${parsed.cards ? parsed.cards.length : 0} Cards)`;
+        renderMath(document.getElementById('fc-live-preview'));
+    } catch(e) {}
+}
+
+function createFlashcardDeckFromIDE() {
+    try {
+        const parsed = JSON.parse(document.getElementById('fc-json-editor').value);
+        parsed.id = 'deck_' + Date.now();
+        if (!db.flashcardDecks) db.flashcardDecks = [];
+        db.flashcardDecks.push(parsed);
+        QuizAppStore.saveDatabase(); switchFcTab('fc-library-tab');
+        alert("Flashcard deck saved!");
+    } catch(e) { alert("Invalid JSON"); }
+}
 
 /* ==========================================================================
    ANALYTICS & MASTER HISTORY
@@ -3131,8 +3263,6 @@ const FlashcardEngine = (function() {
 
 function renderHistory() {
     const tbody = document.getElementById('history-rows');
-    
-    // Compute Global Average Retention Mastery
     let avgRetention = 0;
     if (db.quizzes && db.quizzes.length > 0) {
         let sum = db.quizzes.reduce((acc, q) => acc + getQuizEffectiveMastery(q), 0);
@@ -3183,14 +3313,15 @@ function importAppData(event) {
                 if (scriptTag) text = scriptTag.textContent;
             }
             const parsed = flexibleJSONParse(text);
-            if (parsed.quizzes || parsed.history || parsed.wrongPile) {
+            if (parsed.quizzes || parsed.history || parsed.wrongPile || parsed.flashcardDecks) {
                 if (confirm("Replace existing database with backup? Click Cancel to Merge.")) { db = parsed; }
                 else {
                     db.folders = [...db.folders, ...(parsed.folders || [])];
                     db.quizzes = [...db.quizzes, ...(parsed.quizzes || [])];
+                    db.flashcardDecks = [...(db.flashcardDecks || []), ...(parsed.flashcardDecks || [])];
                     db.history = [...db.history, ...(parsed.history || [])];
                     db.wrongPile = { ...db.wrongPile, ...(parsed.wrongPile || {}) };
-                    db.flashcardSRS = { ...db.flashcardSRS, ...(parsed.flashcardSRS || {}) };
+                    db.flashcardSRS = { ...(db.flashcardSRS || {}), ...(parsed.flashcardSRS || {}) };
                     db.questionStats = { ...db.questionStats, ...(parsed.questionStats || {}) };
                     db.unfinishedSessions = { ...db.unfinishedSessions, ...(parsed.unfinishedSessions || {}) };
                 }
@@ -3221,90 +3352,53 @@ function loadSampleQuiz() {
     renderLibrary(); highlightQuizInLibrary(newId);
 }
 
-function loadMathSampleQuiz() {
-    const newId = QuizAppStore.addQuiz({
-        title: "STEM Math & Calculus Suite", category: "STEM", folder: "Mathematics",
-        questions: [
-            { q: "What is Einstein's mass-energy equation?", type: "mcq", options: ["\\( E = mc^2 \\)", "\\( F = ma \\)"], answer: 0, explain: "Mass-energy equivalence." },
-            { q: "Which of the following are prime numbers?", type: "multi-select", options: ["2", "4", "9", "11"], answer: [0, 3], explain: "2 and 11 have no positive divisors other than 1 and themselves." },
-            { q: "Solution to quadratic equation $$ax^2 + bx + c = 0$$:", type: "mcq", options: ["$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$", "$$x = -b \\pm \\sqrt{b^2 - 4ac}$$"], answer: 0, explain: "Quadratic formula." }
-        ]
-    });
-    renderLibrary(); highlightQuizInLibrary(newId);
-}
-
 function renderMath(node) {
     if (window.MathJax && window.MathJax.typesetPromise) {
         window.MathJax.typesetPromise(node ? [node] : []).catch(e => {});
     }
 }
 
-function switchTab(id) {
-    document.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    const btn = Array.from(document.querySelectorAll('.nav-pill')).find(b => b.getAttribute('onclick').includes(id));
-    if (btn) btn.classList.add('active');
-    document.getElementById(id).classList.add('active');
-    if (id === 'library-tab') renderLibrary();
-    if (id === 'compile-tab') renderCompileChecklist();
-    if (id === 'wrong-tab') renderWrongPile();
-    if (id === 'runner-tab') renderUnfinishedSessions();
-    if (id === 'flashcard-tab') FlashcardEngine.init();
-    if (id === 'history-tab') renderHistory();
-}
-
 function toggleQuickToolsModal(show) { document.getElementById('tools-modal').style.display = show ? 'flex' : 'none'; }
 
-/* ==========================================================================
-   INTERACTIVE SHORTCUT & WINDOW EVENT HANDLERS
-   ========================================================================== */
-
+/* SHORTCUT HANDLERS */
 document.getElementById('runner-tab').addEventListener('click', function(e) {
     if (activeSession && activeSession.questions && activeSession.userAnswers) {
         const answered = activeSession.userAnswers[activeSession.currentIndex] !== null;
         if (answered) {
             const interactive = e.target.closest('input, textarea, button, select, a, .nav-pill');
-            if (!interactive) {
-                nextQuestion();
-            }
+            if (!interactive) nextQuestion();
         }
     }
 });
 
 window.addEventListener('keydown', function(e) {
-    const runnerTab = document.getElementById('runner-tab');
-    const flashcardTab = document.getElementById('flashcard-tab');
-
-    if (runnerTab && runnerTab.classList.contains('active')) {
-        const activeTag = document.activeElement ? document.activeElement.tagName : '';
-        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) return;
-        if (e.code === 'Space' || e.key === ' ') {
-            e.preventDefault();
-            const answered = activeSession.userAnswers[activeSession.currentIndex] !== null;
-            if (answered) nextQuestion(); else skipQuestion();
+    if (currentMasterMode === 'quiz') {
+        const runnerTab = document.getElementById('runner-tab');
+        if (runnerTab && runnerTab.classList.contains('active')) {
+            const activeTag = document.activeElement ? document.activeElement.tagName : '';
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) return;
+            if (e.code === 'Space' || e.key === ' ') {
+                e.preventDefault();
+                const answered = activeSession.userAnswers[activeSession.currentIndex] !== null;
+                if (answered) nextQuestion(); else skipQuestion();
+            }
         }
-    } else if (flashcardTab && flashcardTab.classList.contains('active')) {
-        const activeTag = document.activeElement ? document.activeElement.tagName : '';
-        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) return;
+    } else if (currentMasterMode === 'flashcard') {
+        const fcTab = document.getElementById('fc-study-tab');
+        if (fcTab && fcTab.classList.contains('active')) {
+            const activeTag = document.activeElement ? document.activeElement.tagName : '';
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) return;
 
-        if (e.code === 'Space' || e.key === ' ') { e.preventDefault(); FlashcardEngine.flipCard(); }
-        if (e.key === '1') FlashcardEngine.rateCard('hard');
-        if (e.key === '2') FlashcardEngine.rateCard('good');
-        if (e.key === '3') FlashcardEngine.rateCard('easy');
-    }
-});
-
-window.addEventListener('contextmenu', function(e) {
-    const runnerTab = document.getElementById('runner-tab');
-    if (runnerTab && runnerTab.classList.contains('active')) {
-        e.preventDefault();
-        const answered = activeSession.userAnswers[activeSession.currentIndex] !== null;
-        if (answered) nextQuestion(); else skipQuestion();
+            if (e.code === 'Space' || e.key === ' ') { e.preventDefault(); flipFlashcard(); }
+            if (e.key === '1') rateFlashcard('hard');
+            if (e.key === '2') rateFlashcard('good');
+            if (e.key === '3') rateFlashcard('easy');
+        }
     }
 });
 
 /* ==========================================================================
-   FIREBASE CLOUD SYNC
+   FIREBASE CLOUD SYNC ENGINE (PUSH & PULL)
    ========================================================================== */
 
 async function syncToCloud() {
@@ -3345,7 +3439,7 @@ window.onload = function() {
     renderLibrary();
     renderWrongPile();
     renderHistory();
-    checkSavedSession();
+    renderUnfinishedSessions();
 };
 </script>
 
