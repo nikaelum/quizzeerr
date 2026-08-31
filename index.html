@@ -134,7 +134,7 @@
             font-weight: 700;
         }
 
-        /* PRIMARY MASTER MODE SWITCHER (TWO MAIN MASTER TABS) */
+        /* PRIMARY MASTER MODE SWITCHER */
         .master-mode-switcher {
             display: flex;
             gap: 8px;
@@ -291,7 +291,7 @@
         }
         .btn-icon-menu:hover { background: var(--bg); border-color: var(--accent); color: var(--accent); }
 
-        /* SEGMENTED SWITCHER (FOR MOBILE LIBRARY & IDE) */
+        /* SEGMENTED SWITCHER */
         .library-segmented-switch {
             display: flex;
             gap: 6px;
@@ -321,7 +321,7 @@
             color: var(--bg);
         }
 
-        /* FOLDERS & DRAG-AND-DROP STYLES */
+        /* FOLDERS & LIST STYLES */
         .folder-card {
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -401,7 +401,7 @@
         .quiz-item[draggable="true"]:active { cursor: grabbing; opacity: 0.6; }
         .quiz-item.highlight { background: var(--success-bg) !important; border-color: var(--success) !important; }
 
-        /* UNFINISHED SESSIONS CARD STYLES */
+        /* UNFINISHED SESSIONS CARD */
         .unfinished-item-card {
             border: 1px solid var(--accent);
             background: var(--accent-bg);
@@ -451,7 +451,7 @@
             background: var(--danger-bg);
         }
 
-        /* MASTERY METER STYLES */
+        /* MASTERY METER */
         .mastery-meter-box {
             display: flex;
             flex-direction: column;
@@ -492,8 +492,8 @@
             transition: width 0.4s ease, background-color 0.4s ease;
         }
 
-        /* TACTILE OPTIONS */
-        .options-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        /* TACTILE OPTIONS & IDENTIFICATION INPUT */
+        .options-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
         .option-card {
             padding: 16px 18px;
             background: var(--card);
@@ -515,9 +515,34 @@
         .option-card.wrong { background: var(--danger-bg) !important; border-color: var(--danger) !important; color: var(--danger) !important; }
 
         .fill-input {
-            width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 8px;
-            font-size: 1rem; background: var(--card); color: var(--text-primary); outline: none;
-            min-height: 48px;
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            background: var(--card);
+            color: var(--text-primary);
+            outline: none;
+            min-height: 52px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .fill-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-bg);
+        }
+
+        .fill-input.correct {
+            border-color: var(--success) !important;
+            background: var(--success-bg) !important;
+            color: var(--success) !important;
+        }
+
+        .fill-input.wrong {
+            border-color: var(--danger) !important;
+            background: var(--danger-bg) !important;
+            color: var(--danger) !important;
         }
 
         /* 3D FLASHCARDS */
@@ -538,7 +563,7 @@
         .rating-good { background: var(--warning); color: #000; }
         .rating-easy { background: var(--success); }
 
-        /* TERMINAL & DUAL PANE EDITOR */
+        /* DUAL PANE EDITOR */
         .editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .code-area { width: 100%; height: 260px; font-family: 'Consolas', 'Courier New', monospace; background: var(--editor-bg); color: var(--editor-text); padding: 12px; border-radius: 10px; border: 1px solid var(--border); font-size: 0.85rem; outline: none; resize: vertical; line-height: 1.4; }
         .preview-area { border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: var(--card); height: 260px; overflow-y: auto; font-size: 0.9rem; }
@@ -565,7 +590,7 @@
         .metric-num { font-size: 1.5rem; font-weight: 800; color: var(--accent); margin: 2px 0; }
         .metric-sub { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
 
-        /* STICKY NOTES STYLES */
+        /* STICKY NOTES */
         .sticky-note-box {
             margin-top: 16px; padding: 12px; background: var(--warning-bg); border: 1px solid var(--warning); border-radius: 8px; font-size: 0.88rem;
         }
@@ -587,12 +612,13 @@
         .badge-folder { background: var(--accent-bg); color: var(--accent); }
         .badge-success { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
         .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
+        .badge-type { background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); }
 
         /* DISABLED QUESTION STYLING */
         .question-item-disabled { opacity: 0.6; background: var(--bg) !important; border-style: dashed !important; }
         .question-text-disabled { text-decoration: line-through; color: var(--text-muted); }
 
-        /* FILTER CONTROLS BAR FOR WEAK SPOTS */
+        /* FILTER CONTROLS BAR */
         .filter-controls-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -655,7 +681,7 @@
     <header>
         <div class="brand-logo">
             <span>✦ Master Suite</span>
-            <span class="brand-badge">PRO v4.0</span>
+            <span class="brand-badge">PRO v4.1 • Hybrid Engine</span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
             <button class="btn btn-success btn-sm" onclick="syncToCloud()">☁️ Push</button>
@@ -664,10 +690,10 @@
         </div>
     </header>
 
-    <!-- TWO PRIMARY MASTER TABS (MODE SWITCHER) -->
+    <!-- TWO PRIMARY MASTER TABS -->
     <div class="master-mode-switcher">
         <button class="master-mode-btn active" id="btn-master-quiz" onclick="switchMasterSuiteMode('quiz')">
-            <span>📝 Quiz Suite Master</span>
+            <span>📝 Quiz Suite Master (MCQ & Identification)</span>
         </button>
         <button class="master-mode-btn" id="btn-master-flashcard" onclick="switchMasterSuiteMode('flashcard')">
             <span>🎴 Flashcard Suite Master</span>
@@ -698,7 +724,6 @@
 
         <!-- TAB 1: LIBRARY & DUAL PANE EDITOR -->
         <div id="library-tab" class="tab-content active">
-            <!-- MOBILE SEGMENTED CONTROL -->
             <div class="library-segmented-switch">
                 <button class="segmented-btn active" id="seg-lib-btn" onclick="switchLibrarySubTab('quizzes')">📚 Quiz Library</button>
                 <button class="segmented-btn" id="seg-ide-btn" onclick="switchLibrarySubTab('terminal')">💻 Terminal IDE</button>
@@ -727,18 +752,18 @@
                 <div id="lib-col-right" class="lib-col-right subtab-hidden">
                     <div class="card">
                         <div class="card-header"><div class="card-title">💻 Terminal / Dual-Pane LaTeX IDE</div></div>
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Paste JSON or JS objects directly. Supports LaTeX notation: <code>\( E = mc^2 \)</code> or <code>$$ ... $$</code>.</p>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Create hybrid quizzes containing both <b>MCQ</b> and <b>Identification</b> questions. Smart fuzzy evaluation ignores casing, hyphens, and whitespace differences!</p>
                         <div class="editor-grid">
-                            <textarea id="json-editor-textarea" class="code-area" spellcheck="false" placeholder='{\n  "title": "Quantum Physics",\n  "category": "Physics",\n  "folder": "Science & Math",\n  "questions": [\n    {\n      "q": "What is Plancks energy equation?",\n      "type": "mcq",\n      "options": ["\\( E = h\\nu \\)", "\\( F = ma \\)"],\n      "answer": 0,\n      "explain": "E = h * nu"\n    }\n  ]\n}'></textarea>
+                            <textarea id="json-editor-textarea" class="code-area" spellcheck="false" placeholder='{\n  "title": "Aviation & Science Hybrid",\n  "category": "Aviation",\n  "folder": "General Review",\n  "questions": [\n    {\n      "q": "What force opposes aircraft thrust?",\n      "type": "identification",\n      "answer": "Drag",\n      "explain": "Drag is aerodynamic friction."\n    },\n    {\n      "q": "What is Plancks constant symbol?",\n      "type": "mcq",\n      "options": ["\\( h \\)", "\\( c \\)", "\\( G \\)"],\n      "answer": 0,\n      "explain": "h is Plancks constant."\n    }\n  ]\n}'></textarea>
                             <div id="live-latex-preview" class="preview-area">
-                                <p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Type equations to preview live!</p>
+                                <p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Type equations or JSON to preview live!</p>
                             </div>
                         </div>
                         <div id="editor-status-msg" class="editor-status-bar">Status: Ready (Paste JSON code)</div>
                         <div style="display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;">
                             <button class="btn btn-success btn-sm" style="flex: 1;" onclick="createQuizFromEditor()">🚀 Create Quiz</button>
                             <button class="btn btn-warning btn-sm" onclick="runTerminalTest()">⚡ Self-Test</button>
-                            <button class="btn btn-secondary btn-sm" onclick="loadTemplateToEditor()">📋 Template</button>
+                            <button class="btn btn-secondary btn-sm" onclick="loadTemplateToEditor()">📋 Hybrid Template</button>
                             <button class="btn btn-danger btn-sm" onclick="clearEditor()">🧹 Clear</button>
                         </div>
                     </div>
@@ -763,7 +788,7 @@
                         <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllCompile(false)">Deselect All</button>
                     </div>
                 </div>
-                <p style="font-size: 0.88rem; color: var(--text-muted);">Select specific quizzes across folders to combine into a custom set, run a practice session, or export JSON:</p>
+                <p style="font-size: 0.88rem; color: var(--text-muted);">Select specific quizzes across folders to combine into a custom set (all MCQs & Identifications will seamlessly integrate):</p>
                 <div id="compile-checklist" style="margin: 15px 0;"></div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <button class="btn btn-success" onclick="startCompiledQuiz()">🚀 Start Practice Session</button>
@@ -836,7 +861,10 @@
                 <span id="quiz-score" style="font-weight: 700; color: var(--accent);">Score: 0</span>
             </div>
 
-            <div id="quiz-body" class="card" style="cursor: pointer;" title="Once answered, clicking open card areas will proceed to the next question automatically.">
+            <div id="quiz-body" class="card" style="cursor: pointer;" title="Once answered, clicking open card areas or pressing spacebar will proceed to the next question.">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span id="question-type-badge" class="badge badge-type">MCQ</span>
+                </div>
                 <div id="question-text" style="font-size: 1.1rem; line-height: 1.6; font-weight: 600;">Question goes here...</div>
                 <div id="options-container" class="options-grid"></div>
                 <div id="explanation-box" style="margin-top: 16px; padding: 14px; border-radius: 10px; display: none; font-size: 0.9rem;"></div>
@@ -854,7 +882,7 @@
                     </div>
                     <button id="next-btn" class="btn" onclick="nextQuestion()" disabled>Next Question</button>
                 </div>
-                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; text-align: center;">💡 Tip: Press <b>Spacebar</b> or <b>Click anywhere in the card</b> to proceed to the next question.</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; text-align: center;">💡 Tip: Press <b>Enter</b> to submit identification answers. Press <b>Spacebar</b> or <b>Click anywhere in the card</b> to proceed.</div>
             </div>
 
             <div id="quiz-results" class="card" style="display: none; text-align: center; padding: 40px;">
@@ -897,7 +925,6 @@
          MASTER SUITE 2: DEDICATED FLASHCARD SRS ENGINE
          ========================================================================== -->
     <div id="master-suite-flashcard" style="display: none;">
-        <!-- FLASHCARD SUB NAVIGATION PILLS -->
         <div class="nav-pills">
             <button class="nav-pill active" onclick="switchFcTab('fc-study-tab')">🎴 Study Stage</button>
             <button class="nav-pill" onclick="switchFcTab('fc-library-tab')">📚 Deck Library</button>
@@ -959,7 +986,7 @@
                 <div class="card-header">
                     <div class="card-title">📚 Flashcard Deck Library</div>
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-success btn-sm" onclick="loadLanguageFlashcardSample()">+ Japanese/Spanish Sample Deck</button>
+                        <button class="btn btn-success btn-sm" onclick="loadLanguageFlashcardSample()">+ Japanese/Spanish Deck</button>
                         <button class="btn btn-warning btn-sm" onclick="loadSTEMFlashcardSample()">+ STEM Calculus/Physics Deck</button>
                     </div>
                 </div>
@@ -1176,7 +1203,7 @@
 
             <div>
                 <label style="cursor: pointer; font-weight: 600; font-size: 0.85rem;">
-                    <input type="checkbox" id="setting-shuffle-options" onchange="QuizAppStore.updateSetting('shuffleOptions', this.checked)"> 🔀 Shuffle Options (A, B, C, D)
+                    <input type="checkbox" id="setting-shuffle-options" onchange="QuizAppStore.updateSetting('shuffleOptions', this.checked)"> 🔀 Shuffle MCQ Options (A, B, C, D)
                 </label>
             </div>
 
@@ -1193,7 +1220,7 @@
                     <button class="btn btn-success btn-sm" onclick="syncToCloud()">☁️ Cloud Push</button>
                     <button class="btn btn-warning btn-sm" onclick="syncFromCloud()">☁️ Cloud Pull</button>
                     <button class="btn btn-secondary btn-sm" onclick="loadSampleQuiz()">PCAR Law Sample</button>
-                    <button class="btn btn-secondary btn-sm" onclick="loadMathSampleQuiz()">STEM Math Sample</button>
+                    <button class="btn btn-secondary btn-sm" onclick="loadMathSampleQuiz()">Hybrid STEM Sample</button>
                 </div>
             </div>
         </div>
@@ -1201,6 +1228,37 @@
 </div>
 
 <script>
+/* ==========================================================================
+   SMART STRING NORMALIZER & STRING COMPARISON ENGINE
+   ========================================================================== */
+
+function cleanStringForComparison(str) {
+    if (typeof str !== 'string') str = String(str || '');
+    return str
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accents/diacritics
+        .replace(/[-_–—]/g, ' ') // treat hyphens/dashes as space
+        .replace(/[^\w\s]/gi, '') // remove extra punctuation
+        .replace(/\s+/g, ' ') // collapse multi-spaces
+        .trim();
+}
+
+function checkIdentificationAnswerMatch(userInput, targetAnswers) {
+    const rawUser = String(userInput || '').trim();
+    if (!rawUser) return false;
+
+    const cleanUser = cleanStringForComparison(rawUser);
+    const condensedUser = cleanUser.replace(/\s+/g, '');
+    const answersList = Array.isArray(targetAnswers) ? targetAnswers : [targetAnswers];
+
+    return answersList.some(ans => {
+        const cleanAns = cleanStringForComparison(String(ans));
+        const condensedAns = cleanAns.replace(/\s+/g, '');
+        // Match standard cleaned string OR collapsed spaceless version (e.g. "X-ray" vs "Xray")
+        return cleanUser === cleanAns || condensedUser === condensedAns;
+    });
+}
+
 /* ==========================================================================
    MASTER ENGINE LOGIC & AUDIO SYNTHESIZER
    ========================================================================== */
@@ -1345,13 +1403,28 @@ function getMasteryMeterHTML(qz) {
 
 function normalizeQuestion(q) {
     if (!q) return null;
-    let type = q.type || (Array.isArray(q.answer) ? "multi-select" : typeof q.answer === "string" ? "fill-blank" : "mcq");
+    let type = q.type;
+    if (!type) {
+        if (Array.isArray(q.answer)) {
+            type = (q.options && q.options.length > 0) ? "multi-select" : "identification";
+        } else if (typeof q.answer === "string" && (!q.options || q.options.length === 0)) {
+            type = "identification";
+        } else {
+            type = "mcq";
+        }
+    } else {
+        type = type.toLowerCase().trim();
+        if (type === 'fill-blank' || type === 'fill_in_the_blank' || type === 'id') {
+            type = 'identification';
+        }
+    }
+
     return {
         id: q.id || 'q_' + Math.random().toString(36).substr(2, 9),
         q: q.q || q.question || "Untitled Question",
         type: type,
         options: Array.isArray(q.options) ? [...q.options] : [],
-        answer: q.answer !== undefined ? q.answer : 0,
+        answer: q.answer !== undefined ? q.answer : (type === 'identification' ? '' : 0),
         explain: q.explain || q.explanation || "",
         sourceQuizId: q.sourceQuizId || "",
         sourceQuizTitle: q.sourceQuizTitle || "",
@@ -1714,7 +1787,7 @@ function startFolderPracticeSession(folderId) {
 
 /* ==========================================================================
    MINIMALIST ACTION MENUS & LIBRARY RENDER
-   ========================================================================== */
+   ========================================================================= */
 
 let activeMenuQuizId = null;
 let activeMenuFolderId = null;
@@ -1850,10 +1923,23 @@ function renderQuizItemHTML(q) {
     const totalCount = q.questions.length;
     const disabledCount = totalCount - activeCount;
 
+    const hasIdentification = q.questions.some(quest => quest.type === 'identification');
+    const hasMCQ = q.questions.some(quest => quest.type === 'mcq' || quest.type === 'multi-select');
+
+    let compositionBadge = '';
+    if (hasIdentification && hasMCQ) {
+        compositionBadge = '<span class="badge badge-folder" style="font-size:0.68rem;">Hybrid (MCQ + ID)</span>';
+    } else if (hasIdentification) {
+        compositionBadge = '<span class="badge badge-folder" style="font-size:0.68rem;">Identification</span>';
+    }
+
     return `
         <div class="quiz-item" data-quiz-id="${q.id}" draggable="true" ondragstart="handleDragStart(event, '${q.id}')">
             <div style="flex: 1; min-width: 160px;">
-                <b style="color: var(--text-primary); font-size: 0.98rem; cursor: pointer;" onclick="openQuizAnalyticsModal('${q.id}')" title="Click to view question analytics & toggles">${q.title}</b>
+                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                    <b style="color: var(--text-primary); font-size: 0.98rem; cursor: pointer;" onclick="openQuizAnalyticsModal('${q.id}')" title="Click to view question analytics & toggles">${q.title}</b>
+                    ${compositionBadge}
+                </div>
                 <div style="font-size: 0.8rem; color: var(--text-muted);">
                     ${activeCount} Active Qs ${disabledCount > 0 ? `<span style="color:var(--danger);">(${disabledCount} Disabled)</span>` : ''} | ${q.category || 'General'}
                 </div>
@@ -2053,6 +2139,8 @@ function filterQuizAnalyticsQuestions(filterType) {
 
         if (qa.isFlagged && !q.disabled) badgeHTML += ` <span class="badge badge-streak">🚩 Flagged</span>`;
 
+        const typeBadge = `<span class="badge badge-type" style="font-size:0.68rem;">${q.type === 'identification' ? 'ID' : 'MCQ'}</span>`;
+
         const toggleBtnHTML = `
             <button class="btn btn-sm ${q.disabled ? 'btn-success' : 'btn-secondary'}" 
                     onclick="event.stopPropagation(); toggleQuestionDisabled('${activeInspectedQuizId}', '${q.id}')"
@@ -2064,7 +2152,10 @@ function filterQuizAnalyticsQuestions(filterType) {
         return `
             <div class="quiz-item ${q.disabled ? 'question-item-disabled' : ''}" style="margin-bottom:0; padding:10px 12px; display:flex; flex-direction:column; align-items:stretch;">
                 <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
-                    <span style="font-weight:700; font-size:0.82rem; color:var(--text-muted);">Q${idx+1}</span>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                        <span style="font-weight:700; font-size:0.82rem; color:var(--text-muted);">Q${idx+1}</span>
+                        ${typeBadge}
+                    </div>
                     <div style="display:flex; gap:6px; align-items:center;">
                         ${badgeHTML}
                         ${toggleBtnHTML}
@@ -2132,7 +2223,10 @@ function validateEditorLive() {
         const parsed = flexibleJSONParse(rawText);
         const qz = Array.isArray(parsed) ? parsed[0] : parsed;
         let html = `<b>${qz.title || 'Preview Quiz'}</b><br>`;
-        (qz.questions || []).forEach((q, i) => { html += `<div style="margin-top:6px;"><b>Q${i+1}:</b> ${q.q || q.question}</div>`; });
+        (qz.questions || []).forEach((q, i) => {
+            const typeLabel = (q.type === 'identification' || (!q.options && typeof q.answer === 'string')) ? ' [Identification]' : ' [MCQ]';
+            html += `<div style="margin-top:6px;"><b>Q${i+1}${typeLabel}:</b> ${q.q || q.question}</div>`;
+        });
         preview.innerHTML = html; renderMath(preview);
         showEditorStatus("Status: Valid JSON / JS Object ✓", "var(--success)");
     } catch (err) {
@@ -2167,15 +2261,30 @@ function createQuizFromEditor() {
 
 function runTerminalTest() {
     const testPayload = {
-        title: "Physics & Mass-Energy Equivalence",
+        title: "Hybrid Physics & General Science",
         category: "Physics",
         folder: "Science & Engineering",
-        questions: [{
-            q: "What is Einstein's mass-energy equation?",
-            options: ["\\( E = mc^2 \\)", "\\( F = ma \\)", "\\( E = h\\nu \\)"],
-            answer: 0,
-            explain: "Where E is energy, m is mass, and c is the speed of light."
-        }]
+        questions: [
+            {
+                q: "What is Einstein's mass-energy equivalence equation?",
+                type: "identification",
+                answer: ["E=mc^2", "E = mc^2", "E = mc2"],
+                explain: "Where E is energy, m is mass, and c is the speed of light."
+            },
+            {
+                q: "What is the SI unit of electric current?",
+                type: "identification",
+                answer: ["Ampere", "Amp"],
+                explain: "The ampere (symbol: A) is the base SI unit of electrical current."
+            },
+            {
+                q: "Which law describes the gravitational attraction between two point masses?",
+                type: "mcq",
+                options: ["Newton's Law of Universal Gravitation", "Hooke's Law", "Faraday's Law"],
+                answer: 0,
+                explain: "Newton formulated the inverse-square law for gravity."
+            }
+        ]
     };
     document.getElementById('json-editor-textarea').value = JSON.stringify(testPayload, null, 2);
     validateEditorLive(); createQuizFromEditor();
@@ -2188,16 +2297,28 @@ function clearEditor() {
 
 function loadTemplateToEditor() {
     const template = {
-        title: "STEM Calculus & Algebra Suite",
-        category: "STEM",
-        folder: "Mathematics",
+        title: "Hybrid Master Examination Template",
+        category: "Engineering & Science",
+        folder: "Examinations",
         questions: [
+            {
+                q: "Who is known as the father of modern physics?",
+                type: "identification",
+                answer: ["Albert Einstein", "Einstein"],
+                explain: "Albert Einstein developed the theory of relativity."
+            },
             {
                 q: "What is the derivative of \\( f(x) = x^n \\)?",
                 type: "mcq",
                 options: ["\\( f'(x) = n x^{n-1} \\)", "\\( f'(x) = x^{n+1} \\)"],
                 answer: 0,
                 explain: "Power rule: \\( \\frac{d}{dx}[x^n] = n x^{n-1} \\)."
+            },
+            {
+                q: "Name the non-destructive testing method that uses high frequency sound waves:",
+                type: "identification",
+                answer: ["Ultrasonic Testing", "Ultrasonic", "UT"],
+                explain: "Ultrasonic testing uses high frequency sound waves to detect internal flaws."
             },
             {
                 q: "Select all valid properties of logarithms:",
@@ -2294,7 +2415,7 @@ function combineAndSaveToLibrary() {
         } 
     });
     if (compiled.length === 0) return alert("No active enabled questions to combine!");
-    const name = prompt("Enter title for compiled quiz:", "Combined - " + titles.slice(0, 2).join(", "));
+    const name = prompt("Enter title for combined quiz:", "Combined - " + titles.slice(0, 2).join(", "));
     if (!name) return;
     const newId = QuizAppStore.addQuiz({ title: name.trim(), category: "Combined", questions: compiled });
     switchQuizTab('library-tab'); renderLibrary(); highlightQuizInLibrary(newId);
@@ -2428,7 +2549,9 @@ function renderWrongPile() {
         const origin = getWrongItemOriginInfo(item);
         
         let ansText = '';
-        if (Array.isArray(q.answer)) {
+        if (q.type === 'identification') {
+            ansText = Array.isArray(q.answer) ? q.answer.join(' / ') : String(q.answer);
+        } else if (Array.isArray(q.answer)) {
             ansText = q.answer.map(idx => q.options[idx] !== undefined ? q.options[idx] : idx).join(', ');
         } else {
             ansText = q.options[q.answer] !== undefined ? q.options[q.answer] : String(q.answer);
@@ -2439,6 +2562,7 @@ function renderWrongPile() {
                 <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; flex-wrap: wrap; gap: 6px;">
                     <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
                         <input type="checkbox" class="wrong-select-checkbox" value="${key}" checked style="width:18px; height:18px; cursor:pointer;" onchange="updateWrongPilePracticeBtnCount()">
+                        <span class="badge badge-type">${q.type === 'identification' ? 'Identification' : 'MCQ'}</span>
                         <span class="badge badge-folder">📁 ${origin.folderName}</span>
                         <span class="badge badge-folder" style="background:var(--bg); border:1px solid var(--border); color:var(--text-primary);">📍 ${origin.quizTitle}</span>
                     </div>
@@ -2449,7 +2573,7 @@ function renderWrongPile() {
                 </div>
                 <div>
                     <b style="font-size: 0.98rem; color: var(--text-primary);">${q.q}</b>
-                    <div style="font-size:0.85rem; color:var(--text-muted); margin-top: 2px;">Correct Answer: <b style="color:var(--success);">${ansText}</b></div>
+                    <div style="font-size:0.85rem; color:var(--text-muted); margin-top: 2px;">Target Answer: <b style="color:var(--success);">${ansText}</b></div>
                     ${q.explain ? `<div style="font-size:0.8rem; color:var(--text-muted); margin-top: 2px;">💡 ${q.explain}</div>` : ''}
                 </div>
             </div>
@@ -2513,7 +2637,7 @@ function initSession(title, rawQuestions) {
 
     if (shuffleEnabled) {
         questions.forEach(q => {
-            if (q.type === 'mcq' || q.type === 'true-false') {
+            if ((q.type === 'mcq' || q.type === 'true-false') && Array.isArray(q.options) && q.options.length > 0) {
                 const correctText = q.options[q.answer];
                 q.options.sort(() => Math.random() - 0.5);
                 q.answer = q.options.indexOf(correctText);
@@ -2576,7 +2700,9 @@ function updateTimerBadge() {
 
 function evaluateAnswer(q, userInput) {
     const qType = q.type || 'mcq';
-    if (qType === 'mcq' || qType === 'true-false') return { isCorrect: userInput === q.answer, correctText: q.options[q.answer] || String(q.answer) };
+    if (qType === 'mcq' || qType === 'true-false') {
+        return { isCorrect: userInput === q.answer, correctText: q.options[q.answer] || String(q.answer) };
+    }
     if (qType === 'multi-select') {
         const correctSet = new Set(Array.isArray(q.answer) ? q.answer : [q.answer]);
         const userSet = new Set(Array.isArray(userInput) ? userInput : []);
@@ -2589,10 +2715,10 @@ function evaluateAnswer(q, userInput) {
         const correctLabels = Array.from(correctSet).map(i => `${String.fromCharCode(65 + i)}: ${q.options[i] || i}`);
         return { isCorrect, correctText: correctLabels.join(', ') };
     }
-    if (qType === 'fill-blank') {
-        const cleanInput = String(userInput || '').trim().toLowerCase();
-        const valid = (Array.isArray(q.answer) ? q.answer : [q.answer]).map(a => String(a).trim().toLowerCase());
-        return { isCorrect: valid.includes(cleanInput), correctText: valid.join(' / ') };
+    if (qType === 'identification' || qType === 'fill-blank') {
+        const isCorrect = checkIdentificationAnswerMatch(userInput, q.answer);
+        const correctAnswersArray = Array.isArray(q.answer) ? q.answer : [q.answer];
+        return { isCorrect, correctText: correctAnswersArray.join(' / ') };
     }
     return { isCorrect: false, correctText: '' };
 }
@@ -2606,6 +2732,18 @@ function loadQuestion() {
     if (activeSession.currentIndex !== lastLoadedIndex) {
         currentMultiSelects = [];
         lastLoadedIndex = activeSession.currentIndex;
+    }
+
+    const typeBadge = document.getElementById('question-type-badge');
+    if (q.type === 'identification') {
+        typeBadge.innerText = '✍️ Identification / Fill-in-the-Blank';
+        typeBadge.style.color = 'var(--accent)';
+    } else if (q.type === 'multi-select') {
+        typeBadge.innerText = '☑️ Multi-Select (Choose all that apply)';
+        typeBadge.style.color = 'var(--warning)';
+    } else {
+        typeBadge.innerText = '🔘 Multiple Choice (Single Answer)';
+        typeBadge.style.color = 'var(--text-muted)';
     }
 
     document.getElementById('quiz-progress').innerText = `Question ${activeSession.currentIndex + 1} of ${activeSession.questions.length}`;
@@ -2686,24 +2824,56 @@ function loadQuestion() {
             };
             container.appendChild(submitBtn);
         }
-    } else if (q.type === 'fill-blank') {
+    } else if (q.type === 'identification' || q.type === 'fill-blank') {
+        const idWrapper = document.createElement('div');
+        idWrapper.style.display = 'flex';
+        idWrapper.style.flexDirection = 'column';
+        idWrapper.style.gap = '10px';
+
         const input = document.createElement('input');
-        input.type = 'text'; input.className = 'fill-input';
-        input.placeholder = 'Type answer here...';
+        input.type = 'text';
+        input.className = 'fill-input';
+        input.placeholder = 'Type your answer here (Press Enter to submit)...';
         input.value = (userAnswer !== null && userAnswer !== -1) ? String(userAnswer) : '';
         input.disabled = answered;
-        container.appendChild(input);
+        input.autocomplete = 'off';
+        input.autocapitalize = 'none';
+        input.spellcheck = false;
+
+        if (answered && userAnswer !== -1) {
+            const isMatch = checkIdentificationAnswerMatch(userAnswer, q.answer);
+            input.classList.add(isMatch ? 'correct' : 'wrong');
+        }
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !answered) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (input.value.trim().length > 0) {
+                    submitAnswer(input.value.trim());
+                }
+            }
+        });
+
+        idWrapper.appendChild(input);
 
         if (!answered) {
             const btn = document.createElement('button');
-            btn.className = 'btn btn-success'; btn.innerText = 'Submit Answer';
-            btn.style.marginTop = '10px';
+            btn.className = 'btn btn-success';
+            btn.innerText = 'Submit Answer ↵';
             btn.onclick = (e) => {
                 e.stopPropagation();
+                if (!input.value.trim()) {
+                    input.focus();
+                    return alert("Please type your answer before submitting!");
+                }
                 submitAnswer(input.value.trim());
-            }
-            container.appendChild(btn);
+            };
+            idWrapper.appendChild(btn);
+            setTimeout(() => input.focus(), 150);
         }
+
+        container.appendChild(idWrapper);
     }
 
     if (answered && userAnswer !== -1) {
@@ -2832,7 +3002,9 @@ function showExplanation(isCorrect) {
     const expBox = document.getElementById('explanation-box'); expBox.style.display = 'block';
     
     let correctText = '';
-    if (Array.isArray(q.answer)) {
+    if (q.type === 'identification') {
+        correctText = Array.isArray(q.answer) ? q.answer.join(' / ') : String(q.answer);
+    } else if (Array.isArray(q.answer)) {
         correctText = q.answer.map(idx => q.options[idx] ? String.fromCharCode(65 + idx) + ": " + q.options[idx] : idx).join(', ');
     } else {
         correctText = q.options[q.answer] !== undefined ? String.fromCharCode(65 + q.answer) + ": " + q.options[q.answer] : q.answer;
@@ -3046,7 +3218,7 @@ function loadSelectedFlashcardDeck() {
     document.getElementById('fc-undo-btn').disabled = true;
 
     document.getElementById('fc-deck-title').innerText = `Deck: ${deck.title}`;
-    document.getElementById('fc-deck-counts').innerText = `Remaining Queue: ${activeFcDeckCards.length} | Scheduled Mastered: ${scheduledMasteredCount}`;
+    document.getElementById('fc-deck-counts').innerText = `Remaining Review Queue: ${activeFcDeckCards.length} | Scheduled Mastered: ${scheduledMasteredCount}`;
 
     renderFlashcard();
 }
@@ -3343,10 +3515,23 @@ function downloadJSONFile(dataObj, filename) {
 
 function loadSampleQuiz() {
     const newId = QuizAppStore.addQuiz({
-        title: "PCAR Aviation Law Sample", category: "Aviation", folder: "Civil Air Laws",
+        title: "PCAR Aviation Law & Operations", category: "Aviation", folder: "Civil Air Laws",
         questions: [
             { q: "Under PCAR Part 1, which word denotes a mandatory requirement?", type: "mcq", options: ["MAY", "WILL", "SHALL", "SHOULD"], answer: 2, explain: "'SHALL' is strictly mandatory." },
+            { q: "What government body in the Philippines issues airman licenses?", type: "identification", answer: ["CAAP", "Civil Aviation Authority of the Philippines"], explain: "CAAP is the regulatory civil aviation agency." },
             { q: "Within how many days must a pilot notify CAAP of an address change?", type: "mcq", options: ["15 days", "30 days", "60 days"], answer: 1, explain: "Notification must occur within 30 days." }
+        ]
+    });
+    renderLibrary(); highlightQuizInLibrary(newId);
+}
+
+function loadMathSampleQuiz() {
+    const newId = QuizAppStore.addQuiz({
+        title: "STEM Calculus & Physics Hybrid Review", category: "STEM", folder: "Science & Engineering",
+        questions: [
+            { q: "What is the derivative of \\( \\sin(x) \\)?", type: "identification", answer: ["cos(x)", "\\cos(x)", "cos x", "cosine"], explain: "\\( \\frac{d}{dx}[\\sin(x)] = \\cos(x) \\)." },
+            { q: "Which quantity is defined as the rate of change of displacement with respect to time?", type: "identification", answer: ["Velocity", "Instantaneous Velocity"], explain: "Velocity is displacement over time." },
+            { q: "Select the integral of \\( \\frac{1}{x} \\):", type: "mcq", options: ["\\( \\ln|x| + C \\)", "\\( e^x + C \\)", "\\( x^{-2} + C \\)"], answer: 0, explain: "\\( \\int \\frac{1}{x} dx = \\ln|x| + C \\)." }
         ]
     });
     renderLibrary(); highlightQuizInLibrary(newId);
