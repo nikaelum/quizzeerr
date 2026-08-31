@@ -681,7 +681,7 @@
     <header>
         <div class="brand-logo">
             <span>✦ Master Suite</span>
-            <span class="brand-badge">PRO v4.1 • Hybrid Engine</span>
+            <span class="brand-badge">PRO v4.2 • Hybrid Engine</span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
             <button class="btn btn-success btn-sm" onclick="syncToCloud()">☁️ Push</button>
@@ -1201,8 +1201,11 @@
                 </select>
             </div>
 
-            <div>
-                <label style="cursor: pointer; font-weight: 600; font-size: 0.85rem;">
+            <div style="background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px;">
+                <label style="cursor: pointer; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="setting-shuffle-questions" onchange="QuizAppStore.updateSetting('shuffleQuestions', this.checked)"> 🔀 Shuffle Question Sequence (Random Order)
+                </label>
+                <label style="cursor: pointer; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
                     <input type="checkbox" id="setting-shuffle-options" onchange="QuizAppStore.updateSetting('shuffleOptions', this.checked)"> 🔀 Shuffle MCQ Options (A, B, C, D)
                 </label>
             </div>
@@ -1229,7 +1232,7 @@
 
 <script>
 /* ==========================================================================
-   SMART STRING NORMALIZER & STRING COMPARISON ENGINE
+   SMART STRING NORMALIZER & UTILITY ALGORITHMS
    ========================================================================== */
 
 function cleanStringForComparison(str) {
@@ -1254,9 +1257,18 @@ function checkIdentificationAnswerMatch(userInput, targetAnswers) {
     return answersList.some(ans => {
         const cleanAns = cleanStringForComparison(String(ans));
         const condensedAns = cleanAns.replace(/\s+/g, '');
-        // Match standard cleaned string OR collapsed spaceless version (e.g. "X-ray" vs "Xray")
         return cleanUser === cleanAns || condensedUser === condensedAns;
     });
+}
+
+// Fisher-Yates shuffle algorithm for uniform distribution
+function shuffleArray(array) {
+    if (!Array.isArray(array)) return array;
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
 }
 
 /* ==========================================================================
@@ -1451,7 +1463,7 @@ let db = {
     questionStats: {},
     unfinishedSessions: {},
     questionNotes: {},
-    settings: { theme: 'light', fontScale: '100%', audioMuted: false, shuffleOptions: true, timerMode: 'none' }
+    settings: { theme: 'light', fontScale: '100%', audioMuted: false, shuffleOptions: true, shuffleQuestions: true, timerMode: 'none' }
 };
 
 const QuizAppStore = (function() {
@@ -1490,7 +1502,8 @@ const QuizAppStore = (function() {
         setFontScale(db.settings.fontScale || '100%');
         document.getElementById('theme-select').value = db.settings.theme || 'light';
         document.getElementById('font-scale-select').value = db.settings.fontScale || '100%';
-        document.getElementById('setting-shuffle-options').checked = !!db.settings.shuffleOptions;
+        document.getElementById('setting-shuffle-questions').checked = db.settings.shuffleQuestions !== false;
+        document.getElementById('setting-shuffle-options').checked = db.settings.shuffleOptions !== false;
         document.getElementById('setting-timer-mode').value = db.settings.timerMode || 'none';
     }
 
@@ -1781,7 +1794,6 @@ function startFolderPracticeSession(folderId) {
         });
     });
     if (combined.length === 0) return alert("No enabled questions found in this folder!");
-    combined.sort(() => Math.random() - 0.5);
     initSession(`Folder Practice: ${folder.name} (${combined.length} Qs)`, combined);
 }
 
@@ -2398,7 +2410,6 @@ function startCompiledQuiz() {
         }
     });
     if (compiled.length === 0) return alert("No active enabled questions found in selected quizzes!");
-    compiled.sort(() => Math.random() - 0.5);
     initSession(`Compiled Set (${checked.length} Topics)`, compiled);
 }
 
@@ -2610,14 +2621,14 @@ function startWrongPileQuiz() {
         qCopy.sourceQuizId = item.sourceQuizId || item.question.sourceQuizId;
         qCopy.sourceQuizTitle = item.sourceQuizTitle || item.question.sourceQuizTitle || 'Weak Spots Practice';
         return qCopy;
-    }).filter(q => !q.disabled).sort(() => Math.random() - 0.5);
+    }).filter(q => !q.disabled);
 
     if (questions.length === 0) return alert("No active enabled questions in selected weak spots!");
     initSession(`Targeted Weak Spots Practice (${questions.length} Qs)`, questions);
 }
 
 /* ==========================================================================
-   PRACTICE RUNNER & SESSION RESUME
+   PRACTICE RUNNER & UNIVERSAL SHUFFLE ENGINE
    ========================================================================== */
 
 let activeSession = { id: "", title: "", questions: [], currentIndex: 0, userAnswers: [], score: 0, timerMode: 'none', questionTimeLogs: [] };
@@ -2627,19 +2638,26 @@ let currentMultiSelects = [];
 let currentQuestionStartTime = 0;
 
 function initSession(title, rawQuestions) {
-    const shuffleEnabled = document.getElementById('setting-shuffle-options').checked;
-    const timerSetting = document.getElementById('setting-timer-mode').value;
+    const shuffleQuestionsEnabled = db.settings.shuffleQuestions !== false;
+    const shuffleOptionsEnabled = db.settings.shuffleOptions !== false;
+    const timerSetting = db.settings.timerMode || 'none';
     let questions = JSON.parse(JSON.stringify(rawQuestions)).filter(q => !q.disabled);
 
     if (questions.length === 0) {
         return alert("All questions for this session are currently disabled!");
     }
 
-    if (shuffleEnabled) {
+    // 1. Shuffle Question Order across the entire quiz/folder/set
+    if (shuffleQuestionsEnabled) {
+        shuffleArray(questions);
+    }
+
+    // 2. Shuffle MCQ Options (A, B, C, D)
+    if (shuffleOptionsEnabled) {
         questions.forEach(q => {
             if ((q.type === 'mcq' || q.type === 'true-false') && Array.isArray(q.options) && q.options.length > 0) {
                 const correctText = q.options[q.answer];
-                q.options.sort(() => Math.random() - 0.5);
+                shuffleArray(q.options);
                 q.answer = q.options.indexOf(correctText);
             }
         });
@@ -3212,7 +3230,7 @@ function loadSelectedFlashcardDeck() {
         }
     });
 
-    activeFcDeckCards.sort(() => Math.random() - 0.5);
+    shuffleArray(activeFcDeckCards);
     currentFcIndex = 0;
     fcHistoryStack = [];
     document.getElementById('fc-undo-btn').disabled = true;
@@ -3654,3 +3672,4 @@ window.onload = function() {
 
 </body>
 </html>
+
