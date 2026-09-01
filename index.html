@@ -713,7 +713,7 @@
     <header>
         <div class="brand-logo">
             <span>✦ Master Suite</span>
-            <span class="brand-badge">PRO v4.4 • Smart NLP Engine</span>
+            <span class="brand-badge">PRO v4.5 • Smart NLP Engine</span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
             <button class="btn btn-success btn-sm" onclick="syncToCloud()">☁️ Push</button>
@@ -3680,7 +3680,7 @@ function loadLanguageFlashcardSample(save = true) {
         category: 'Language Learning',
         cards: [
             { id: 'c1', front: '水 (みず)', back: 'Water (Japanese)', notes: 'Pronounced: Mizu' },
-            { id: 'c2', front: '猫 (ねこ)', back: 'Cat (Japanese)', notes: 'Pronounced: Neko' },
+            { id: 'c2', front: '猫 (ねco)', back: 'Cat (Japanese)', notes: 'Pronounced: Neko' },
             { id: 'c3', front: 'El libro', back: 'The book (Spanish)', notes: 'Masculine noun' }
         ]
     };
@@ -3914,38 +3914,98 @@ window.addEventListener('keydown', function(e) {
 });
 
 /* ==========================================================================
-   FIREBASE CLOUD SYNC ENGINE (PUSH & PULL)
+   FIREBASE AUTO-CHUNKING CLOUD SYNC ENGINE (OVERCOMING 1MB FIRESTORE LIMIT)
    ========================================================================== */
 
 async function syncToCloud() {
     if (!window.firebaseDb) return alert("Firebase initializing. Please wait...");
     const syncKey = prompt("Enter Cloud Sync ID (e.g. secret username or email):", localStorage.getItem('sync_user_key') || "default_user");
     if (!syncKey) return;
-    localStorage.setItem('sync_user_key', syncKey.trim());
+    const cleanKey = syncKey.trim();
+    localStorage.setItem('sync_user_key', cleanKey);
+
     try {
         const { doc, setDoc } = window.firestoreTools;
-        await setDoc(doc(window.firebaseDb, "user_sync", syncKey.trim()), {
-            payload: JSON.stringify(db),
+        const jsonString = JSON.stringify(db);
+        const CHUNK_SIZE = 600000; // ~600KB safe chunk size well below 1MB
+        const totalChunks = Math.ceil(jsonString.length / CHUNK_SIZE);
+
+        // 1. Write Header Index Document
+        await setDoc(doc(window.firebaseDb, "user_sync", cleanKey), {
+            totalChunks: totalChunks,
+            totalLength: jsonString.length,
             updatedAt: new Date().toISOString()
         });
-        alert(`✅ Data pushed to cloud key: "${syncKey.trim()}"`);
-    } catch (err) { alert("❌ Sync failed: " + err.message); }
+
+        // 2. Write Chunk Documents in Parallel
+        const chunkPromises = [];
+        for (let i = 0; i < totalChunks; i++) {
+            const chunkData = jsonString.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+            chunkPromises.push(
+                setDoc(doc(window.firebaseDb, "user_sync", cleanKey, "chunks", `part_${i}`), {
+                    chunkIndex: i,
+                    data: chunkData
+                })
+            );
+        }
+        await Promise.all(chunkPromises);
+
+        alert(`✅ Successfully synced ${totalChunks} data chunk(s) (${(jsonString.length / 1024).toFixed(1)} KB) to cloud key: "${cleanKey}"!`);
+    } catch (err) {
+        alert("❌ Sync failed: " + err.message);
+    }
 }
 
 async function syncFromCloud() {
     if (!window.firebaseDb) return alert("Firebase initializing. Please wait...");
     const syncKey = prompt("Enter Cloud Sync ID to pull data:", localStorage.getItem('sync_user_key') || "default_user");
     if (!syncKey) return;
+    const cleanKey = syncKey.trim();
+
     try {
         const { doc, getDoc } = window.firestoreTools;
-        const docSnap = await getDoc(doc(window.firebaseDb, "user_sync", syncKey.trim()));
-        if (docSnap.exists() && docSnap.data().payload) {
-            db = JSON.parse(docSnap.data().payload);
-            localStorage.setItem('sync_user_key', syncKey.trim());
-            QuizAppStore.saveDatabase(); renderLibrary(); renderHistory(); renderWrongPile(); renderUnfinishedSessions();
-            alert(`✅ Data pulled successfully from cloud key: "${syncKey.trim()}"`);
-        } else { alert("⚠️ No record found for that key."); }
-    } catch (err) { alert("❌ Cloud pull failed: " + err.message); }
+        const mainDocSnap = await getDoc(doc(window.firebaseDb, "user_sync", cleanKey));
+        
+        if (!mainDocSnap.exists()) {
+            return alert("⚠️ No record found for that key.");
+        }
+
+        const meta = mainDocSnap.data();
+        let fullJSON = "";
+
+        // Backward compatibility for old single payload format
+        if (meta.payload) {
+            fullJSON = meta.payload;
+        } else if (meta.totalChunks) {
+            // New chunked payload format
+            const fetchPromises = [];
+            for (let i = 0; i < meta.totalChunks; i++) {
+                fetchPromises.push(getDoc(doc(window.firebaseDb, "user_sync", cleanKey, "chunks", `part_${i}`)));
+            }
+            const chunkSnaps = await Promise.all(fetchPromises);
+            let assembled = [];
+            for (let i = 0; i < chunkSnaps.length; i++) {
+                if (!chunkSnaps[i].exists() || !chunkSnaps[i].data().data) {
+                    throw new Error(`Corrupted sync: Missing chunk part_${i}`);
+                }
+                assembled.push(chunkSnaps[i].data().data);
+            }
+            fullJSON = assembled.join('');
+        } else {
+            return alert("⚠️ Sync data format is unreadable or empty.");
+        }
+
+        db = JSON.parse(fullJSON);
+        localStorage.setItem('sync_user_key', cleanKey);
+        QuizAppStore.saveDatabase();
+        renderLibrary();
+        renderHistory();
+        renderWrongPile();
+        renderUnfinishedSessions();
+        alert(`✅ Data pulled successfully from cloud key: "${cleanKey}"!`);
+    } catch (err) {
+        alert("❌ Cloud pull failed: " + err.message);
+    }
 }
 
 window.onload = function() {
@@ -3985,3 +4045,4 @@ window.onload = function() {
 
 </body>
 </html>
+
