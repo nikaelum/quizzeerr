@@ -614,6 +614,38 @@
         .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
         .badge-type { background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); }
 
+        /* SETUP MODAL STYLES */
+        .setup-section-box {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+        }
+
+        .setup-radio-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: background 0.15s ease;
+        }
+
+        .setup-radio-label:hover {
+            background: var(--card);
+        }
+
+        .setup-radio-label input[type="radio"] {
+            accent-color: var(--accent);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
         /* DISABLED QUESTION STYLING */
         .question-item-disabled { opacity: 0.6; background: var(--bg) !important; border-style: dashed !important; }
         .question-text-disabled { text-decoration: line-through; color: var(--text-muted); }
@@ -681,7 +713,7 @@
     <header>
         <div class="brand-logo">
             <span>✦ Master Suite</span>
-            <span class="brand-badge">PRO v4.2 • Hybrid Engine</span>
+            <span class="brand-badge">PRO v4.3 • Hybrid Engine</span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
             <button class="btn btn-success btn-sm" onclick="syncToCloud()">☁️ Push</button>
@@ -791,7 +823,7 @@
                 <p style="font-size: 0.88rem; color: var(--text-muted);">Select specific quizzes across folders to combine into a custom set (all MCQs & Identifications will seamlessly integrate):</p>
                 <div id="compile-checklist" style="margin: 15px 0;"></div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button class="btn btn-success" onclick="startCompiledQuiz()">🚀 Start Practice Session</button>
+                    <button class="btn btn-success" onclick="startCompiledQuiz()">🚀 Setup Practice Session</button>
                     <button class="btn btn-warning" onclick="combineAndSaveToLibrary()">🧩 Create Combined Quiz in Library</button>
                     <button class="btn btn-secondary" onclick="exportMergedQuizJSON()">📥 Export Merged JSON</button>
                     <button class="btn btn-secondary" onclick="exportSelectedQuizArrayJSON()">📦 Export Quiz Array JSON</button>
@@ -843,7 +875,7 @@
                         <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllWrongPile(true)">Select All</button>
                         <button class="btn btn-secondary btn-sm" onclick="toggleSelectAllWrongPile(false)">Deselect All</button>
                     </div>
-                    <button class="btn btn-success" id="start-wrong-quiz-btn" onclick="startWrongPileQuiz()">🚀 Practice Selected / Filtered Weak Spots (0 Qs)</button>
+                    <button class="btn btn-success" id="start-wrong-quiz-btn" onclick="startWrongPileQuiz()">🚀 Setup Practice for Weak Spots (0 Qs)</button>
                 </div>
 
                 <div id="wrong-questions-list"></div>
@@ -864,6 +896,7 @@
             <div id="quiz-body" class="card" style="cursor: pointer;" title="Once answered, clicking open card areas or pressing spacebar will proceed to the next question.">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span id="question-type-badge" class="badge badge-type">MCQ</span>
+                    <span id="question-section-pill" class="badge badge-folder" style="font-size: 0.72rem; display: none;"></span>
                 </div>
                 <div id="question-text" style="font-size: 1.1rem; line-height: 1.6; font-weight: 600;">Question goes here...</div>
                 <div id="options-container" class="options-grid"></div>
@@ -1032,6 +1065,92 @@
     </div>
 </div>
 
+<!-- ==========================================================================
+     LAUNCH PRACTICE SETUP MODAL (FILTERING, GROUPING & SHUFFLE OPTIONS)
+     ========================================================================== -->
+<div id="practice-setup-modal" class="modal-overlay">
+    <div class="modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <div>
+                <b style="font-size: 1.15rem; display: block;" id="psetup-modal-title">🚀 Launch Practice Session</b>
+                <span style="font-size: 0.82rem; color: var(--text-muted);" id="psetup-modal-subtitle">Configure practice options</span>
+            </div>
+            <button class="btn-sm btn-secondary" onclick="togglePracticeSetupModal(false)">✕ Close</button>
+        </div>
+
+        <!-- 1. Question Type Filter -->
+        <div class="setup-section-box">
+            <label style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">1. Question Type Filter</label>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label class="setup-radio-label">
+                    <input type="radio" name="psetup-filter-type" value="all" checked onchange="updatePracticeSetupPreview()">
+                    <span>🔘 All Questions (<span id="psetup-cnt-all">0</span>)</span>
+                </label>
+                <label class="setup-radio-label" id="psetup-mcq-filter-label">
+                    <input type="radio" name="psetup-filter-type" value="mcq_only" onchange="updatePracticeSetupPreview()">
+                    <span>🔘 Multiple Choice Only (<span id="psetup-cnt-mcq">0</span>)</span>
+                </label>
+                <label class="setup-radio-label" id="psetup-id-filter-label">
+                    <input type="radio" name="psetup-filter-type" value="id_only" onchange="updatePracticeSetupPreview()">
+                    <span>🔘 Identification Only (<span id="psetup-cnt-id">0</span>)</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- 2. Question Arrangement & Shuffling Mode -->
+        <div class="setup-section-box">
+            <label style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">2. Arrangement & Shuffling Order</label>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label class="setup-radio-label">
+                    <input type="radio" name="psetup-order-mode" value="shuffle_all" checked>
+                    <span>🔀 Pure Shuffle (Completely Random Order)</span>
+                </label>
+                <label class="setup-radio-label" id="psetup-group-mcq-shuffled-label">
+                    <input type="radio" name="psetup-order-mode" value="group_mcq_first_shuffled">
+                    <span>📑 Group: MCQ First $\rightarrow$ Identification (Shuffled per Group)</span>
+                </label>
+                <label class="setup-radio-label" id="psetup-group-id-shuffled-label">
+                    <input type="radio" name="psetup-order-mode" value="group_id_first_shuffled">
+                    <span>✍️ Group: Identification First $\rightarrow$ MCQ (Shuffled per Group)</span>
+                </label>
+                <label class="setup-radio-label" id="psetup-group-mcq-ordered-label">
+                    <input type="radio" name="psetup-order-mode" value="group_mcq_first_ordered">
+                    <span>📑 Group by Type (MCQ First $\rightarrow$ Identification, Sequential)</span>
+                </label>
+                <label class="setup-radio-label">
+                    <input type="radio" name="psetup-order-mode" value="original">
+                    <span>📋 Original / Default Sequential Order (No Shuffle)</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- 3. Additional Settings -->
+        <div class="setup-section-box" style="margin-bottom: 16px;">
+            <label style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">3. Additional Options</label>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="cursor: pointer; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="psetup-shuffle-options" checked> 🔀 Shuffle MCQ Options (A, B, C, D)
+                </label>
+                <div>
+                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">⏱️ Timer Mode for this session:</label>
+                    <select id="psetup-timer-mode" class="filter-select-input" style="margin-top: 4px;">
+                        <option value="none">Untimed (Default)</option>
+                        <option value="per_question_30">30 Sec per Question</option>
+                        <option value="10m">10 Minutes Total</option>
+                        <option value="30m">30 Minutes Total</option>
+                        <option value="60m">60 Minutes Total</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button class="btn btn-secondary" onclick="togglePracticeSetupModal(false)">Cancel</button>
+            <button class="btn btn-success" id="psetup-start-btn" onclick="confirmAndStartSession()">▶ Start Practice Session</button>
+        </div>
+    </div>
+</div>
+
 <!-- QUIZ OPTIONS MODAL SHEET -->
 <div id="quiz-options-modal" class="modal-overlay">
     <div class="modal-card">
@@ -1043,7 +1162,7 @@
             <button class="btn-sm btn-secondary" onclick="toggleQuizOptionsModal(false)">✕ Close</button>
         </div>
         <div class="action-menu-list">
-            <button class="action-menu-btn" onclick="execQuizOption('run')">▶ Start Practice Session</button>
+            <button class="action-menu-btn" onclick="execQuizOption('run')">▶ Launch Practice Session</button>
             <button class="action-menu-btn" onclick="execQuizOption('stats')">📊 Questions, Toggles & Analytics</button>
             <button class="action-menu-btn" onclick="execQuizOption('edit')">✏️ Edit Quiz Title & Category</button>
             <button class="action-menu-btn" onclick="execQuizOption('clone')">📋 Duplicate / Clone Quiz</button>
@@ -1191,26 +1310,6 @@
             </div>
 
             <div>
-                <label style="font-weight: 600; font-size: 0.85rem;">⏱️ Practice Timer Mode:</label>
-                <select id="setting-timer-mode" onchange="QuizAppStore.updateSetting('timerMode', this.value)" style="width: 100%; padding: 10px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-primary); min-height: 42px;">
-                    <option value="none">Untimed (Default)</option>
-                    <option value="per_question_30">30 Sec per Question</option>
-                    <option value="10m">10 Minutes Total</option>
-                    <option value="30m">30 Minutes Total</option>
-                    <option value="60m">60 Minutes Total</option>
-                </select>
-            </div>
-
-            <div style="background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px;">
-                <label style="cursor: pointer; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="setting-shuffle-questions" onchange="QuizAppStore.updateSetting('shuffleQuestions', this.checked)"> 🔀 Shuffle Question Sequence (Random Order)
-                </label>
-                <label style="cursor: pointer; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="setting-shuffle-options" onchange="QuizAppStore.updateSetting('shuffleOptions', this.checked)"> 🔀 Shuffle MCQ Options (A, B, C, D)
-                </label>
-            </div>
-
-            <div>
                 <label style="font-weight: 600; font-size: 0.85rem;">Audio Synthesizer Effects:</label>
                 <button class="btn btn-secondary btn-sm" id="audio-toggle-btn" onclick="AudioEngine.toggleMute()" style="width: 100%; margin-top: 4px;">🔊 Sound: ON</button>
             </div>
@@ -1239,10 +1338,10 @@ function cleanStringForComparison(str) {
     if (typeof str !== 'string') str = String(str || '');
     return str
         .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accents/diacritics
-        .replace(/[-_–—]/g, ' ') // treat hyphens/dashes as space
-        .replace(/[^\w\s]/gi, '') // remove extra punctuation
-        .replace(/\s+/g, ' ') // collapse multi-spaces
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[-_–—]/g, ' ')
+        .replace(/[^\w\s]/gi, '')
+        .replace(/\s+/g, ' ')
         .trim();
 }
 
@@ -1261,7 +1360,6 @@ function checkIdentificationAnswerMatch(userInput, targetAnswers) {
     });
 }
 
-// Fisher-Yates shuffle algorithm for uniform distribution
 function shuffleArray(array) {
     if (!Array.isArray(array)) return array;
     for (let i = array.length - 1; i > 0; i--) {
@@ -1321,7 +1419,6 @@ function switchMasterSuiteMode(mode) {
     }
 }
 
-/* MOBILE SUBTAB CONTROLLER */
 let activeLibrarySubTab = 'quizzes';
 function switchLibrarySubTab(mode) {
     activeLibrarySubTab = mode;
@@ -1463,7 +1560,7 @@ let db = {
     questionStats: {},
     unfinishedSessions: {},
     questionNotes: {},
-    settings: { theme: 'light', fontScale: '100%', audioMuted: false, shuffleOptions: true, shuffleQuestions: true, timerMode: 'none' }
+    settings: { theme: 'light', fontScale: '100%', audioMuted: false }
 };
 
 const QuizAppStore = (function() {
@@ -1502,9 +1599,6 @@ const QuizAppStore = (function() {
         setFontScale(db.settings.fontScale || '100%');
         document.getElementById('theme-select').value = db.settings.theme || 'light';
         document.getElementById('font-scale-select').value = db.settings.fontScale || '100%';
-        document.getElementById('setting-shuffle-questions').checked = db.settings.shuffleQuestions !== false;
-        document.getElementById('setting-shuffle-options').checked = db.settings.shuffleOptions !== false;
-        document.getElementById('setting-timer-mode').value = db.settings.timerMode || 'none';
     }
 
     function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
@@ -1794,7 +1888,7 @@ function startFolderPracticeSession(folderId) {
         });
     });
     if (combined.length === 0) return alert("No enabled questions found in this folder!");
-    initSession(`Folder Practice: ${folder.name} (${combined.length} Qs)`, combined);
+    openPracticeSetupModal(`Folder: ${folder.name}`, combined);
 }
 
 /* ==========================================================================
@@ -2198,7 +2292,7 @@ function startTargetedQuizPractice(filterType) {
 
     toggleQuizAnalyticsModal(false);
     const questionsCopy = targetQuestions.map(q => ({ ...q, sourceQuizId: qz.id, sourceQuizTitle: qz.title }));
-    initSession(`Targeted Review: ${qz.title} (${questionsCopy.length} Qs)`, questionsCopy);
+    openPracticeSetupModal(`Targeted: ${qz.title}`, questionsCopy);
 }
 
 /* ==========================================================================
@@ -2410,7 +2504,7 @@ function startCompiledQuiz() {
         }
     });
     if (compiled.length === 0) return alert("No active enabled questions found in selected quizzes!");
-    initSession(`Compiled Set (${checked.length} Topics)`, compiled);
+    openPracticeSetupModal(`Compiled Set (${checked.length} Topics)`, compiled);
 }
 
 function combineAndSaveToLibrary() {
@@ -2507,7 +2601,7 @@ function renderWrongPile() {
     if (allKeys.length === 0) {
         container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 20px 0;">No missed questions recorded yet!</p>`;
         document.getElementById('start-wrong-quiz-btn').disabled = true;
-        document.getElementById('start-wrong-quiz-btn').innerText = "🚀 Practice Selected / Filtered Weak Spots (0 Qs)";
+        document.getElementById('start-wrong-quiz-btn').innerText = "🚀 Setup Practice for Weak Spots (0 Qs)";
         return;
     }
 
@@ -2546,7 +2640,7 @@ function renderWrongPile() {
 
     const startBtn = document.getElementById('start-wrong-quiz-btn');
     startBtn.disabled = filteredKeys.length === 0;
-    startBtn.innerText = `🚀 Practice Filtered / Selected Weak Spots (${filteredKeys.length} Qs)`;
+    startBtn.innerText = `🚀 Setup Practice for Weak Spots (${filteredKeys.length} Qs)`;
 
     if (filteredKeys.length === 0) {
         container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 30px 0;">No weak spot questions match the current filter selection.</p>`;
@@ -2599,7 +2693,7 @@ function updateWrongPilePracticeBtnCount() {
     const checked = Array.from(document.querySelectorAll('.wrong-select-checkbox:checked')).map(cb => cb.value);
     const startBtn = document.getElementById('start-wrong-quiz-btn');
     startBtn.disabled = checked.length === 0;
-    startBtn.innerText = `🚀 Practice Filtered / Selected Weak Spots (${checked.length} Qs)`;
+    startBtn.innerText = `🚀 Setup Practice for Weak Spots (${checked.length} Qs)`;
 }
 
 function toggleSelectAllWrongPile(select) {
@@ -2624,37 +2718,125 @@ function startWrongPileQuiz() {
     }).filter(q => !q.disabled);
 
     if (questions.length === 0) return alert("No active enabled questions in selected weak spots!");
-    initSession(`Targeted Weak Spots Practice (${questions.length} Qs)`, questions);
+    openPracticeSetupModal(`Weak Spots Practice (${questions.length} Qs)`, questions);
 }
 
 /* ==========================================================================
-   PRACTICE RUNNER & UNIVERSAL SHUFFLE ENGINE
+   PRE-FLIGHT PRACTICE SETUP MODAL & DYNAMIC GROUPING CONTROLLER
    ========================================================================== */
 
-let activeSession = { id: "", title: "", questions: [], currentIndex: 0, userAnswers: [], score: 0, timerMode: 'none', questionTimeLogs: [] };
-let timerInterval = null, sessionTimeRemaining = 0;
-let lastLoadedIndex = -1;
-let currentMultiSelects = [];
-let currentQuestionStartTime = 0;
+let pendingPracticeConfig = { title: '', rawQuestions: [] };
 
-function initSession(title, rawQuestions) {
-    const shuffleQuestionsEnabled = db.settings.shuffleQuestions !== false;
-    const shuffleOptionsEnabled = db.settings.shuffleOptions !== false;
-    const timerSetting = db.settings.timerMode || 'none';
-    let questions = JSON.parse(JSON.stringify(rawQuestions)).filter(q => !q.disabled);
+function openPracticeSetupModal(title, rawQuestions) {
+    const activeQuestions = rawQuestions.filter(q => !q.disabled);
+    if (activeQuestions.length === 0) return alert("All questions in this selection are disabled!");
 
-    if (questions.length === 0) {
-        return alert("All questions for this session are currently disabled!");
+    pendingPracticeConfig = {
+        title: title,
+        rawQuestions: JSON.parse(JSON.stringify(activeQuestions))
+    };
+
+    const mcqCount = activeQuestions.filter(q => q.type === 'mcq' || q.type === 'true-false' || q.type === 'multi-select').length;
+    const idCount = activeQuestions.filter(q => q.type === 'identification' || q.type === 'fill-blank').length;
+
+    document.getElementById('psetup-modal-title').innerText = `🚀 ${title}`;
+    document.getElementById('psetup-modal-subtitle').innerText = `${activeQuestions.length} Total Available Questions`;
+
+    document.getElementById('psetup-cnt-all').innerText = activeQuestions.length;
+    document.getElementById('psetup-cnt-mcq').innerText = mcqCount;
+    document.getElementById('psetup-cnt-id').innerText = idCount;
+
+    // Reset default selections
+    document.querySelector('input[name="psetup-filter-type"][value="all"]').checked = true;
+    document.querySelector('input[name="psetup-order-mode"][value="shuffle_all"]').checked = true;
+
+    // Toggle availability
+    const mcqRadio = document.querySelector('input[name="psetup-filter-type"][value="mcq_only"]');
+    const idRadio = document.querySelector('input[name="psetup-filter-type"][value="id_only"]');
+    mcqRadio.disabled = mcqCount === 0;
+    idRadio.disabled = idCount === 0;
+
+    const groupMcqShuffledLabel = document.getElementById('psetup-group-mcq-shuffled-label');
+    const groupIdShuffledLabel = document.getElementById('psetup-group-id-shuffled-label');
+    const groupMcqOrderedLabel = document.getElementById('psetup-group-mcq-ordered-label');
+
+    const isHybrid = mcqCount > 0 && idCount > 0;
+    groupMcqShuffledLabel.style.display = isHybrid ? 'flex' : 'none';
+    groupIdShuffledLabel.style.display = isHybrid ? 'flex' : 'none';
+    groupMcqOrderedLabel.style.display = isHybrid ? 'flex' : 'none';
+
+    togglePracticeSetupModal(true);
+}
+
+function togglePracticeSetupModal(show) {
+    document.getElementById('practice-setup-modal').style.display = show ? 'flex' : 'none';
+}
+
+function updatePracticeSetupPreview() {
+    const filterType = document.querySelector('input[name="psetup-filter-type"]:checked')?.value || 'all';
+    const isFilteredToSingleType = filterType === 'mcq_only' || filterType === 'id_only';
+
+    const groupMcqShuffledLabel = document.getElementById('psetup-group-mcq-shuffled-label');
+    const groupIdShuffledLabel = document.getElementById('psetup-group-id-shuffled-label');
+    const groupMcqOrderedLabel = document.getElementById('psetup-group-mcq-ordered-label');
+
+    if (isFilteredToSingleType) {
+        groupMcqShuffledLabel.style.display = 'none';
+        groupIdShuffledLabel.style.display = 'none';
+        groupMcqOrderedLabel.style.display = 'none';
+        document.querySelector('input[name="psetup-order-mode"][value="shuffle_all"]').checked = true;
+    } else {
+        const mcqCount = pendingPracticeConfig.rawQuestions.filter(q => q.type === 'mcq' || q.type === 'true-false' || q.type === 'multi-select').length;
+        const idCount = pendingPracticeConfig.rawQuestions.filter(q => q.type === 'identification' || q.type === 'fill-blank').length;
+        const isHybrid = mcqCount > 0 && idCount > 0;
+
+        groupMcqShuffledLabel.style.display = isHybrid ? 'flex' : 'none';
+        groupIdShuffledLabel.style.display = isHybrid ? 'flex' : 'none';
+        groupMcqOrderedLabel.style.display = isHybrid ? 'flex' : 'none';
+    }
+}
+
+function confirmAndStartSession() {
+    togglePracticeSetupModal(false);
+
+    const filterType = document.querySelector('input[name="psetup-filter-type"]:checked')?.value || 'all';
+    const orderMode = document.querySelector('input[name="psetup-order-mode"]:checked')?.value || 'shuffle_all';
+    const shuffleOptions = document.getElementById('psetup-shuffle-options').checked;
+    const timerMode = document.getElementById('psetup-timer-mode').value;
+
+    let filteredQuestions = [...pendingPracticeConfig.rawQuestions];
+
+    // 1. Filter Questions
+    if (filterType === 'mcq_only') {
+        filteredQuestions = filteredQuestions.filter(q => q.type === 'mcq' || q.type === 'true-false' || q.type === 'multi-select');
+    } else if (filterType === 'id_only') {
+        filteredQuestions = filteredQuestions.filter(q => q.type === 'identification' || q.type === 'fill-blank');
     }
 
-    // 1. Shuffle Question Order across the entire quiz/folder/set
-    if (shuffleQuestionsEnabled) {
-        shuffleArray(questions);
+    if (filteredQuestions.length === 0) {
+        return alert("No questions available under the selected filter!");
     }
 
-    // 2. Shuffle MCQ Options (A, B, C, D)
-    if (shuffleOptionsEnabled) {
-        questions.forEach(q => {
+    // 2. Order & Group Questions
+    let finalQuestions = [];
+    const mcqPool = filteredQuestions.filter(q => q.type === 'mcq' || q.type === 'true-false' || q.type === 'multi-select');
+    const idPool = filteredQuestions.filter(q => q.type === 'identification' || q.type === 'fill-blank');
+
+    if (orderMode === 'shuffle_all') {
+        finalQuestions = shuffleArray([...filteredQuestions]);
+    } else if (orderMode === 'group_mcq_first_shuffled') {
+        finalQuestions = [...shuffleArray([...mcqPool]), ...shuffleArray([...idPool])];
+    } else if (orderMode === 'group_id_first_shuffled') {
+        finalQuestions = [...shuffleArray([...idPool]), ...shuffleArray([...mcqPool])];
+    } else if (orderMode === 'group_mcq_first_ordered') {
+        finalQuestions = [...mcqPool, ...idPool];
+    } else if (orderMode === 'original') {
+        finalQuestions = [...filteredQuestions];
+    }
+
+    // 3. Shuffle Options if enabled
+    if (shuffleOptions) {
+        finalQuestions.forEach(q => {
             if ((q.type === 'mcq' || q.type === 'true-false') && Array.isArray(q.options) && q.options.length > 0) {
                 const correctText = q.options[q.answer];
                 shuffleArray(q.options);
@@ -2663,17 +2845,35 @@ function initSession(title, rawQuestions) {
         });
     }
 
+    let dynamicTitle = pendingPracticeConfig.title;
+    if (filterType === 'mcq_only') dynamicTitle += ' [MCQ Only]';
+    if (filterType === 'id_only') dynamicTitle += ' [Identification Only]';
+
+    initSession(dynamicTitle, finalQuestions, timerMode);
+}
+
+/* ==========================================================================
+   PRACTICE RUNNER CORE ENGINE
+   ========================================================================== */
+
+let activeSession = { id: "", title: "", questions: [], currentIndex: 0, userAnswers: [], score: 0, timerMode: 'none', questionTimeLogs: [] };
+let timerInterval = null, sessionTimeRemaining = 0;
+let lastLoadedIndex = -1;
+let currentMultiSelects = [];
+let currentQuestionStartTime = 0;
+
+function initSession(title, processedQuestions, timerMode = 'none') {
     const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
 
     activeSession = { 
         id: sessionId,
         title, 
-        questions, 
+        questions: processedQuestions, 
         currentIndex: 0, 
-        userAnswers: new Array(questions.length).fill(null), 
-        questionTimeLogs: new Array(questions.length).fill(0),
+        userAnswers: new Array(processedQuestions.length).fill(null), 
+        questionTimeLogs: new Array(processedQuestions.length).fill(0),
         score: 0, 
-        timerMode: timerSetting 
+        timerMode: timerMode 
     };
 
     document.getElementById('runner-tab-btn').disabled = false;
@@ -2684,7 +2884,9 @@ function initSession(title, rawQuestions) {
     lastLoadedIndex = -1;
     currentMultiSelects = [];
 
-    switchQuizTab('runner-tab'); setupSessionTimer(); loadQuestion();
+    switchQuizTab('runner-tab');
+    setupSessionTimer();
+    loadQuestion();
     saveSessionBackup();
 }
 
@@ -2753,15 +2955,20 @@ function loadQuestion() {
     }
 
     const typeBadge = document.getElementById('question-type-badge');
-    if (q.type === 'identification') {
-        typeBadge.innerText = '✍️ Identification / Fill-in-the-Blank';
+    const sectionPill = document.getElementById('question-section-pill');
+
+    if (q.type === 'identification' || q.type === 'fill-blank') {
+        typeBadge.innerText = '✍️ Identification';
         typeBadge.style.color = 'var(--accent)';
+        if (sectionPill) { sectionPill.style.display = 'inline-flex'; sectionPill.innerText = 'Part: Identification'; }
     } else if (q.type === 'multi-select') {
         typeBadge.innerText = '☑️ Multi-Select (Choose all that apply)';
         typeBadge.style.color = 'var(--warning)';
+        if (sectionPill) { sectionPill.style.display = 'inline-flex'; sectionPill.innerText = 'Part: Multiple Choice'; }
     } else {
-        typeBadge.innerText = '🔘 Multiple Choice (Single Answer)';
+        typeBadge.innerText = '🔘 Multiple Choice';
         typeBadge.style.color = 'var(--text-muted)';
+        if (sectionPill) { sectionPill.style.display = 'inline-flex'; sectionPill.innerText = 'Part: Multiple Choice'; }
     }
 
     document.getElementById('quiz-progress').innerText = `Question ${activeSession.currentIndex + 1} of ${activeSession.questions.length}`;
@@ -3020,7 +3227,7 @@ function showExplanation(isCorrect) {
     const expBox = document.getElementById('explanation-box'); expBox.style.display = 'block';
     
     let correctText = '';
-    if (q.type === 'identification') {
+    if (q.type === 'identification' || q.type === 'fill-blank') {
         correctText = Array.isArray(q.answer) ? q.answer.join(' / ') : String(q.answer);
     } else if (Array.isArray(q.answer)) {
         correctText = q.answer.map(idx => q.options[idx] ? String.fromCharCode(65 + idx) + ": " + q.options[idx] : idx).join(', ');
@@ -3161,7 +3368,7 @@ function startSingleQuiz(id) {
         const activeQs = qz.questions.filter(q => !q.disabled);
         if (activeQs.length === 0) return alert("All questions in this quiz are disabled!");
         const questions = activeQs.map(q => ({ ...q, sourceQuizId: qz.id, sourceQuizTitle: qz.title }));
-        initSession(qz.title, questions);
+        openPracticeSetupModal(qz.title, questions);
     }
 }
 
@@ -3672,4 +3879,3 @@ window.onload = function() {
 
 </body>
 </html>
-
