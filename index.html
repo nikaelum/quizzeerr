@@ -713,7 +713,7 @@
     <header>
         <div class="brand-logo">
             <span>✦ Master Suite</span>
-            <span class="brand-badge">PRO v4.3 • Hybrid Engine</span>
+            <span class="brand-badge">PRO v4.4 • Smart NLP Engine</span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
             <button class="btn btn-success btn-sm" onclick="syncToCloud()">☁️ Push</button>
@@ -784,7 +784,7 @@
                 <div id="lib-col-right" class="lib-col-right subtab-hidden">
                     <div class="card">
                         <div class="card-header"><div class="card-title">💻 Terminal / Dual-Pane LaTeX IDE</div></div>
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Create hybrid quizzes containing both <b>MCQ</b> and <b>Identification</b> questions. Smart fuzzy evaluation ignores casing, hyphens, and whitespace differences!</p>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Create hybrid quizzes containing both <b>MCQ</b> and <b>Identification</b> questions. Smart fuzzy evaluation ignores casing, hyphens, plurals, missing articles, and slight typos!</p>
                         <div class="editor-grid">
                             <textarea id="json-editor-textarea" class="code-area" spellcheck="false" placeholder='{\n  "title": "Aviation & Science Hybrid",\n  "category": "Aviation",\n  "folder": "General Review",\n  "questions": [\n    {\n      "q": "What force opposes aircraft thrust?",\n      "type": "identification",\n      "answer": "Drag",\n      "explain": "Drag is aerodynamic friction."\n    },\n    {\n      "q": "What is Plancks constant symbol?",\n      "type": "mcq",\n      "options": ["\\( h \\)", "\\( c \\)", "\\( G \\)"],\n      "answer": 0,\n      "explain": "h is Plancks constant."\n    }\n  ]\n}'></textarea>
                             <div id="live-latex-preview" class="preview-area">
@@ -1331,18 +1331,72 @@
 
 <script>
 /* ==========================================================================
-   SMART STRING NORMALIZER & UTILITY ALGORITHMS
+   SMART MULTI-TIER NLP & FUZZY EVALUATION ENGINE
    ========================================================================== */
 
 function cleanStringForComparison(str) {
     if (typeof str !== 'string') str = String(str || '');
     return str
         .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .replace(/[-_–—]/g, ' ')
-        .replace(/[^\w\s]/gi, '')
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // strip diacritics / accents
+        .replace(/['’`]/g, '') // remove apostrophes: Newton's -> Newtons
+        .replace(/[-_–—]/g, ' ') // convert dashes to space
+        .replace(/[^\w\s\^]/gi, ' ') // convert punctuation to spaces
+        .replace(/\s+/g, ' ') // collapse multi-spaces
+        .trim();
+}
+
+function stripArticlesAndStopWords(str) {
+    return str
+        .replace(/\b(the|a|an|of|to|in|for|and|on|at|by|with|is|are|was|were)\b/gi, ' ')
         .replace(/\s+/g, ' ')
         .trim();
+}
+
+function stemWord(w) {
+    if (!w || w.length <= 3) return w;
+    if (w.endsWith('ies')) return w.slice(0, -3) + 'y';
+    if (w.endsWith('es') && !w.endsWith('ies')) return w.slice(0, -2);
+    if (w.endsWith('s') && !w.endsWith('ss')) return w.slice(0, -1);
+    if (w.endsWith('ing') && w.length > 5) return w.slice(0, -3);
+    if (w.endsWith('ed') && w.length > 4) return w.slice(0, -2);
+    return w;
+}
+
+function extractAcronym(str) {
+    const stopWords = ['of', 'the', 'and', 'in', 'for', 'to', 'a', 'an', 'at', 'by'];
+    const words = str.split(/\s+/).filter(w => w.length > 0 && !stopWords.includes(w.toLowerCase()));
+    if (words.length <= 1) return '';
+    return words.map(w => w[0]).join('').toLowerCase();
+}
+
+function levenshteinDistance(s1, s2) {
+    s1 = s1 || ''; s2 = s2 || '';
+    const m = s1.length, n = s2.length;
+    const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+    for (let i = 0; i <= m; i++) dp[i][0] = i;
+    for (let j = 0; j <= n; j++) dp[0][j] = j;
+
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+            dp[i][j] = Math.min(
+                dp[i - 1][j] + 1,
+                dp[i][j - 1] + 1,
+                dp[i - 1][j - 1] + cost
+            );
+        }
+    }
+    return dp[m][n];
+}
+
+function calculateSimilarityRatio(s1, s2) {
+    if (!s1 || !s2) return 0;
+    if (s1 === s2) return 1;
+    const maxLen = Math.max(s1.length, s2.length);
+    if (maxLen === 0) return 1;
+    const dist = levenshteinDistance(s1, s2);
+    return 1 - (dist / maxLen);
 }
 
 function checkIdentificationAnswerMatch(userInput, targetAnswers) {
@@ -1350,14 +1404,68 @@ function checkIdentificationAnswerMatch(userInput, targetAnswers) {
     if (!rawUser) return false;
 
     const cleanUser = cleanStringForComparison(rawUser);
-    const condensedUser = cleanUser.replace(/\s+/g, '');
+    const spacelessUser = cleanUser.replace(/\s+/g, '');
+    const noArticlesUser = cleanStringForComparison(stripArticlesAndStopWords(cleanUser));
+    const stemmedUser = cleanUser.split(' ').map(stemWord).join(' ');
+    const userTokens = cleanUser.split(' ').filter(t => t.length > 1);
+
     const answersList = Array.isArray(targetAnswers) ? targetAnswers : [targetAnswers];
 
-    return answersList.some(ans => {
-        const cleanAns = cleanStringForComparison(String(ans));
-        const condensedAns = cleanAns.replace(/\s+/g, '');
-        return cleanUser === cleanAns || condensedUser === condensedAns;
-    });
+    for (let rawAns of answersList) {
+        const cleanAns = cleanStringForComparison(String(rawAns || ''));
+        if (!cleanAns) continue;
+
+        // 1. Direct match or spaceless match (e.g. "X-ray" vs "Xray")
+        if (cleanUser === cleanAns || spacelessUser === cleanAns.replace(/\s+/g, '')) return true;
+
+        // 2. Stop words / Articles stripped match (e.g. "The law of inertia" vs "Law of inertia")
+        const noArticlesAns = cleanStringForComparison(stripArticlesAndStopWords(cleanAns));
+        if (noArticlesUser && noArticlesAns && (noArticlesUser === noArticlesAns || noArticlesUser.replace(/\s+/g, '') === noArticlesAns.replace(/\s+/g, ''))) return true;
+
+        // 3. Stemmed singular / plural match (e.g. "electron" vs "electrons", "wave" vs "waves")
+        const stemmedAns = cleanAns.split(' ').map(stemWord).join(' ');
+        if (stemmedUser === stemmedAns) return true;
+
+        // 4. Stemmed without articles
+        const stemmedNoArtUser = noArticlesUser.split(' ').map(stemWord).join(' ');
+        const stemmedNoArtAns = noArticlesAns.split(' ').map(stemWord).join(' ');
+        if (stemmedNoArtUser && stemmedNoArtAns && stemmedNoArtUser === stemmedNoArtAns) return true;
+
+        // 5. Acronym match (e.g. CAAP vs Civil Aviation Authority of the Philippines)
+        const targetAcronym = extractAcronym(cleanAns);
+        const userAcronym = extractAcronym(cleanUser);
+        if (targetAcronym && (cleanUser === targetAcronym || spacelessUser === targetAcronym)) return true;
+        if (userAcronym && (cleanAns === userAcronym || cleanAns.replace(/\s+/g, '') === userAcronym)) return true;
+
+        // 6. Fuzzy similarity (Levenshtein typo forgiveness)
+        const simScore = calculateSimilarityRatio(cleanUser, cleanAns);
+        if (cleanAns.length >= 4 && simScore >= 0.82) return true;
+
+        if (noArticlesAns.length >= 4) {
+            const simNoArt = calculateSimilarityRatio(noArticlesUser, noArticlesAns);
+            if (simNoArt >= 0.82) return true;
+        }
+
+        // 7. Token Overlap / Key Concept Matching
+        const ansTokens = cleanAns.split(' ').filter(t => t.length > 1);
+        if (ansTokens.length >= 2 && userTokens.length >= 1) {
+            const stemmedAnsTokens = ansTokens.map(stemWord);
+            const stemmedUserTokens = userTokens.map(stemWord);
+
+            let matchCount = 0;
+            stemmedUserTokens.forEach(ut => {
+                if (stemmedAnsTokens.some(at => at === ut || calculateSimilarityRatio(ut, at) >= 0.80)) {
+                    matchCount++;
+                }
+            });
+
+            const coverage = matchCount / stemmedAnsTokens.length;
+            const precision = matchCount / stemmedUserTokens.length;
+            if (coverage >= 0.65 && precision >= 0.65) return true;
+        }
+    }
+
+    return false;
 }
 
 function shuffleArray(array) {
@@ -2654,7 +2762,7 @@ function renderWrongPile() {
         const origin = getWrongItemOriginInfo(item);
         
         let ansText = '';
-        if (q.type === 'identification') {
+        if (q.type === 'identification' || q.type === 'fill-blank') {
             ansText = Array.isArray(q.answer) ? q.answer.join(' / ') : String(q.answer);
         } else if (Array.isArray(q.answer)) {
             ansText = q.answer.map(idx => q.options[idx] !== undefined ? q.options[idx] : idx).join(', ');
@@ -2746,11 +2854,9 @@ function openPracticeSetupModal(title, rawQuestions) {
     document.getElementById('psetup-cnt-mcq').innerText = mcqCount;
     document.getElementById('psetup-cnt-id').innerText = idCount;
 
-    // Reset default selections
     document.querySelector('input[name="psetup-filter-type"][value="all"]').checked = true;
     document.querySelector('input[name="psetup-order-mode"][value="shuffle_all"]').checked = true;
 
-    // Toggle availability
     const mcqRadio = document.querySelector('input[name="psetup-filter-type"][value="mcq_only"]');
     const idRadio = document.querySelector('input[name="psetup-filter-type"][value="id_only"]');
     mcqRadio.disabled = mcqCount === 0;
