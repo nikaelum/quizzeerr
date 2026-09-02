@@ -713,7 +713,7 @@
     <header>
         <div class="brand-logo">
             <span>✦ Master Suite</span>
-            <span class="brand-badge">PRO v4.5 • Smart NLP Engine</span>
+            <span class="brand-badge">PRO v4.6 • Smart NLP & Shuffler</span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
             <button class="btn btn-success btn-sm" onclick="syncToCloud()">☁️ Push</button>
@@ -1129,7 +1129,7 @@
             <label style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">3. Additional Options</label>
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <label style="cursor: pointer; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="psetup-shuffle-options" checked> 🔀 Shuffle MCQ Options (A, B, C, D)
+                    <input type="checkbox" id="psetup-shuffle-options" checked> 🔀 Shuffle Options / Choices (MCQ & Multi-Select)
                 </label>
                 <div>
                     <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">⏱️ Timer Mode for this session:</label>
@@ -2940,13 +2940,30 @@ function confirmAndStartSession() {
         finalQuestions = [...filteredQuestions];
     }
 
-    // 3. Shuffle Options if enabled
+    // 3. Robust Option Shuffler (Single MCQ & Multi-Select Multiple Answers)
     if (shuffleOptions) {
         finalQuestions.forEach(q => {
-            if ((q.type === 'mcq' || q.type === 'true-false') && Array.isArray(q.options) && q.options.length > 0) {
-                const correctText = q.options[q.answer];
-                shuffleArray(q.options);
-                q.answer = q.options.indexOf(correctText);
+            if (Array.isArray(q.options) && q.options.length > 0) {
+                if (q.type === 'mcq' || q.type === 'true-false') {
+                    const mappedOptions = q.options.map((opt, idx) => ({
+                        text: opt,
+                        isCorrect: idx === q.answer
+                    }));
+                    shuffleArray(mappedOptions);
+                    q.options = mappedOptions.map(o => o.text);
+                    q.answer = mappedOptions.findIndex(o => o.isCorrect);
+                } else if (q.type === 'multi-select') {
+                    const correctIndices = Array.isArray(q.answer) ? q.answer : [q.answer];
+                    const mappedOptions = q.options.map((opt, idx) => ({
+                        text: opt,
+                        isCorrect: correctIndices.includes(idx)
+                    }));
+                    shuffleArray(mappedOptions);
+                    q.options = mappedOptions.map(o => o.text);
+                    q.answer = mappedOptions
+                        .map((o, idx) => o.isCorrect ? idx : -1)
+                        .filter(idx => idx !== -1);
+                }
             }
         });
     }
@@ -3680,7 +3697,7 @@ function loadLanguageFlashcardSample(save = true) {
         category: 'Language Learning',
         cards: [
             { id: 'c1', front: '水 (みず)', back: 'Water (Japanese)', notes: 'Pronounced: Mizu' },
-            { id: 'c2', front: '猫 (ねco)', back: 'Cat (Japanese)', notes: 'Pronounced: Neko' },
+            { id: 'c2', front: '猫 (ねこ)', back: 'Cat (Japanese)', notes: 'Pronounced: Neko' },
             { id: 'c3', front: 'El libro', back: 'The book (Spanish)', notes: 'Masculine noun' }
         ]
     };
